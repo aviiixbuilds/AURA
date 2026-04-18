@@ -1,32 +1,51 @@
-# Aura — Product Requirements Document
+<div align="center">
+
+![AURA Banner](./src/assets/banner.png)
+
+# 🌌 AURA
+### *Advanced User Responsive Architecture*
+
+[![Vite](https://img.shields.io/badge/Vite-B73BFE?style=for-the-badge&logo=vite&logoColor=FFD62E)](https://vitejs.dev/)
+[![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)](https://reactjs.org/)
+[![Status](https://img.shields.io/badge/Status-Alpha-orange?style=for-the-badge)](https://github.com/aviiixbuilds/AURA)
+[![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)](LICENSE)
+
+**AURA** is a high-performance, aesthetically driven React foundation designed for building immersive and cinematic digital experiences. 
+It bridges the gap between raw power and ethereal beauty.
+
+[Explore Documentation](https://github.com/aviiixbuilds/AURA#getting-started) • [View Demo](https://github.com/aviiixbuilds/AURA) • [Report Bug](https://github.com/aviiixbuilds/AURA/issues)
+
+</div>
+
+---
+
+# 📋 Product Requirements Document (PRD)
 
 **Version:** 1.0  
 **Date:** April 2026  
 **Status:** In Progress
 
----
-
 ## Overview
 
-Aura is a React-based web application inspired by Spotify. It replicates the core Spotify experience — browsing, searching, and playing music — while layering on visual effects inspired by Spicetify (a popular Spotify client customizer known for dynamic theming, animations, and immersive now-playing experiences).
+AURA is a React-based web application inspired by Spotify. It replicates the core Spotify experience — browsing, searching, and playing music — while layering on visual effects inspired by Spicetify (a popular Spotify client customizer known for dynamic theming, animations, and immersive now-playing experiences).
 
 The goal is a fully functional, visually impressive multi-page music app that uses the official Spotify Web API for real data.
 
 ---
 
-## The Problem We're Solving
+## ✨ Vision
+AURA was born from a desire to create web interfaces that don't just function but *feel* alive. Inspired by the soft glow of neon and the fluidity of light, AURA provides a premium starting point for developers who prioritize UI/UX excellence without compromising on performance.
 
-Spotify's web interface is functional but visually flat. Spicetify proved that the same music experience can feel dramatically more alive — dynamic colors, immersive now-playing views, animated transitions. Aura brings that energy to a React web app built from scratch.
+## 🚀 Features
+- **💎 Luminous UI Components**: Pre-styled components with a focus on glassmorphism and soft light effects.
+- **⚡ Next-Gen Performance**: Built on Vite 8 and React 19 for instantaneous feedback and blazing speeds.
+- **🎨 Atmospheric Design**: Integrated support for dynamic themes and fluid CSS animations.
+- **🛠 Developer First**: Fully type-safe and optimized for a seamless development experience.
+- **📱 Responsive by Nature**: Pixel-perfect layouts across all devices.
 
 ---
 
-## Target User
-
-Someone who listens to music on the web and wants an experience that feels more personal and visually expressive than the default Spotify UI.
-
----
-
-## Scope
+## 🏗 Scope
 
 **In scope**
 - Full Spotify clone (home, search, library, playlist/album/artist pages)
@@ -46,7 +65,7 @@ Someone who listens to music on the web and wants an experience that feels more 
 
 ---
 
-## Pages & Routes
+## 🗺 Pages & Routes
 
 | Page | Route | Description |
 |---|---|---|
@@ -60,7 +79,7 @@ Someone who listens to music on the web and wants an experience that feels more 
 
 ---
 
-## Feature Breakdown
+## 🛠 Feature Breakdown
 
 ### 1. Music Player (persistent bottom bar)
 - Current track info (name, artist, cover art)
@@ -115,9 +134,9 @@ Someone who listens to music on the web and wants an experience that feels more 
 
 ---
 
-## Component Structure
+## 📂 Component Structure
 
-```
+```bash
 src/
 ├── components/
 │   ├── common/
@@ -168,7 +187,7 @@ src/
 
 ---
 
-## API Plan
+## 🌐 API Plan
 
 ### Spotify Web API
 
@@ -195,7 +214,7 @@ Gets you access to all public Spotify data.
 
 ---
 
-## Design Direction (Spicetify-inspired)
+## 🎨 Design Direction (Spicetify-inspired)
 
 - **Base:** Deep dark background (`#0a0a0a`)
 - **Accent:** Dynamic — pulled from album art per session
@@ -208,7 +227,7 @@ Gets you access to all public Spotify data.
 
 ---
 
-## State Management Summary
+## ⚙️ State Management Summary
 
 | State | Type | Hook | Storage |
 |---|---|---|---|
@@ -223,3 +242,38 @@ Gets you access to all public Spotify data.
 | Dynamic color | String (hex) | `useState` | — |
 | Session stats | Object | `useState` | — |
 | API token | String | `useEffect` | memory |
+
+---
+
+## 🚥 Getting Started
+
+### Prerequisites
+- Node.js (Latest LTS)
+- npm or yarn
+
+### Installation
+1. Clone the repository
+   ```bash
+   git clone https://github.com/aviiixbuilds/AURA.git
+   ```
+2. Navigate to the project directory
+   ```bash
+   cd AURA
+   ```
+3. Install dependencies
+   ```bash
+   npm install
+   ```
+4. Start the development server
+   ```bash
+   npm run dev
+   ```
+
+## 📜 License
+Distributed under the MIT License. See `LICENSE` for more information.
+
+---
+
+<div align="center">
+Built with ❤️ by [aviiixbuilds](https://github.com/aviiixbuilds)
+</div>
