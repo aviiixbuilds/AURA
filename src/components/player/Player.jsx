@@ -1,0 +1,137 @@
+import React from 'react';
+import { 
+  Play, Pause, SkipBack, SkipForward, Repeat, Shuffle, 
+  Volume2, Maximize2, Mic2, ListMusic 
+} from 'lucide-react';
+import { usePlayer } from '../../context/PlayerContext';
+
+const Player = ({ toggleLyrics }) => {
+  const { 
+    currentTrack, isPlaying, togglePlay, progress, duration, 
+    volume, setVolume, seek, isAmbientMode, setIsAmbientMode 
+  } = usePlayer();
+
+  if (!currentTrack) return <div className="glass" style={{ height: 'var(--player-height)', position: 'fixed', bottom: 0, left: 0, right: 0 }} />;
+
+  const formatTime = (time) => {
+    if (!time) return "0:00";
+    const minutes = Math.floor(time / 60);
+    const seconds = Math.floor(time % 60);
+    return `${minutes}:${seconds.toString().padStart(2, '0')}`;
+  };
+
+  return (
+    <footer className="glass" style={{ 
+      height: 'var(--player-height)', 
+      position: 'fixed', 
+      bottom: 0, 
+      left: 0, 
+      right: 0,
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      padding: '0 16px',
+      zIndex: 200,
+      transition: 'var(--transition-color)'
+    }}>
+      {/* Track Info */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: '14px', width: '30%' }}>
+        <div style={{ 
+          width: '56px', height: '56px', borderRadius: '4px', 
+          background: 'var(--bg-card)', overflow: 'hidden',
+          boxShadow: '0 4px 12px rgba(0,0,0,0.5)',
+          cursor: 'pointer'
+        }} onClick={() => setIsAmbientMode(true)}>
+          <img 
+            src={currentTrack.album?.images?.[0]?.url} 
+            alt={currentTrack.name} 
+            style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
+          />
+        </div>
+        <div style={{ display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+          <span style={{ fontWeight: 600, fontSize: '14px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+            {currentTrack.name}
+          </span>
+          <span style={{ fontSize: '12px', color: 'var(--text-muted)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+            {currentTrack.artists?.map(a => a.name).join(', ')}
+          </span>
+        </div>
+      </div>
+
+      {/* Controls */}
+      <div style={{ 
+        display: 'flex', flexDirection: 'column', alignItems: 'center', 
+        gap: '8px', width: '40%' 
+      }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '24px', color: 'var(--text-muted)' }}>
+          <Shuffle size={18} className="cursor-pointer hover:text-white" />
+          <SkipBack size={20} className="fill-current cursor-pointer hover:text-white" />
+          <div 
+            onClick={togglePlay}
+            style={{ 
+              width: '32px', height: '32px', borderRadius: '50%', background: 'white',
+              display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'black',
+              cursor: 'pointer', transition: 'transform 0.1s active'
+            }}
+          >
+            {isPlaying ? <Pause size={20} className="fill-current" /> : <Play size={20} className="fill-current" />}
+          </div>
+          <SkipForward size={20} className="fill-current cursor-pointer hover:text-white" />
+          <Repeat size={18} className="cursor-pointer hover:text-white" />
+        </div>
+        
+        <div style={{ width: '100%', display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <span style={{ fontSize: '11px', color: 'var(--text-muted)' }}>{formatTime(progress)}</span>
+          <div 
+            style={{ 
+              flex: 1, height: '4px', background: 'rgba(255,255,255,0.1)', 
+              borderRadius: '2px', position: 'relative', cursor: 'pointer'
+            }}
+            onClick={(e) => {
+              const rect = e.currentTarget.getBoundingClientRect();
+              const x = e.clientX - rect.left;
+              const pct = x / rect.width;
+              seek(pct * duration);
+            }}
+          >
+            <div style={{ 
+              width: `${(progress / duration) * 100}%`, 
+              height: '100%', 
+              background: 'white', 
+              borderRadius: '2px' 
+            }}></div>
+          </div>
+          <span style={{ fontSize: '11px', color: 'var(--text-muted)' }}>{formatTime(duration)}</span>
+        </div>
+      </div>
+
+      {/* Volume & Extras */}
+      <div style={{ 
+        display: 'flex', alignItems: 'center', gap: '16px', 
+        justifyContent: 'flex-end', width: '30%', color: 'var(--text-muted)' 
+      }}>
+        <Mic2 size={18} className="cursor-pointer hover:text-white" onClick={toggleLyrics} />
+        <ListMusic size={18} className="cursor-pointer hover:text-white" />
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', width: '120px' }}>
+          <Volume2 size={18} />
+          <input 
+            type="range" 
+            min="0" max="1" step="0.01" 
+            value={volume} 
+            onChange={(e) => setVolume(parseFloat(e.target.value))}
+            style={{ 
+              flex: 1, height: '4px', cursor: 'pointer', accentColor: 'white'
+            }}
+          />
+        </div>
+        <Maximize2 
+          size={18} 
+          className="cursor-pointer hover:text-white" 
+          onClick={() => setIsAmbientMode(true)}
+        />
+      </div>
+    </footer>
+  );
+};
+
+export default Player;
