@@ -1,7 +1,5 @@
 <div align="center">
 
-![AURA Banner](./src/assets/banner.png)
-
 # 🌌 AURA
 ### *Advanced User Responsive Architecture*
 
