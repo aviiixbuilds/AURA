@@ -311,10 +311,9 @@ const Sidebar = () => {
           onClick={() => navigate('/')}
         >
           <div style={{ 
-            width: '28px', height: '28px', borderRadius: '50%', background: '#fff', 
-            display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 
+            width: '28px', height: '28px', flexShrink: 0 
           }}>
-            <Music size={16} color="#000" />
+            <img src="/logo.png" alt="AURA Logo" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
           </div>
           {!isCollapsed && <span style={{ fontWeight: 700, fontSize: '16px', color: '#fff', letterSpacing: '-0.5px' }}>AURA</span>}
         </div>
