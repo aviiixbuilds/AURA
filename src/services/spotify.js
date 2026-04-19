@@ -215,29 +215,66 @@ class SpotifyService {
     return result;
   }
 
-  /**
-   * Get playlist details by ID
-   */
   async getPlaylist(id) {
-    const data = await apiFetch(`/playlist/?id=${id}`);
+    // 1. Handle user-created local playlists
+    if (id.startsWith('user-pl-')) {
+      const localPlaylists = JSON.parse(localStorage.getItem('aura-playlists') || '[]');
+      const local = localPlaylists.find(p => p.id === id);
+      if (local) {
+        return {
+          id: local.id,
+          name: local.name,
+          description: local.description || '',
+          images: local.images || [],
+          owner: { display_name: 'You' },
+          tracks: {
+            total: local.tracks?.total || 0,
+            items: local.tracks?.items || []
+          },
+          followers: { total: 0 }
+        };
+      }
+    }
 
-    const tracks = (data.tracks?.items || []).map(item => {
-      const t = normalizeTrack(item.track || item);
-      return { track: t };
-    });
+    try {
+      const data = await apiFetch(`/playlist/?id=${id}`);
 
-    return {
-      id: data.id || id,
-      name: data.name || '',
-      description: data.description || '',
-      images: (data.images || []).map(img => ({ url: img.url || '' })),
-      owner: { display_name: data.owner?.display_name || data.owner?.name || 'Spotify' },
-      tracks: {
-        total: data.tracks?.totalCount || data.tracks?.total || tracks.length,
-        items: tracks
-      },
-      followers: { total: data.followers?.total || 0 }
-    };
+      const tracks = (data.tracks?.items || []).map(item => {
+        const t = normalizeTrack(item.track || item);
+        return { track: t };
+      });
+
+      return {
+        id: data.id || id,
+        name: data.name || '',
+        description: data.description || '',
+        images: (data.images || []).map(img => ({ url: img.url || '' })),
+        owner: { display_name: data.owner?.display_name || data.owner?.name || 'Spotify' },
+        tracks: {
+          total: data.tracks?.totalCount || data.tracks?.total || tracks.length,
+          items: tracks
+        },
+        followers: { total: data.followers?.total || 0 }
+      };
+    } catch (error) {
+      console.warn("RapidAPI /playlist/ endpoint failed or rate-limited. Serving fallback mock playlist.", error);
+      // Fallback: Use search to populate some tracks so the UI doesn't crash
+      const fallbackData = await this.search('top hits', 'multi');
+      const fallbackTracks = fallbackData?.tracks?.items || [];
+      
+      return {
+        id,
+        name: 'AURA Curated Playlist',
+        description: 'The Spotify API is currently rate-limited or unavailable. Displaying fallback tracks.',
+        images: [{ url: 'https://images.unsplash.com/photo-1614613535308-eb5fbd3d2c17?auto=format&fit=crop&q=80&w=300&h=300' }],
+        owner: { display_name: 'AURA Fallback' },
+        tracks: {
+          total: fallbackTracks.length,
+          items: fallbackTracks.map(t => ({ track: t }))
+        },
+        followers: { total: 0 }
+      };
+    }
   }
 
   /**
