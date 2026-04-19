@@ -1,6 +1,6 @@
 <div align="center">
 
-# 🌌 AURA
+# AURA
 ### *Advanced User Responsive Architecture*
 
 [![Vite](https://img.shields.io/badge/Vite-B73BFE?style=for-the-badge&logo=vite&logoColor=FFD62E)](https://vitejs.dev/)
