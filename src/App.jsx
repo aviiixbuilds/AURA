@@ -4,9 +4,6 @@ import { AnimatePresence } from 'framer-motion';
 
 import Sidebar from './components/common/Sidebar';
 import Navbar from './components/common/Navbar';
-import Player from './components/player/Player';
-import AmbientMode from './components/player/AmbientMode';
-import LyricsView from './components/sections/LyricsView';
 
 // Page Components
 import Home from './pages/Home';
@@ -18,20 +15,16 @@ import ArtistPage from './pages/ArtistPage';
 import LikedSongs from './pages/LikedSongs';
 
 const MainLayout = ({ children }) => {
-  const [isLyricsOpen, setIsLyricsOpen] = React.useState(false);
 
   return (
     <div style={{ display: 'flex', height: '100vh', width: '100vw' }}>
       <Sidebar />
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
         <Navbar />
-        <main className="no-scrollbar" style={{ flex: 1, overflowY: 'auto', padding: '24px', paddingBottom: 'calc(var(--player-height) + 24px)' }}>
+        <main className="no-scrollbar" style={{ flex: 1, overflowY: 'auto', padding: '24px' }}>
           {children}
         </main>
       </div>
-      <Player toggleLyrics={() => setIsLyricsOpen(!isLyricsOpen)} />
-      <AmbientMode />
-      <LyricsView isOpen={isLyricsOpen} onClose={() => setIsLyricsOpen(false)} />
     </div>
   );
 };
