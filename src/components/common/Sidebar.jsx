@@ -311,11 +311,11 @@ const Sidebar = () => {
           onClick={() => navigate('/')}
         >
           <div style={{ 
-            width: '36px', height: '36px', flexShrink: 0 
+            width: '48px', height: '48px', flexShrink: 0 
           }}>
             <img src="/logo.png" alt="AURA Logo" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
           </div>
-          {!isCollapsed && <span style={{ fontWeight: 700, fontSize: '18px', color: '#fff', letterSpacing: '-0.5px' }}>AURA</span>}
+          {!isCollapsed && <span style={{ fontWeight: 700, fontSize: '20px', color: '#fff', letterSpacing: '-0.5px' }}>AURA</span>}
         </div>
         <NavItem icon={Home} label="Home" to="/" isCollapsed={isCollapsed} />
         {/* Search removed from left bar */}
