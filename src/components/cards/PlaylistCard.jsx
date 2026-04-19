@@ -12,6 +12,7 @@ const PlaylistCard = ({ item, type = 'playlist' }) => {
   const subtext = type === 'artist' ? 'Artist' : (description || artists?.[0]?.name || '');
 
   const handleClick = () => {
+    localStorage.setItem('aura-fallback-meta', JSON.stringify(item));
     navigate(`/${type}/${id}`, { state: { fallbackData: item } });
   };
 
@@ -21,6 +22,7 @@ const PlaylistCard = ({ item, type = 'playlist' }) => {
     if (type === 'track') {
        playTrack(item);
     } else {
+       localStorage.setItem('aura-fallback-meta', JSON.stringify(item));
        navigate(`/${type}/${id}`, { state: { fallbackData: item } });
     }
   };

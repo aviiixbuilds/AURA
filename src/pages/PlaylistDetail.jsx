@@ -7,7 +7,19 @@ import TrackRow from '../components/cards/TrackRow';
 const PlaylistDetail = () => {
   const { id } = useParams();
   const { state } = useLocation();
-  const fallbackData = state?.fallbackData || null;
+  let fallbackData = state?.fallbackData || null;
+  
+  if (!fallbackData) {
+    try {
+      const stored = JSON.parse(localStorage.getItem('aura-fallback-meta'));
+      if (stored && stored.id === id) {
+        fallbackData = stored;
+      }
+    } catch (e) {
+      console.error("Failed to parse fallback meta", e);
+    }
+  }
+
   const { data: playlist, loading, error } = useSpotify('getPlaylist', id, fallbackData);
 
   if (loading) return <div style={{ color: 'var(--text-muted)' }}>Unfolding the playlist...</div>;

@@ -259,31 +259,40 @@ class SpotifyService {
     } catch (error) {
       console.warn("RapidAPI /playlist/ endpoint failed or rate-limited. Serving intelligent fallback playlist.", error);
       
-      // Intelligent Fallback: 
-      // If we know the playlist name (via fallbackMeta passed from Home/Sidebar), 
-      // search for tracks matching that name to provide contextually accurate, authentic songs!
-      const searchQuery = fallbackMeta?.name ? `genre:${fallbackMeta.name} OR ${fallbackMeta.name}` : 'top hits 2025';
-      const fallbackData = await this.search(searchQuery, 'multi');
-      
-      // Ensure we always have tracks
-      let fallbackTracks = fallbackData?.tracks?.items || [];
-      if (fallbackTracks.length === 0) {
-        const secondary = await this.search('trending tracks', 'tracks');
-        fallbackTracks = secondary?.tracks?.items || [];
+      try {
+        const searchQuery = fallbackMeta?.name ? `genre:${fallbackMeta.name} OR ${fallbackMeta.name}` : 'top hits 2025';
+        const fallbackData = await this.search(searchQuery, 'multi');
+        
+        let fallbackTracks = fallbackData?.tracks?.items || [];
+        if (fallbackTracks.length === 0) {
+          const secondary = await this.search('trending tracks', 'tracks');
+          fallbackTracks = secondary?.tracks?.items || [];
+        }
+        
+        return {
+          id,
+          name: fallbackMeta?.name || 'AURA Curated Playlist',
+          description: fallbackMeta?.description || 'The Spotify API is currently rate-limited. We fetched these related authentic tracks for you instead!',
+          images: fallbackMeta?.images?.length ? fallbackMeta.images : [{ url: 'https://images.unsplash.com/photo-1614613535308-eb5fbd3d2c17?auto=format&fit=crop&q=80&w=300&h=300' }],
+          owner: { display_name: fallbackMeta?.owner?.display_name || 'AURA Proxy' },
+          tracks: {
+            total: fallbackTracks.length,
+            items: fallbackTracks.map(t => ({ track: t }))
+          },
+          followers: { total: fallbackMeta?.followers?.total || 0 }
+        };
+      } catch (criticalError) {
+        console.error("RapidAPI is completely down.", criticalError);
+        return {
+          id,
+          name: fallbackMeta?.name || 'AURA Offline',
+          description: 'The RapidAPI service is completely offline right now. Try again later.',
+          images: fallbackMeta?.images?.length ? fallbackMeta.images : [],
+          owner: { display_name: 'AURA Offline' },
+          tracks: { total: 0, items: [] },
+          followers: { total: 0 }
+        };
       }
-      
-      return {
-        id,
-        name: fallbackMeta?.name || 'AURA Curated Playlist',
-        description: fallbackMeta?.description || 'The Spotify API is currently rate-limited. We fetched these related authentic tracks for you instead!',
-        images: fallbackMeta?.images?.length ? fallbackMeta.images : [{ url: 'https://images.unsplash.com/photo-1614613535308-eb5fbd3d2c17?auto=format&fit=crop&q=80&w=300&h=300' }],
-        owner: { display_name: fallbackMeta?.owner?.display_name || 'AURA Proxy' },
-        tracks: {
-          total: fallbackTracks.length,
-          items: fallbackTracks.map(t => ({ track: t }))
-        },
-        followers: { total: fallbackMeta?.followers?.total || 0 }
-      };
     }
   }
 
