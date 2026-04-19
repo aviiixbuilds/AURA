@@ -1,107 +1,308 @@
 /**
- * Spotify API Service using Client Credentials Flow
- * Note: For a production app, the token exchange should happen on a backend
- * to keep the Client Secret secure.
+ * Spotify API Service via RapidAPI (spotify23.p.rapidapi.com)
+ * Fetches real Spotify data using the RapidAPI proxy.
+ * Includes in-memory caching to minimize API calls.
  */
 
-const BASE_URL = 'https://api.spotify.com/v1';
+const API_HOST = import.meta.env.VITE_RAPIDAPI_HOST || 'spotify23.p.rapidapi.com';
+const API_KEY = import.meta.env.VITE_RAPIDAPI_KEY;
+const BASE_URL = `https://${API_HOST}`;
+
+// --- In-Memory Cache (5 min TTL) ---
+const cache = new Map();
+const CACHE_TTL = 5 * 60 * 1000;
+
+function getCached(key) {
+  const entry = cache.get(key);
+  if (entry && Date.now() - entry.timestamp < CACHE_TTL) {
+    return entry.data;
+  }
+  cache.delete(key);
+  return null;
+}
+
+function setCache(key, data) {
+  cache.set(key, { data, timestamp: Date.now() });
+}
+
+// --- Core Fetch Helper ---
+async function apiFetch(endpoint) {
+  const cacheKey = endpoint;
+  const cached = getCached(cacheKey);
+  if (cached) return cached;
+
+  const response = await fetch(`${BASE_URL}${endpoint}`, {
+    method: 'GET',
+    headers: {
+      'x-rapidapi-key': API_KEY,
+      'x-rapidapi-host': API_HOST,
+      'Content-Type': 'application/json'
+    }
+  });
+
+  if (!response.ok) {
+    throw new Error(`API Error ${response.status}: ${response.statusText}`);
+  }
+
+  const data = await response.json();
+  setCache(cacheKey, data);
+  return data;
+}
+
+// --- Normalizers ---
+// These transform the RapidAPI response shapes into the format our components expect.
+
+function normalizeTrack(item) {
+  if (!item) return null;
+  // Handle the search response wrapper { data: { ... } }
+  const raw = item.data || item;
+  const albumArt = raw.albumOfTrack?.coverArt?.sources
+    || raw.album?.images
+    || [];
+  const imageUrl = albumArt[0]?.url || albumArt[0]?.url || '';
+
+  return {
+    id: raw.id || raw.uri?.split(':').pop() || '',
+    name: raw.name || raw.title || '',
+    artists: (raw.artists?.items || raw.artists || []).map(a => ({
+      id: a.uri?.split(':').pop() || a.id || '',
+      name: a.profile?.name || a.name || ''
+    })),
+    album: {
+      name: raw.albumOfTrack?.name || raw.album?.name || '',
+      images: albumArt.map(s => ({ url: s.url }))
+    },
+    duration_ms: raw.duration?.totalMilliseconds || raw.duration_ms || raw.contentRating?.duration || 180000,
+    preview_url: raw.preview_url || null
+  };
+}
+
+function normalizeAlbum(item) {
+  if (!item) return null;
+  const raw = item.data || item;
+  const images = raw.coverArt?.sources || raw.images || [];
+
+  return {
+    id: raw.id || raw.uri?.split(':').pop() || '',
+    name: raw.name || '',
+    artists: (raw.artists?.items || raw.artists || []).map(a => ({
+      id: a.uri?.split(':').pop() || a.id || '',
+      name: a.profile?.name || a.name || ''
+    })),
+    images: images.map(s => ({ url: s.url })),
+    release_date: raw.date?.isoString || raw.release_date || raw.year || '',
+    total_tracks: raw.tracks?.totalCount || raw.total_tracks || 0,
+    tracks: {
+      items: (raw.tracks?.items || []).map(t => normalizeTrack(t.track || t))
+    },
+    type: 'album'
+  };
+}
+
+function normalizePlaylist(item) {
+  if (!item) return null;
+  const raw = item.data || item;
+  const images = raw.images?.items || raw.images || [];
+
+  return {
+    id: raw.id || raw.uri?.split(':').pop() || '',
+    name: raw.name || '',
+    description: raw.description || '',
+    images: images.map(s => ({ url: s.sources?.[0]?.url || s.url || '' })),
+    owner: { display_name: raw.owner?.name || raw.owner?.display_name || 'Spotify' },
+    tracks: {
+      total: raw.tracks?.totalCount || raw.tracks?.total || 0,
+      items: []
+    },
+    followers: { total: raw.followers?.total || 0 },
+    type: 'playlist'
+  };
+}
+
+function normalizeArtist(item) {
+  if (!item) return null;
+  const raw = item.data || item;
+  const images = raw.visuals?.avatarImage?.sources || raw.images || [];
+
+  return {
+    id: raw.id || raw.uri?.split(':').pop() || '',
+    name: raw.profile?.name || raw.name || '',
+    images: images.map(s => ({ url: s.url })),
+    followers: { total: raw.stats?.monthlyListeners || raw.followers?.total || 0 },
+    genres: raw.profile?.genres || raw.genres || [],
+    type: 'artist'
+  };
+}
+
+// --- Public API Methods ---
 
 class SpotifyService {
-  constructor() {
-    this.token = null;
-    this.expiresAt = null;
+
+  /**
+   * Fetch home page data: trending playlists + new releases
+   * Uses search queries to get diverse content.
+   */
+  async getHomeData() {
+    const [trending, newMusic] = await Promise.all([
+      this.search('trending hits 2025', 'multi'),
+      this.search('new releases 2025', 'multi')
+    ]);
+
+    return {
+      featured: trending,
+      newReleases: newMusic
+    };
   }
 
-  async getAccessToken() {
-    // Check if we already have a valid token
-    if (this.token && this.expiresAt && Date.now() < this.expiresAt) {
-      return this.token;
+  /**
+   * Search for tracks, artists, albums, playlists
+   */
+  async search(query, type = 'multi') {
+    if (!query) return null;
+
+    const data = await apiFetch(
+      `/search/?q=${encodeURIComponent(query)}&type=${type}&offset=0&limit=10&numberOfTopResults=5`
+    );
+
+    // Normalize the response
+    const result = {
+      tracks: { items: [] },
+      albums: { items: [] },
+      artists: { items: [] },
+      playlists: { items: [] }
+    };
+
+    // Tracks
+    if (data.tracks?.items) {
+      result.tracks.items = data.tracks.items
+        .map(t => normalizeTrack(t))
+        .filter(Boolean);
     }
 
-    const clientId = import.meta.env.VITE_SPOTIFY_CLIENT_ID;
-    const clientSecret = import.meta.env.VITE_SPOTIFY_CLIENT_SECRET;
-
-    if (!clientId || !clientSecret) {
-      console.error('Spotify credentials missing from .env');
-      return null;
+    // Albums
+    if (data.albums?.items) {
+      result.albums.items = data.albums.items
+        .map(a => normalizeAlbum(a))
+        .filter(Boolean);
     }
 
-    try {
-      const response = await fetch('https://accounts.spotify.com/api/token', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-          'Authorization': 'Basic ' + btoa(`${clientId}:${clientSecret}`)
-        },
-        body: 'grant_type=client_credentials'
-      });
-
-      const data = await response.json();
-      this.token = data.access_token;
-      // Expires in 3600 seconds, setting buffer of 60 seconds
-      this.expiresAt = Date.now() + (data.expires_in - 60) * 1000;
-      
-      return this.token;
-    } catch (error) {
-      console.error('Failed to fetch Spotify token:', error);
-      return null;
+    // Artists
+    if (data.artists?.items) {
+      result.artists.items = data.artists.items
+        .map(a => normalizeArtist(a))
+        .filter(Boolean);
     }
-  }
 
-  async fetchFromSpotify(endpoint) {
-    const token = await this.getAccessToken();
-    if (!token) return null;
+    // Playlists
+    if (data.playlists?.items) {
+      result.playlists.items = data.playlists.items
+        .map(p => normalizePlaylist(p))
+        .filter(Boolean);
+    }
 
-    try {
-      const response = await fetch(`${BASE_URL}${endpoint}`, {
-        headers: {
-          'Authorization': `Bearer ${token}`
+    // Also check topResults for additional data
+    if (data.topResults?.items) {
+      data.topResults.items.forEach(item => {
+        if (item.__typename === 'Track' || item.data?.__typename === 'Track') {
+          const t = normalizeTrack(item);
+          if (t && !result.tracks.items.find(x => x.id === t.id)) {
+            result.tracks.items.unshift(t);
+          }
         }
       });
-      
-      if (!response.ok) {
-        throw new Error(`Spotify API error: ${response.status}`);
-      }
-      
-      return await response.json();
-    } catch (error) {
-      console.error(`Error fetching from Spotify (${endpoint}):`, error);
-      return null;
     }
+
+    return result;
   }
 
-  // --- Convenience Methods ---
-
-  async getFeaturedPlaylists() {
-    return this.fetchFromSpotify('/browse/featured-playlists?limit=10');
-  }
-
-  async getNewReleases() {
-    return this.fetchFromSpotify('/browse/new-releases?limit=10');
-  }
-
-  async getCategories() {
-    return this.fetchFromSpotify('/browse/categories?limit=5');
-  }
-
-  async search(query, types = 'track,artist,album') {
-    return this.fetchFromSpotify(`/search?q=${encodeURIComponent(query)}&type=${types}&limit=20`);
-  }
-
+  /**
+   * Get playlist details by ID
+   */
   async getPlaylist(id) {
-    return this.fetchFromSpotify(`/playlists/${id}`);
+    const data = await apiFetch(`/playlist/?id=${id}`);
+
+    const tracks = (data.tracks?.items || []).map(item => {
+      const t = normalizeTrack(item.track || item);
+      return { track: t };
+    });
+
+    return {
+      id: data.id || id,
+      name: data.name || '',
+      description: data.description || '',
+      images: (data.images || []).map(img => ({ url: img.url || '' })),
+      owner: { display_name: data.owner?.display_name || data.owner?.name || 'Spotify' },
+      tracks: {
+        total: data.tracks?.totalCount || data.tracks?.total || tracks.length,
+        items: tracks
+      },
+      followers: { total: data.followers?.total || 0 }
+    };
   }
 
+  /**
+   * Get album details by ID
+   */
   async getAlbum(id) {
-    return this.fetchFromSpotify(`/albums/${id}`);
+    const data = await apiFetch(`/albums/?ids=${id}`);
+    const album = data.albums?.[0] || data;
+
+    const tracks = (album.tracks?.items || []).map(t => normalizeTrack(t));
+
+    return {
+      id: album.id || id,
+      name: album.name || '',
+      artists: (album.artists || []).map(a => ({
+        id: a.id || '',
+        name: a.name || ''
+      })),
+      images: (album.images || []).map(img => ({ url: img.url })),
+      release_date: album.release_date || '',
+      total_tracks: album.total_tracks || tracks.length,
+      tracks: { items: tracks }
+    };
   }
 
+  /**
+   * Get artist details by ID
+   */
   async getArtist(id) {
-    return this.fetchFromSpotify(`/artists/${id}`);
+    const data = await apiFetch(`/artist_overview/?id=${id}`);
+    const artist = data.data?.artist || data.artist || data;
+
+    const images = artist.visuals?.avatarImage?.sources
+      || artist.visuals?.headerImage?.sources
+      || artist.images
+      || [];
+
+    return {
+      id: artist.id || id,
+      name: artist.profile?.name || artist.name || '',
+      images: images.map(s => ({ url: s.url })),
+      followers: {
+        total: artist.stats?.monthlyListeners || artist.stats?.followers || artist.followers?.total || 0
+      },
+      genres: artist.profile?.genres?.items?.map(g => g.name) || artist.genres || []
+    };
   }
 
+  /**
+   * Get artist's top tracks by ID
+   */
   async getArtistTopTracks(id) {
-    return this.fetchFromSpotify(`/artists/${id}/top-tracks?market=US`);
+    // The artist_overview endpoint often includes top tracks
+    const data = await apiFetch(`/artist_overview/?id=${id}`);
+    const artist = data.data?.artist || data.artist || data;
+    const topTracks = artist.discography?.topTracks?.items
+      || artist.discography?.popularReleases?.items
+      || [];
+
+    const tracks = topTracks.map(item => {
+      const t = item.track || item;
+      return normalizeTrack(t);
+    }).filter(Boolean);
+
+    return { tracks };
   }
 }
 

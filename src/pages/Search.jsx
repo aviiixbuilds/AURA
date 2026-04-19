@@ -49,13 +49,12 @@ const Search = () => {
             width: '100%', 
             padding: '12px 16px 12px 48px', 
             background: 'var(--bg-card)', 
-            border: 'none', 
+            border: '1px solid transparent', 
             borderRadius: '24px', 
             color: 'white',
             fontFamily: 'inherit',
             fontSize: '14px',
             outline: 'none',
-            border: '1px solid transparent',
             transition: 'var(--transition-smooth)'
           }}
           onFocus={(e) => e.target.style.border = '1px solid var(--glass-border)'}
@@ -82,7 +81,6 @@ const Search = () => {
             gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', 
             gap: '24px' 
           }}>
-            {/* Standard Category Cards could go here */}
             {['Podcast', 'Live Events', 'Pop', 'Hip-Hop', 'Chart-topping', 'New Releases'].map(cat => (
               <div key={cat} className="card-hover" style={{ 
                 height: '180px', background: 'var(--bg-card)', borderRadius: '8px', 
@@ -105,7 +103,7 @@ const Search = () => {
               <h2 style={{ fontSize: '24px', marginBottom: '16px' }}>Tracks</h2>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
                  {results.tracks.items.slice(0, 5).map((track, index) => (
-                   <TrackRow key={track.id} track={track} index={index} />
+                   <TrackRow key={track.id + '-' + index} track={track} index={index} />
                  ))}
               </div>
             </section>
@@ -138,6 +136,22 @@ const Search = () => {
               }}>
                 {results.artists.items.map(artist => (
                   <PlaylistCard key={artist.id} item={artist} type="artist" />
+                ))}
+              </div>
+            </section>
+          )}
+
+          {/* Playlists */}
+          {results.playlists?.items?.length > 0 && (
+            <section>
+              <h2 style={{ fontSize: '24px', marginBottom: '16px' }}>Playlists</h2>
+              <div style={{ 
+                display: 'grid', 
+                gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', 
+                gap: '24px' 
+              }}>
+                {results.playlists.items.map(playlist => (
+                  <PlaylistCard key={playlist.id} item={playlist} type="playlist" />
                 ))}
               </div>
             </section>

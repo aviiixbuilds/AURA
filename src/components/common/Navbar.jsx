@@ -1,10 +1,9 @@
 import React from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
-import { ChevronLeft, ChevronRight, User, Settings } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { ChevronLeft, ChevronRight, User, Settings, Wifi } from 'lucide-react';
 
 const Navbar = () => {
   const navigate = useNavigate();
-  const location = useLocation();
 
   return (
     <nav className="glass-nav" style={{ 
@@ -41,6 +40,15 @@ const Navbar = () => {
       </div>
 
       <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+        <div style={{ 
+          display: 'flex', alignItems: 'center', gap: '8px', 
+          background: 'rgba(29, 185, 84, 0.1)',
+          padding: '6px 12px', borderRadius: '16px', border: '1px solid #1db954',
+          fontSize: '11px', fontWeight: 700, color: '#1db954'
+        }}>
+          <Wifi size={14} />
+          LIVE API
+        </div>
         <button style={{ 
           background: 'white', border: 'none', color: 'black', 
           padding: '8px 20px', borderRadius: '20px', fontWeight: 700, 

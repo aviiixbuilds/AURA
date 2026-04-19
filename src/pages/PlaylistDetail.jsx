@@ -6,9 +6,10 @@ import TrackRow from '../components/cards/TrackRow';
 
 const PlaylistDetail = () => {
   const { id } = useParams();
-  const { data: playlist, loading } = useSpotify('getPlaylist', id);
+  const { data: playlist, loading, error } = useSpotify('getPlaylist', id);
 
   if (loading) return <div style={{ color: 'var(--text-muted)' }}>Unfolding the playlist...</div>;
+  if (error) return <div style={{ color: 'var(--text-muted)' }}>Failed to load playlist.</div>;
   if (!playlist) return <div style={{ color: 'var(--text-muted)' }}>Playlist not found.</div>;
 
   const { name, images, description, owner, tracks, followers } = playlist;
@@ -33,10 +34,13 @@ const PlaylistDetail = () => {
         <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
           <span style={{ fontSize: '12px', fontWeight: 700, textTransform: 'uppercase' }}>Playlist</span>
           <h1 style={{ fontSize: '72px', fontWeight: 900, margin: '8px 0' }}>{name}</h1>
-          <p style={{ color: 'var(--text-muted)', fontSize: '14px' }}>{description}</p>
+          {description && <p style={{ color: 'var(--text-muted)', fontSize: '14px' }}>{description}</p>}
           <div style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '14px', fontWeight: 600 }}>
-            <span>{owner.display_name}</span>
-            <span style={{ color: 'var(--text-muted)' }}>• {followers.total.toLocaleString()} likes • {tracks.total} songs</span>
+            <span>{owner?.display_name}</span>
+            <span style={{ color: 'var(--text-muted)' }}>
+              {followers?.total ? ` • ${followers.total.toLocaleString()} likes` : ''}
+              {tracks?.total ? ` • ${tracks.total} songs` : ''}
+            </span>
           </div>
         </div>
       </section>
@@ -69,11 +73,16 @@ const PlaylistDetail = () => {
 
       {/* Track List */}
       <div style={{ display: 'flex', flexDirection: 'column', marginTop: '16px' }}>
-        {tracks.items.map((item, index) => {
-          const { track } = item;
+        {tracks?.items?.map((item, index) => {
+          const track = item.track || item;
           if (!track) return null;
-          return <TrackRow key={track.id + index} track={track} index={index} />;
+          return <TrackRow key={(track.id || index) + '-' + index} track={track} index={index} />;
         })}
+        {(!tracks?.items || tracks.items.length === 0) && (
+          <div style={{ padding: '32px', textAlign: 'center', color: 'var(--text-muted)' }}>
+            No tracks available for this playlist.
+          </div>
+        )}
       </div>
     </div>
   );
