@@ -17,12 +17,6 @@ It bridges the gap between raw power and ethereal beauty.
 
 ---
 
-# 📋 Product Requirements Document (PRD)
-
-**Version:** 1.0  
-**Date:** April 2026  
-**Status:** In Progress
-
 ## Overview
 
 AURA is a React-based web application inspired by Spotify. It replicates the core Spotify experience — browsing, searching, and playing music — while layering on visual effects inspired by Spicetify (a popular Spotify client customizer known for dynamic theming, animations, and immersive now-playing experiences).
