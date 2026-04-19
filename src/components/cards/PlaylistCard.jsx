@@ -12,17 +12,16 @@ const PlaylistCard = ({ item, type = 'playlist' }) => {
   const subtext = type === 'artist' ? 'Artist' : (description || artists?.[0]?.name || '');
 
   const handleClick = () => {
-    navigate(`/${type}/${id}`);
+    navigate(`/${type}/${id}`, { state: { fallbackData: item } });
   };
 
   const handlePlay = (e) => {
     e.stopPropagation();
-    // If it's a playlist/album, we could fetch tracks and play the first one.
-    // For now, if there's no track directly, we'll just navigate.
+    // If it's a track directly, we play it.
     if (type === 'track') {
        playTrack(item);
     } else {
-       navigate(`/${type}/${id}`);
+       navigate(`/${type}/${id}`, { state: { fallbackData: item } });
     }
   };
 

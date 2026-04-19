@@ -54,7 +54,7 @@ const LibraryItem = ({ item, type = 'playlist', isCollapsed }) => {
     <div
       onClick={() => {
         if (type === 'liked') return navigate('/liked');
-        navigate(`/${item.type || 'playlist'}/${item.id}`);
+        navigate(`/${item.type || 'playlist'}/${item.id}`, { state: { fallbackData: item } });
       }}
       style={{
         display: 'flex',

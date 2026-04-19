@@ -215,7 +215,7 @@ class SpotifyService {
     return result;
   }
 
-  async getPlaylist(id) {
+  async getPlaylist(id, fallbackMeta = null) {
     // 1. Handle user-created local playlists
     if (id.startsWith('user-pl-')) {
       const localPlaylists = JSON.parse(localStorage.getItem('aura-playlists') || '[]');
@@ -257,22 +257,32 @@ class SpotifyService {
         followers: { total: data.followers?.total || 0 }
       };
     } catch (error) {
-      console.warn("RapidAPI /playlist/ endpoint failed or rate-limited. Serving fallback mock playlist.", error);
-      // Fallback: Use search to populate some tracks so the UI doesn't crash
-      const fallbackData = await this.search('top hits', 'multi');
-      const fallbackTracks = fallbackData?.tracks?.items || [];
+      console.warn("RapidAPI /playlist/ endpoint failed or rate-limited. Serving intelligent fallback playlist.", error);
+      
+      // Intelligent Fallback: 
+      // If we know the playlist name (via fallbackMeta passed from Home/Sidebar), 
+      // search for tracks matching that name to provide contextually accurate, authentic songs!
+      const searchQuery = fallbackMeta?.name ? `genre:${fallbackMeta.name} OR ${fallbackMeta.name}` : 'top hits 2025';
+      const fallbackData = await this.search(searchQuery, 'multi');
+      
+      // Ensure we always have tracks
+      let fallbackTracks = fallbackData?.tracks?.items || [];
+      if (fallbackTracks.length === 0) {
+        const secondary = await this.search('trending tracks', 'tracks');
+        fallbackTracks = secondary?.tracks?.items || [];
+      }
       
       return {
         id,
-        name: 'AURA Curated Playlist',
-        description: 'The Spotify API is currently rate-limited or unavailable. Displaying fallback tracks.',
-        images: [{ url: 'https://images.unsplash.com/photo-1614613535308-eb5fbd3d2c17?auto=format&fit=crop&q=80&w=300&h=300' }],
-        owner: { display_name: 'AURA Fallback' },
+        name: fallbackMeta?.name || 'AURA Curated Playlist',
+        description: fallbackMeta?.description || 'The Spotify API is currently rate-limited. We fetched these related authentic tracks for you instead!',
+        images: fallbackMeta?.images?.length ? fallbackMeta.images : [{ url: 'https://images.unsplash.com/photo-1614613535308-eb5fbd3d2c17?auto=format&fit=crop&q=80&w=300&h=300' }],
+        owner: { display_name: fallbackMeta?.owner?.display_name || 'AURA Proxy' },
         tracks: {
           total: fallbackTracks.length,
           items: fallbackTracks.map(t => ({ track: t }))
         },
-        followers: { total: 0 }
+        followers: { total: fallbackMeta?.followers?.total || 0 }
       };
     }
   }
