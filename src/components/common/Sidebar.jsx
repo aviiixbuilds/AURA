@@ -16,18 +16,29 @@ const NavItem = ({ icon: Icon, label, to, isCollapsed }) => (
       textDecoration: 'none',
       display: 'flex',
       alignItems: 'center',
-      justifyContent: isCollapsed ? 'center' : 'flex-start',
-      gap: '20px',
-      padding: isCollapsed ? '4px 0' : '8px 12px',
+      justifyContent: 'flex-start',
+      padding: '8px 16px',
       borderRadius: '8px',
       color: isActive ? '#fff' : '#b3b3b3',
       fontWeight: 700,
       fontSize: '15px',
-      transition: 'color 0.2s'
+      transition: 'all 0.3s ease',
+      whiteSpace: 'nowrap',
+      overflow: 'hidden'
     })}
   >
-    <Icon size={24} />
-    {!isCollapsed && <span>{label}</span>}
+    <div style={{ flexShrink: 0, display: 'flex' }}>
+      <Icon size={24} />
+    </div>
+    <span style={{ 
+      marginLeft: isCollapsed ? '0' : '20px',
+      opacity: isCollapsed ? 0 : 1,
+      width: isCollapsed ? 0 : 'auto',
+      transition: 'all 0.3s ease',
+      display: 'block'
+    }}>
+      {label}
+    </span>
   </NavLink>
 );
 
@@ -292,7 +303,7 @@ const Sidebar = () => {
     >
       {/* ─── Top Navigation ─── */}
       <div style={{
-        padding: isCollapsed ? '8px' : '12px 16px 8px',
+        padding: '12px 8px 8px',
         display: 'flex',
         flexDirection: 'column',
         gap: '4px',
@@ -301,12 +312,14 @@ const Sidebar = () => {
       }}>
         <div 
           style={{ 
-            padding: isCollapsed ? '8px 0' : '8px 12px 16px', 
+            padding: '8px 4px 16px',
             display: 'flex', 
             alignItems: 'center', 
-            justifyContent: isCollapsed ? 'center' : 'flex-start',
-            gap: '8px', 
-            cursor: 'pointer' 
+            justifyContent: 'flex-start',
+            cursor: 'pointer',
+            transition: 'all 0.3s ease',
+            whiteSpace: 'nowrap',
+            overflow: 'hidden'
           }} 
           onClick={() => navigate('/')}
         >
@@ -315,10 +328,16 @@ const Sidebar = () => {
           }}>
             <img src="/logo.png" alt="AURA Logo" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
           </div>
-          {!isCollapsed && <span style={{ fontWeight: 700, fontSize: '20px', color: '#fff', letterSpacing: '-0.5px' }}>AURA</span>}
+          <span style={{ 
+            fontWeight: 700, fontSize: '20px', color: '#fff', letterSpacing: '-0.5px',
+            marginLeft: isCollapsed ? '0' : '8px',
+            opacity: isCollapsed ? 0 : 1,
+            width: isCollapsed ? 0 : 'auto',
+            transition: 'all 0.3s ease',
+            display: 'block'
+          }}>AURA</span>
         </div>
         <NavItem icon={Home} label="Home" to="/" isCollapsed={isCollapsed} />
-        {/* Search removed from left bar */}
       </div>
 
       <div style={{
@@ -332,12 +351,13 @@ const Sidebar = () => {
       }}>
         {/* Library Header */}
         <div style={{
-          padding: isCollapsed ? '8px 4px 0' : '12px 16px 0',
+          padding: '12px 8px 0',
           display: 'flex',
-          flexDirection: isCollapsed ? 'column' : 'row',
+          flexDirection: 'row',
           alignItems: 'center',
-          justifyContent: isCollapsed ? 'center' : 'space-between',
-          gap: isCollapsed ? '12px' : '0'
+          justifyContent: 'space-between',
+          whiteSpace: 'nowrap',
+          overflow: 'hidden'
         }}>
           <button
             onClick={toggleSidebar}
@@ -347,90 +367,80 @@ const Sidebar = () => {
               border: 'none',
               display: 'flex',
               alignItems: 'center',
-              justifyContent: 'center',
-              gap: '12px',
+              justifyContent: 'flex-start',
+              padding: '8px 16px',
               color: '#b3b3b3',
               fontWeight: 700,
               fontSize: '15px',
-              transition: 'color 0.2s',
+              transition: 'all 0.3s ease',
               cursor: 'pointer',
-              padding: isCollapsed ? '8px' : '0'
             }}
             onMouseEnter={e => e.currentTarget.style.color = '#fff'}
             onMouseLeave={e => e.currentTarget.style.color = '#b3b3b3'}
           >
-            <Library size={isCollapsed ? 28 : 24} />
-            {!isCollapsed && <span>Your Library</span>}
+            <div style={{ flexShrink: 0, display: 'flex' }}>
+              <Library size={24} />
+            </div>
+            <span style={{ 
+              marginLeft: isCollapsed ? '0' : '20px',
+              opacity: isCollapsed ? 0 : 1,
+              width: isCollapsed ? 0 : 'auto',
+              transition: 'all 0.3s ease',
+              display: 'block'
+            }}>Your Library</span>
           </button>
 
-          {!isCollapsed ? (
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <button
-                onClick={handleCreatePlaylist}
-                title="Create playlist"
-                style={{
-                  background: 'none',
-                  border: 'none',
-                  color: '#b3b3b3',
-                  cursor: 'pointer',
-                  borderRadius: '50%',
-                  width: '32px',
-                  height: '32px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  transition: 'all 0.2s'
-                }}
-                onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.08)'; e.currentTarget.style.color = '#fff'; }}
-                onMouseLeave={e => { e.currentTarget.style.background = 'none'; e.currentTarget.style.color = '#b3b3b3'; }}
-              >
-                <Plus size={20} />
-              </button>
-              <button
-                title="Expand sidebar"
-                style={{
-                  background: 'none',
-                  border: 'none',
-                  color: '#b3b3b3',
-                  cursor: 'pointer',
-                  borderRadius: '50%',
-                  width: '32px',
-                  height: '32px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  transition: 'all 0.2s'
-                }}
-                onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.08)'; e.currentTarget.style.color = '#fff'; }}
-                onMouseLeave={e => { e.currentTarget.style.background = 'none'; e.currentTarget.style.color = '#b3b3b3'; }}
-                onClick={toggleSidebar}
-              >
-                <ArrowRight size={20} />
-              </button>
-            </div>
-          ) : (
+          <div style={{ 
+            display: 'flex', 
+            alignItems: 'center', 
+            gap: '8px',
+            opacity: isCollapsed ? 0 : 1,
+            pointerEvents: isCollapsed ? 'none' : 'auto',
+            transition: 'opacity 0.3s ease'
+          }}>
             <button
-               onClick={handleCreatePlaylist}
-               title="Create playlist"
-               style={{
-                 background: 'rgba(255,255,255,0.08)',
-                 border: 'none',
-                 color: '#b3b3b3',
-                 cursor: 'pointer',
-                 borderRadius: '50%',
-                 width: '32px',
-                 height: '32px',
-                 display: 'flex',
-                 alignItems: 'center',
-                 justifyContent: 'center',
-                 marginTop: '4px'
-               }}
-               onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.15)'; e.currentTarget.style.color = '#fff'; }}
-               onMouseLeave={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.08)'; e.currentTarget.style.color = '#b3b3b3'; }}
-             >
-               <Plus size={20} />
+              onClick={handleCreatePlaylist}
+              title="Create playlist"
+              style={{
+                background: 'none',
+                border: 'none',
+                color: '#b3b3b3',
+                cursor: 'pointer',
+                borderRadius: '50%',
+                width: '32px',
+                height: '32px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                transition: 'all 0.2s'
+              }}
+              onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.08)'; e.currentTarget.style.color = '#fff'; }}
+              onMouseLeave={e => { e.currentTarget.style.background = 'none'; e.currentTarget.style.color = '#b3b3b3'; }}
+            >
+              <Plus size={20} />
             </button>
-          )}
+            <button
+              title="Expand sidebar"
+              style={{
+                background: 'none',
+                border: 'none',
+                color: '#b3b3b3',
+                cursor: 'pointer',
+                borderRadius: '50%',
+                width: '32px',
+                height: '32px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                transition: 'all 0.2s'
+              }}
+              onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.08)'; e.currentTarget.style.color = '#fff'; }}
+              onMouseLeave={e => { e.currentTarget.style.background = 'none'; e.currentTarget.style.color = '#b3b3b3'; }}
+              onClick={toggleSidebar}
+            >
+              <ArrowRight size={20} />
+            </button>
+          </div>
         </div>
 
         {/* Filter Chips - Hidden when collapsed */}
