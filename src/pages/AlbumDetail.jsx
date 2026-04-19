@@ -6,14 +6,15 @@ import TrackRow from '../components/cards/TrackRow';
 
 const AlbumDetail = () => {
   const { id } = useParams();
-  const { data: album, loading } = useSpotify('getAlbum', id);
+  const { data: album, loading, error } = useSpotify('getAlbum', id);
 
-  if (loading) return <div style={{ color: 'var(--text-muted)' }}>Crating the album...</div>;
+  if (loading) return <div style={{ color: 'var(--text-muted)' }}>Loading the album...</div>;
+  if (error) return <div style={{ color: 'var(--text-muted)' }}>Failed to load album.</div>;
   if (!album) return <div style={{ color: 'var(--text-muted)' }}>Album not found.</div>;
 
   const { name, images, artists, release_date, total_tracks, tracks } = album;
   const image = images?.[0]?.url || 'https://via.placeholder.com/300';
-  const year = new Date(release_date).getFullYear();
+  const year = release_date ? new Date(release_date).getFullYear() : '';
 
   return (
     <div className="animate-fade-in" style={{ display: 'flex', flexDirection: 'column' }}>
@@ -35,8 +36,11 @@ const AlbumDetail = () => {
           <span style={{ fontSize: '12px', fontWeight: 700, textTransform: 'uppercase' }}>Album</span>
           <h1 style={{ fontSize: '72px', fontWeight: 900, margin: '8px 0' }}>{name}</h1>
           <div style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '14px', fontWeight: 600 }}>
-            <span style={{ cursor: 'pointer' }} className="hover:underline">{artists[0].name}</span>
-            <span style={{ color: 'var(--text-muted)' }}>• {year} • {total_tracks} songs</span>
+            <span style={{ cursor: 'pointer' }} className="hover:underline">{artists?.[0]?.name}</span>
+            <span style={{ color: 'var(--text-muted)' }}>
+              {year ? ` • ${year}` : ''}
+              {total_tracks ? ` • ${total_tracks} songs` : ''}
+            </span>
           </div>
         </div>
       </section>
@@ -68,9 +72,14 @@ const AlbumDetail = () => {
 
       {/* Track List */}
       <div style={{ display: 'flex', flexDirection: 'column', marginTop: '16px' }}>
-        {tracks.items.map((track, index) => (
-          <TrackRow key={track.id} track={track} index={index} showAlbum={false} />
+        {tracks?.items?.map((track, index) => (
+          <TrackRow key={(track.id || index) + '-' + index} track={track} index={index} showAlbum={false} />
         ))}
+        {(!tracks?.items || tracks.items.length === 0) && (
+          <div style={{ padding: '32px', textAlign: 'center', color: 'var(--text-muted)' }}>
+            No tracks available for this album.
+          </div>
+        )}
       </div>
     </div>
   );

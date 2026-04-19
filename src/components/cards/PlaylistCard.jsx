@@ -8,6 +8,12 @@ const PlaylistCard = ({ item, type = 'playlist' }) => {
   const navigate = useNavigate();
   const { playTrack } = usePlayer();
   const { name, images, description, id, artists } = item;
+  const image = images?.[0]?.url || 'https://via.placeholder.com/150';
+  const subtext = type === 'artist' ? 'Artist' : (description || artists?.[0]?.name || '');
+
+  const handleClick = () => {
+    navigate(`/${type}/${id}`);
+  };
 
   const handlePlay = (e) => {
     e.stopPropagation();

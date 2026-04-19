@@ -2,19 +2,20 @@ import React from 'react';
 import { useParams } from 'react-router-dom';
 import { useSpotify } from '../hooks/useSpotify';
 import { Play, MoreHorizontal, CheckCircle2 } from 'lucide-react';
-import PlaylistCard from '../components/cards/PlaylistCard';
 import TrackRow from '../components/cards/TrackRow';
 
 const ArtistPage = () => {
   const { id } = useParams();
-  const { data: artist, loading: artLoading } = useSpotify('getArtist', id);
+  const { data: artist, loading: artLoading, error: artError } = useSpotify('getArtist', id);
   const { data: topTracks, loading: topLoading } = useSpotify('getArtistTopTracks', id);
 
   if (artLoading || topLoading) return <div style={{ color: 'var(--text-muted)' }}>Channeling the artist...</div>;
+  if (artError) return <div style={{ color: 'var(--text-muted)' }}>Failed to load artist.</div>;
   if (!artist) return <div style={{ color: 'var(--text-muted)' }}>Artist not found.</div>;
 
   const { name, images, followers, genres } = artist;
   const image = images?.[0]?.url || 'https://via.placeholder.com/600';
+  const genreList = Array.isArray(genres) ? genres : [];
 
   return (
     <div className="animate-fade-in" style={{ display: 'flex', flexDirection: 'column' }}>
@@ -35,7 +36,9 @@ const ArtistPage = () => {
             <span style={{ fontSize: '14px', fontWeight: 600 }}>Verified Artist</span>
           </div>
           <h1 style={{ fontSize: '96px', fontWeight: 900, margin: '0 0 16px 0' }}>{name}</h1>
-          <span style={{ fontSize: '16px', fontWeight: 600 }}>{followers.total.toLocaleString()} monthly listeners</span>
+          <span style={{ fontSize: '16px', fontWeight: 600 }}>
+            {followers?.total ? `${followers.total.toLocaleString()} monthly listeners` : ''}
+          </span>
         </div>
       </section>
 
@@ -63,9 +66,13 @@ const ArtistPage = () => {
         <section>
           <h2 style={{ fontSize: '24px', marginBottom: '20px' }}>Popular</h2>
           <div style={{ display: 'flex', flexDirection: 'column' }}>
-            {topTracks?.tracks?.slice(0, 5).map((track, index) => (
-              <TrackRow key={track.id} track={track} index={index} showAlbum={false} />
-            ))}
+            {topTracks?.tracks?.length > 0 ? (
+              topTracks.tracks.slice(0, 5).map((track, index) => (
+                <TrackRow key={(track.id || index) + '-' + index} track={track} index={index} showAlbum={false} />
+              ))
+            ) : (
+              <div style={{ color: 'var(--text-muted)', padding: '16px' }}>No top tracks available.</div>
+            )}
           </div>
         </section>
 
@@ -81,12 +88,16 @@ const ArtistPage = () => {
              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                <span style={{ fontSize: '14px', fontWeight: 700 }}>Genres</span>
                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
-                 {genres.map(genre => (
-                   <span key={genre} style={{ 
-                     background: 'rgba(255,255,255,0.1)', padding: '4px 12px', 
-                     borderRadius: '16px', fontSize: '12px' 
-                   }}>{genre}</span>
-                 ))}
+                 {genreList.length > 0 ? (
+                   genreList.map(genre => (
+                     <span key={genre} style={{ 
+                       background: 'rgba(255,255,255,0.1)', padding: '4px 12px', 
+                       borderRadius: '16px', fontSize: '12px' 
+                     }}>{genre}</span>
+                   ))
+                 ) : (
+                   <span style={{ fontSize: '12px', color: 'var(--text-muted)' }}>No genre info available</span>
+                 )}
                </div>
              </div>
           </div>

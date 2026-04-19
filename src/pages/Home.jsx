@@ -22,8 +22,7 @@ const MoodCard = ({ title, emoji, color }) => (
 );
 
 const Home = () => {
-  const { data: featured, loading: featLoading } = useSpotify('getFeaturedPlaylists');
-  const { data: newReleases, loading: newLoading } = useSpotify('getNewReleases');
+  const { data: homeData, loading, error } = useSpotify('getHomeData');
 
   const moods = [
     { title: 'Focused', emoji: '🧠', color: '#4c2b91' },
@@ -32,9 +31,16 @@ const Home = () => {
     { title: 'Melancholic', emoji: '🌧️', color: '#2b4c2b' }
   ];
 
-  if (featLoading || newLoading) {
+  if (loading) {
     return <div style={{ color: 'var(--text-muted)' }}>Loading the universe...</div>;
   }
+
+  if (error) {
+    return <div style={{ color: 'var(--text-muted)' }}>Failed to load data. Please check your API key.</div>;
+  }
+
+  const featured = homeData?.featured;
+  const newReleases = homeData?.newReleases;
 
   return (
     <div className="animate-fade-in" style={{ display: 'flex', flexDirection: 'column', gap: '40px' }}>
@@ -53,38 +59,83 @@ const Home = () => {
       </section>
 
       {/* Featured Playlists */}
-      <section>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '16px' }}>
-          <h2 style={{ fontSize: '24px' }}>Featured Playlists</h2>
-          <span style={{ fontSize: '14px', color: 'var(--text-muted)', fontWeight: 700, cursor: 'pointer' }}>Show all</span>
-        </div>
-        <div style={{ 
-          display: 'grid', 
-          gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', 
-          gap: '24px' 
-        }}>
-          {featured?.playlists?.items?.map(item => (
-            <PlaylistCard key={item.id} item={item} />
-          ))}
-        </div>
-      </section>
+      {featured?.playlists?.items?.length > 0 && (
+        <section>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '16px' }}>
+            <h2 style={{ fontSize: '24px' }}>Trending Now</h2>
+            <span style={{ fontSize: '14px', color: 'var(--text-muted)', fontWeight: 700, cursor: 'pointer' }}>Show all</span>
+          </div>
+          <div style={{ 
+            display: 'grid', 
+            gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', 
+            gap: '24px' 
+          }}>
+            {featured.playlists.items.map(item => (
+              <PlaylistCard key={item.id} item={item} type="playlist" />
+            ))}
+          </div>
+        </section>
+      )}
 
-      {/* New Releases */}
-      <section>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '16px' }}>
-          <h2 style={{ fontSize: '24px' }}>New Releases</h2>
-          <span style={{ fontSize: '14px', color: 'var(--text-muted)', fontWeight: 700, cursor: 'pointer' }}>Show all</span>
-        </div>
-        <div style={{ 
-          display: 'grid', 
-          gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', 
-          gap: '24px' 
-        }}>
-          {newReleases?.albums?.items?.map(item => (
-            <PlaylistCard key={item.id} item={item} type="album" />
-          ))}
-        </div>
-      </section>
+      {/* Trending Tracks */}
+      {featured?.tracks?.items?.length > 0 && (
+        <section>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '16px' }}>
+            <h2 style={{ fontSize: '24px' }}>Hot Tracks</h2>
+            <span style={{ fontSize: '14px', color: 'var(--text-muted)', fontWeight: 700, cursor: 'pointer' }}>Show all</span>
+          </div>
+          <div style={{ 
+            display: 'grid', 
+            gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', 
+            gap: '24px' 
+          }}>
+            {featured.tracks.items.slice(0, 6).map(item => (
+              <PlaylistCard key={item.id} item={{
+                ...item,
+                images: item.album?.images || []
+              }} type="track" />
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* New Release Albums */}
+      {newReleases?.albums?.items?.length > 0 && (
+        <section>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '16px' }}>
+            <h2 style={{ fontSize: '24px' }}>New Releases</h2>
+            <span style={{ fontSize: '14px', color: 'var(--text-muted)', fontWeight: 700, cursor: 'pointer' }}>Show all</span>
+          </div>
+          <div style={{ 
+            display: 'grid', 
+            gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', 
+            gap: '24px' 
+          }}>
+            {newReleases.albums.items.map(item => (
+              <PlaylistCard key={item.id} item={item} type="album" />
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* Trending Artists */}
+      {featured?.artists?.items?.length > 0 && (
+        <section>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '16px' }}>
+            <h2 style={{ fontSize: '24px' }}>Popular Artists</h2>
+            <span style={{ fontSize: '14px', color: 'var(--text-muted)', fontWeight: 700, cursor: 'pointer' }}>Show all</span>
+          </div>
+          <div style={{ 
+            display: 'grid', 
+            gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', 
+            gap: '24px' 
+          }}>
+            {featured.artists.items.slice(0, 6).map(item => (
+              <PlaylistCard key={item.id} item={item} type="artist" />
+            ))}
+          </div>
+        </section>
+      )}
     </div>
   );
 };
