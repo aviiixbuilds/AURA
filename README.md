@@ -1,7 +1,5 @@
 <div align="center">
 
-![AURA Banner](./src/assets/banner.png)
-
 # 🌌 AURA
 ### *Advanced User Responsive Architecture*
 
@@ -18,12 +16,6 @@ It bridges the gap between raw power and ethereal beauty.
 </div>
 
 ---
-
-# 📋 Product Requirements Document (PRD)
-
-**Version:** 1.0  
-**Date:** April 2026  
-**Status:** In Progress
 
 ## Overview
 
