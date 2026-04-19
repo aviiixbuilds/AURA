@@ -60,7 +60,7 @@ const Sidebar = () => {
         fontSize: '12px',
         color: 'var(--text-muted)'
       }}>
-        <p>Aura uses Spotify API for 30-second previews. Enjoy the vibes.</p>
+        <p>Powered by AURA — discover music from the cosmos. ✨</p>
       </div>
     </aside>
   );

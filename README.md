@@ -1,6 +1,8 @@
 <div align="center">
 
-# AURA
+![AURA Banner](./src/assets/banner.png)
+
+# 🌌 AURA
 ### *Advanced User Responsive Architecture*
 
 [![Vite](https://img.shields.io/badge/Vite-B73BFE?style=for-the-badge&logo=vite&logoColor=FFD62E)](https://vitejs.dev/)
@@ -16,6 +18,12 @@ It bridges the gap between raw power and ethereal beauty.
 </div>
 
 ---
+
+# 📋 Product Requirements Document (PRD)
+
+**Version:** 1.0  
+**Date:** April 2026  
+**Status:** In Progress
 
 ## Overview
 

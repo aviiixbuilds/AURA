@@ -12,12 +12,13 @@ export const useSpotify = (method, ...args) => {
     const fetchData = async () => {
       try {
         setLoading(true);
+        setError(null);
         const result = await spotify[method](...args);
         if (isMounted) {
           setData(result);
-          setError(null);
         }
       } catch (err) {
+        console.error(`useSpotify error [${method}]:`, err);
         if (isMounted) setError(err);
       } finally {
         if (isMounted) setLoading(false);
