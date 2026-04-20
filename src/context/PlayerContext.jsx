@@ -47,19 +47,28 @@ export const PlayerProvider = ({ children }) => {
   }, [volume]);
 
   const playTrack = (track) => {
-    if (!track.preview_url) {
-      alert("No preview available for this track (Spotify API limitation).");
+    if (!track) return;
+
+    // Always set the current track so the RightSidebar is shown
+    if (currentTrack?.id === track.id) {
+      // If same track, toggle play/pause (only if we have audio)
+      if (track.preview_url) togglePlay();
       return;
     }
 
-    if (currentTrack?.id === track.id) {
-      togglePlay();
-    } else {
-      setCurrentTrack(track);
+    setCurrentTrack(track);
+    addPlay(track);
+
+    if (track.preview_url) {
+      // Real playback via Spotify 30-sec preview URL
       audioRef.current.src = track.preview_url;
-      audioRef.current.play();
+      audioRef.current.play().catch(() => {});
       setIsPlaying(true);
-      addPlay(track);
+    } else {
+      // No preview available — show track info in sidebar but can't play audio
+      audioRef.current.src = '';
+      setIsPlaying(false);
+      setProgress(0);
     }
   };
 
