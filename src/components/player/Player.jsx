@@ -25,7 +25,7 @@ const Player = ({ toggleLyrics }) => {
   const trackIsLiked = isLiked(currentTrack.id);
 
   return (
-    <footer className="glass" style={{ 
+    <footer style={{ 
       height: 'var(--player-height)', 
       position: 'fixed', 
       bottom: 0, 
@@ -36,7 +36,8 @@ const Player = ({ toggleLyrics }) => {
       justifyContent: 'space-between',
       padding: '0 16px',
       zIndex: 200,
-      transition: 'var(--transition-color)'
+      background: '#000',
+      borderTop: '1px solid rgba(255,255,255,0.05)', // Very subtle border instead of the glass one
     }}>
       {/* Track Info */}
       <div style={{ display: 'flex', alignItems: 'center', gap: '14px', width: '30%', minWidth: 0 }}>
