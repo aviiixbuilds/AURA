@@ -1,13 +1,15 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Play, Pause, SkipBack, SkipForward } from 'lucide-react';
+import { X, Play, Pause, SkipBack, SkipForward, Heart } from 'lucide-react';
 import { usePlayer } from '../../context/PlayerContext';
+import { useLibrary } from '../../context/LibraryContext';
 
 const AmbientMode = () => {
   const { 
     currentTrack, isPlaying, togglePlay, progress, duration, 
     isAmbientMode, setIsAmbientMode 
   } = usePlayer();
+  const { toggleLike, isLiked } = useLibrary();
 
   if (!isAmbientMode || !currentTrack) return null;
 
@@ -17,6 +19,8 @@ const AmbientMode = () => {
     const seconds = Math.floor(time % 60);
     return `${minutes}:${seconds.toString().padStart(2, '0')}`;
   };
+
+  const trackIsLiked = isLiked(currentTrack.id);
 
   return (
     <AnimatePresence>
@@ -33,7 +37,7 @@ const AmbientMode = () => {
         {/* Animated Background */}
         <div style={{ 
           position: 'absolute', inset: 0, 
-          backgroundImage: `url(${currentTrack.album?.images?.[0]?.url})`,
+          backgroundImage: `url(${currentTrack.album?.images?.[0]?.url || currentTrack.images?.[0]?.url})`,
           backgroundSize: 'cover', backgroundPosition: 'center',
           filter: 'blur(80px) brightness(0.4)', transform: 'scale(1.2)',
           zIndex: -1
@@ -60,7 +64,7 @@ const AmbientMode = () => {
           <motion.img 
             initial={{ scale: 0.8, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
-            src={currentTrack.album?.images?.[0]?.url} 
+            src={currentTrack.album?.images?.[0]?.url || currentTrack.images?.[0]?.url} 
             alt={currentTrack.name}
             style={{ 
               width: '400px', height: '400px', borderRadius: '12px', 
@@ -89,6 +93,16 @@ const AmbientMode = () => {
           </div>
 
           <div style={{ display: 'flex', alignItems: 'center', gap: '48px' }}>
+            <button 
+              onClick={() => toggleLike(currentTrack)}
+              style={{ 
+                background: 'none', border: 'none', 
+                color: trackIsLiked ? '#1DB954' : 'white', 
+                cursor: 'pointer', display: 'flex', transition: 'all 0.2s ease'
+              }}
+            >
+              <Heart size={32} fill={trackIsLiked ? '#1DB954' : 'none'} />
+            </button>
             <SkipBack size={32} className="cursor-pointer hover:text-white" />
             <button 
               onClick={togglePlay}

@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { X, PlusCircle, Maximize2, ArrowUpRight } from 'lucide-react';
+import { X, Heart, Maximize2, ArrowUpRight } from 'lucide-react';
 import { usePlayer } from '../../context/PlayerContext';
+import { useLibrary } from '../../context/LibraryContext';
 
 const MIN_WIDTH = 280;
 const MAX_WIDTH = 600;
@@ -8,6 +9,7 @@ const DEFAULT_WIDTH = 340;
 
 const RightSidebar = () => {
   const { currentTrack } = usePlayer();
+  const { toggleLike, isLiked } = useLibrary();
   const [isOpen, setIsOpen] = useState(false);
   const [width, setWidth] = useState(DEFAULT_WIDTH);
   const [isResizing, setIsResizing] = useState(false);
@@ -52,13 +54,21 @@ const RightSidebar = () => {
     };
   }, [isResizing, width]);
 
+  const trackName = currentTrack?.name || 'Unknown Track';
+  const artistName = currentTrack?.artists?.[0]?.name || 'Unknown Artist';
+  
+  // STABLE LISTENER COUNT
+  const listenerCount = React.useMemo(() => {
+    return Math.floor(Math.random() * 800 + 100);
+  }, [artistName]);
+
   if (!currentTrack || !isOpen) return null;
 
-  const trackName = currentTrack.name || 'Unknown Track';
-  const artistName = currentTrack.artists?.[0]?.name || 'Unknown Artist';
   const image = currentTrack.album?.images?.[0]?.url
     || currentTrack.images?.[0]?.url
     || `https://picsum.photos/seed/${encodeURIComponent(trackName)}/400/400`;
+
+  const trackIsLiked = isLiked(currentTrack.id);
 
   return (
     <>
@@ -239,15 +249,23 @@ const RightSidebar = () => {
               {artistName}
             </div>
           </div>
-          <button style={{
-            background: 'none', border: 'none', color: '#b3b3b3',
-            cursor: 'pointer', flexShrink: 0, display: 'flex',
-            alignItems: 'center', padding: '4px', transition: 'color 0.2s'
-          }}
-            onMouseEnter={e => e.currentTarget.style.color = '#1DB954'}
-            onMouseLeave={e => e.currentTarget.style.color = '#b3b3b3'}
+          <button 
+            onClick={() => toggleLike(currentTrack)}
+            title={trackIsLiked ? "Remove from Liked Songs" : "Add to Liked Songs"}
+            style={{
+              background: 'none', border: 'none', 
+              color: trackIsLiked ? '#1DB954' : '#b3b3b3',
+              cursor: 'pointer', flexShrink: 0, display: 'flex',
+              alignItems: 'center', padding: '4px', transition: 'all 0.2s ease'
+            }}
+            onMouseEnter={e => {
+              if (!trackIsLiked) e.currentTarget.style.color = '#fff';
+            }}
+            onMouseLeave={e => {
+              if (!trackIsLiked) e.currentTarget.style.color = '#b3b3b3';
+            }}
           >
-            <PlusCircle size={22} />
+            <Heart size={22} fill={trackIsLiked ? '#1DB954' : 'none'} />
           </button>
         </div>
 
@@ -279,7 +297,7 @@ const RightSidebar = () => {
               alignItems: 'center', marginBottom: '12px'
             }}>
               <span style={{ fontSize: '13px', color: '#b3b3b3' }}>
-                {(Math.floor(Math.random() * 800 + 100)).toLocaleString() + ',000'} monthly listeners
+                {listenerCount.toLocaleString() + ',000'} monthly listeners
               </span>
               <button style={{
                 background: 'transparent', border: '1px solid #727272',

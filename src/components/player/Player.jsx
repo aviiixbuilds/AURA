@@ -1,15 +1,17 @@
 import React from 'react';
 import { 
   Play, Pause, SkipBack, SkipForward, Repeat, Shuffle, 
-  Volume2, Maximize2, Mic2, ListMusic 
+  Volume2, Maximize2, Mic2, ListMusic, Heart 
 } from 'lucide-react';
 import { usePlayer } from '../../context/PlayerContext';
+import { useLibrary } from '../../context/LibraryContext';
 
 const Player = ({ toggleLyrics }) => {
   const { 
     currentTrack, isPlaying, togglePlay, progress, duration, 
     volume, setVolume, seek, isAmbientMode, setIsAmbientMode 
   } = usePlayer();
+  const { toggleLike, isLiked } = useLibrary();
 
   if (!currentTrack) return <div className="glass" style={{ height: 'var(--player-height)', position: 'fixed', bottom: 0, left: 0, right: 0 }} />;
 
@@ -19,6 +21,8 @@ const Player = ({ toggleLyrics }) => {
     const seconds = Math.floor(time % 60);
     return `${minutes}:${seconds.toString().padStart(2, '0')}`;
   };
+
+  const trackIsLiked = isLiked(currentTrack.id);
 
   return (
     <footer className="glass" style={{ 
@@ -35,20 +39,20 @@ const Player = ({ toggleLyrics }) => {
       transition: 'var(--transition-color)'
     }}>
       {/* Track Info */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: '14px', width: '30%' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '14px', width: '30%', minWidth: 0 }}>
         <div style={{ 
           width: '56px', height: '56px', borderRadius: '4px', 
-          background: 'var(--bg-card)', overflow: 'hidden',
+          background: 'var(--bg-card)', flexShrink: 0, overflow: 'hidden',
           boxShadow: '0 4px 12px rgba(0,0,0,0.5)',
           cursor: 'pointer'
         }} onClick={() => setIsAmbientMode(true)}>
           <img 
-            src={currentTrack.album?.images?.[0]?.url} 
+            src={currentTrack.album?.images?.[0]?.url || currentTrack.images?.[0]?.url} 
             alt={currentTrack.name} 
             style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
           />
         </div>
-        <div style={{ display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', overflow: 'hidden', minWidth: 0 }}>
           <span style={{ fontWeight: 600, fontSize: '14px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
             {currentTrack.name}
           </span>
@@ -56,6 +60,16 @@ const Player = ({ toggleLyrics }) => {
             {currentTrack.artists?.map(a => a.name).join(', ')}
           </span>
         </div>
+        <button 
+          onClick={() => toggleLike(currentTrack)}
+          style={{ 
+            background: 'none', border: 'none', padding: '4px', 
+            cursor: 'pointer', color: trackIsLiked ? '#1DB954' : 'var(--text-muted)',
+            transition: 'all 0.2s ease', display: 'flex'
+          }}
+        >
+          <Heart size={18} fill={trackIsLiked ? '#1DB954' : 'none'} />
+        </button>
       </div>
 
       {/* Controls */}

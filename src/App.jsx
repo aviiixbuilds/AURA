@@ -5,6 +5,8 @@ import { AnimatePresence } from 'framer-motion';
 import Sidebar from './components/common/Sidebar';
 import Navbar from './components/common/Navbar';
 import RightSidebar from './components/common/RightSidebar';
+import Player from './components/player/Player';
+import AmbientMode from './components/player/AmbientMode';
 
 // Page Components
 import Home from './pages/Home';
@@ -25,8 +27,10 @@ const MainLayout = ({ children }) => {
         <main className="no-scrollbar" style={{ flex: 1, overflowY: 'auto', padding: '24px' }}>
           {children}
         </main>
+        <Player />
       </div>
       <RightSidebar />
+      <AmbientMode />
     </div>
   );
 };
