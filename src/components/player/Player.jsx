@@ -94,12 +94,15 @@ const Player = ({ toggleLyrics }) => {
           <Repeat size={18} className="cursor-pointer hover:text-white" />
         </div>
         
-        <div style={{ width: '100%', display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <span style={{ fontSize: '11px', color: 'var(--text-muted)' }}>{formatTime(progress)}</span>
+        <div style={{ width: '100%', display: 'flex', alignItems: 'center', gap: '12px' }}>
+          <span style={{ fontSize: '11px', color: 'var(--text-muted)', minWidth: '35px', textAlign: 'right' }}>
+            {formatTime(progress)}
+          </span>
           <div 
             style={{ 
               flex: 1, height: '4px', background: 'rgba(255,255,255,0.1)', 
-              borderRadius: '2px', position: 'relative', cursor: 'pointer'
+              borderRadius: '2px', position: 'relative', cursor: 'pointer',
+              group: 'progress'
             }}
             onClick={(e) => {
               const rect = e.currentTarget.getBoundingClientRect();
@@ -107,15 +110,24 @@ const Player = ({ toggleLyrics }) => {
               const pct = x / rect.width;
               seek(pct * duration);
             }}
+            onMouseEnter={e => {
+              e.currentTarget.firstChild.style.background = '#1DB954'; // Spotify green on hover
+            }}
+            onMouseLeave={e => {
+              e.currentTarget.firstChild.style.background = 'white';
+            }}
           >
             <div style={{ 
               width: `${(progress / duration) * 100}%`, 
               height: '100%', 
               background: 'white', 
-              borderRadius: '2px' 
+              borderRadius: '2px',
+              transition: 'background 0.2s'
             }}></div>
           </div>
-          <span style={{ fontSize: '11px', color: 'var(--text-muted)' }}>{formatTime(duration)}</span>
+          <span style={{ fontSize: '11px', color: 'var(--text-muted)', minWidth: '35px' }}>
+            {formatTime(duration)}
+          </span>
         </div>
       </div>
 

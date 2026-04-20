@@ -14,22 +14,47 @@ export const PlayerProvider = ({ children }) => {
   const [duration, setDuration] = useState(0);
   const [queue, setQueue] = useState([]);
   const [isAmbientMode, setIsAmbientMode] = useState(false);
+  const [isSimulated, setIsSimulated] = useState(false);
 
   const audioRef = useRef(new Audio());
+  const simulationIntervalRef = useRef(null);
+
+  const stopSimulation = () => {
+    if (simulationIntervalRef.current) {
+      clearInterval(simulationIntervalRef.current);
+      simulationIntervalRef.current = null;
+    }
+  };
+
+  const startSimulation = () => {
+    stopSimulation();
+    simulationIntervalRef.current = setInterval(() => {
+      setProgress(prev => {
+        const next = prev + 1;
+        if (next >= duration) {
+          setIsPlaying(false);
+          stopSimulation();
+          return duration;
+        }
+        return next;
+      });
+    }, 1000);
+  };
 
   useEffect(() => {
     const audio = audioRef.current;
     audio.volume = volume;
 
     const updateProgress = () => {
-      setProgress(audio.currentTime);
-      setDuration(audio.duration || 0);
+      if (!isSimulated) {
+        setProgress(audio.currentTime);
+        setDuration(audio.duration || currentTrack?.duration_ms / 1000 || 0);
+      }
     };
 
     const handleEnded = () => {
       setIsPlaying(false);
       setProgress(0);
-      // Logic for next track could go here
     };
 
     audio.addEventListener('timeupdate', updateProgress);
@@ -38,8 +63,9 @@ export const PlayerProvider = ({ children }) => {
     return () => {
       audio.removeEventListener('timeupdate', updateProgress);
       audio.removeEventListener('ended', handleEnded);
+      stopSimulation();
     };
-  }, [volume]);
+  }, [volume, isSimulated, currentTrack]);
 
   useEffect(() => {
     localStorage.setItem('aura-volume', volume);
@@ -49,35 +75,51 @@ export const PlayerProvider = ({ children }) => {
   const playTrack = (track) => {
     if (!track) return;
 
-    // Always set the current track so the RightSidebar is shown
     if (currentTrack?.id === track.id) {
-      // If same track, toggle play/pause (only if we have audio)
-      if (track.preview_url) togglePlay();
+      togglePlay();
       return;
     }
 
+    // Stop everything first
+    stopSimulation();
+    audioRef.current.pause();
+    audioRef.current.src = '';
+    
+    const trackDuration = (track.duration_ms / 1000) || 0;
     setCurrentTrack(track);
+    setDuration(trackDuration);
+    setProgress(0);
     addPlay(track);
 
     if (track.preview_url) {
-      // Real playback via Spotify 30-sec preview URL
+      setIsSimulated(false);
       audioRef.current.src = track.preview_url;
       audioRef.current.play().catch(() => {});
       setIsPlaying(true);
     } else {
-      // No preview available — show track info in sidebar but can't play audio
-      audioRef.current.src = '';
-      setIsPlaying(false);
-      setProgress(0);
+      setIsSimulated(true);
+      setIsPlaying(true);
+      // Interval will be started by the useEffect or togglePlay
     }
   };
 
+  useEffect(() => {
+    if (isPlaying && isSimulated) {
+      startSimulation();
+    } else {
+      stopSimulation();
+    }
+  }, [isPlaying, isSimulated, duration]);
+
   const togglePlay = () => {
     if (isPlaying) {
-      audioRef.current.pause();
+      if (!isSimulated) audioRef.current.pause();
+      else stopSimulation();
     } else {
-      if (audioRef.current.src) {
+      if (!isSimulated && audioRef.current.src) {
         audioRef.current.play();
+      } else if (isSimulated) {
+        startSimulation();
       }
     }
     setIsPlaying(!isPlaying);
