@@ -5,7 +5,13 @@
  */
 
 const API_HOST = import.meta.env.VITE_RAPIDAPI_HOST || 'spotify23.p.rapidapi.com';
-const API_KEY = import.meta.env.VITE_RAPIDAPI_KEY;
+const API_KEYS = [
+  import.meta.env.VITE_RAPIDAPI_KEY,
+  import.meta.env.VITE_RAPIDAPI_KEY_2,
+  import.meta.env.VITE_RAPIDAPI_KEY_3,
+].filter(Boolean); // Filter out any empty/undefined keys
+
+let currentKeyIndex = 0;
 const BASE_URL = `https://${API_HOST}`;
 
 // --- In-Memory Cache (5 min TTL) ---
@@ -26,27 +32,61 @@ function setCache(key, data) {
 }
 
 // --- Core Fetch Helper ---
-async function apiFetch(endpoint) {
+async function apiFetch(endpoint, retryCount = 0) {
   const cacheKey = endpoint;
   const cached = getCached(cacheKey);
   if (cached) return cached;
 
-  const response = await fetch(`${BASE_URL}${endpoint}`, {
-    method: 'GET',
-    headers: {
-      'x-rapidapi-key': API_KEY,
-      'x-rapidapi-host': API_HOST,
-      'Content-Type': 'application/json'
-    }
-  });
-
-  if (!response.ok) {
-    throw new Error(`API Error ${response.status}: ${response.statusText}`);
+  if (API_KEYS.length === 0) {
+    throw new Error('No API keys configured.');
   }
 
-  const data = await response.json();
-  setCache(cacheKey, data);
-  return data;
+  const activeKey = API_KEYS[currentKeyIndex];
+
+  let response;
+  try {
+    response = await fetch(`${BASE_URL}${endpoint}`, {
+      method: 'GET',
+      headers: {
+        'x-rapidapi-key': activeKey,
+        'x-rapidapi-host': API_HOST,
+        'Content-Type': 'application/json'
+      }
+    });
+
+    if (!response.ok) {
+      if ((response.status === 429 || response.status === 401 || response.status === 403) && retryCount < API_KEYS.length - 1) {
+        console.warn(`API Key ${currentKeyIndex + 1} failed (${response.status}). Rotating to next key...`);
+        currentKeyIndex = (currentKeyIndex + 1) % API_KEYS.length;
+        return apiFetch(endpoint, retryCount + 1);
+      }
+      throw new Error(`API Error ${response.status}: ${response.statusText}`);
+    }
+
+    const data = await response.json();
+    
+    // RapidAPI sometimes returns a 200 HTTP OK but wraps a 429/401 error inside the JSON payload.
+    if (data && data.status === 'success' && data.error && (data.error.status === 429 || data.error.status === 401 || data.error.status === 400 || data.error.status === 403)) {
+      if (retryCount < API_KEYS.length - 1) {
+        console.warn(`API Key ${currentKeyIndex + 1} nested failure (${data.error.status}: ${data.error.message}). Rotating to next key...`);
+        currentKeyIndex = (currentKeyIndex + 1) % API_KEYS.length;
+        return apiFetch(endpoint, retryCount + 1);
+      }
+      throw new Error(`API Inner Error ${data.error.status}: ${data.error.message}`);
+    }
+
+    setCache(cacheKey, data);
+    return data;
+
+  } catch (error) {
+    // If there's a hard network/CORS error, it might be due to a blocked key (401 disguised as CORS). Try rotation.
+    if ((error.name === 'TypeError' || error.message === 'Load failed') && retryCount < API_KEYS.length - 1) {
+      console.warn(`API Key ${currentKeyIndex + 1} network block. Rotating to next key...`);
+      currentKeyIndex = (currentKeyIndex + 1) % API_KEYS.length;
+      return apiFetch(endpoint, retryCount + 1);
+    }
+    throw error;
+  }
 }
 
 // --- Normalizers ---
@@ -215,85 +255,29 @@ class SpotifyService {
     return result;
   }
 
-  async getPlaylist(id, fallbackMeta = null) {
-    // 1. Handle user-created local playlists
-    if (id.startsWith('user-pl-')) {
-      const localPlaylists = JSON.parse(localStorage.getItem('aura-playlists') || '[]');
-      const local = localPlaylists.find(p => p.id === id);
-      if (local) {
-        return {
-          id: local.id,
-          name: local.name,
-          description: local.description || '',
-          images: local.images || [],
-          owner: { display_name: 'You' },
-          tracks: {
-            total: local.tracks?.total || 0,
-            items: local.tracks?.items || []
-          },
-          followers: { total: 0 }
-        };
-      }
-    }
+  /**
+   * Get playlist details by ID
+   */
+  async getPlaylist(id) {
+    const data = await apiFetch(`/playlist/?id=${id}`);
 
-    try {
-      const data = await apiFetch(`/playlist/?id=${id}`);
+    const tracks = (data.tracks?.items || []).map(item => {
+      const t = normalizeTrack(item.track || item);
+      return { track: t };
+    });
 
-      const tracks = (data.tracks?.items || []).map(item => {
-        const t = normalizeTrack(item.track || item);
-        return { track: t };
-      });
-
-      return {
-        id: data.id || id,
-        name: data.name || '',
-        description: data.description || '',
-        images: (data.images || []).map(img => ({ url: img.url || '' })),
-        owner: { display_name: data.owner?.display_name || data.owner?.name || 'Spotify' },
-        tracks: {
-          total: data.tracks?.totalCount || data.tracks?.total || tracks.length,
-          items: tracks
-        },
-        followers: { total: data.followers?.total || 0 }
-      };
-    } catch (error) {
-      console.warn("RapidAPI /playlist/ endpoint failed or rate-limited. Serving intelligent fallback playlist.", error);
-      
-      try {
-        const searchQuery = fallbackMeta?.name ? `genre:${fallbackMeta.name} OR ${fallbackMeta.name}` : 'top hits 2025';
-        const fallbackData = await this.search(searchQuery, 'multi');
-        
-        let fallbackTracks = fallbackData?.tracks?.items || [];
-        if (fallbackTracks.length === 0) {
-          const secondary = await this.search('trending tracks', 'tracks');
-          fallbackTracks = secondary?.tracks?.items || [];
-        }
-        
-        return {
-          id,
-          name: fallbackMeta?.name || 'AURA Curated Playlist',
-          description: fallbackMeta?.description || 'The Spotify API is currently rate-limited. We fetched these related authentic tracks for you instead!',
-          images: fallbackMeta?.images?.length ? fallbackMeta.images : [{ url: 'https://images.unsplash.com/photo-1614613535308-eb5fbd3d2c17?auto=format&fit=crop&q=80&w=300&h=300' }],
-          owner: { display_name: fallbackMeta?.owner?.display_name || 'AURA Proxy' },
-          tracks: {
-            total: fallbackTracks.length,
-            items: fallbackTracks.map(t => ({ track: t }))
-          },
-          followers: { total: fallbackMeta?.followers?.total || 0 }
-        };
-      } catch (criticalError) {
-        console.error("RapidAPI is completely down.", criticalError);
-        return {
-          id,
-          name: fallbackMeta?.name || 'AURA Offline',
-          description: 'The RapidAPI service is completely offline right now. Try again later.',
-          images: fallbackMeta?.images?.length ? fallbackMeta.images : [],
-          owner: { display_name: 'AURA Offline' },
-          tracks: { total: 0, items: [] },
-          followers: { total: 0 }
-        };
-      }
-    }
+    return {
+      id: data.id || id,
+      name: data.name || '',
+      description: data.description || '',
+      images: (data.images || []).map(img => ({ url: img.url || '' })),
+      owner: { display_name: data.owner?.display_name || data.owner?.name || 'Spotify' },
+      tracks: {
+        total: data.tracks?.totalCount || data.tracks?.total || tracks.length,
+        items: tracks
+      },
+      followers: { total: data.followers?.total || 0 }
+    };
   }
 
   /**

@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { 
   Home, Library, Heart, Plus, 
-  ArrowRight, Search as SearchIcon, ListFilter,
+  ArrowRight, ArrowLeft, Search as SearchIcon, ListFilter,
   Music
 } from 'lucide-react';
 import { useLibrary } from '../../context/LibraryContext';
@@ -16,8 +16,8 @@ const NavItem = ({ icon: Icon, label, to, isCollapsed }) => (
       textDecoration: 'none',
       display: 'flex',
       alignItems: 'center',
-      justifyContent: 'flex-start',
-      padding: '8px 16px',
+      justifyContent: isCollapsed ? 'center' : 'flex-start',
+      padding: isCollapsed ? '12px 0' : '12px 16px',
       borderRadius: '8px',
       color: isActive ? '#fff' : '#b3b3b3',
       fontWeight: 700,
@@ -42,20 +42,90 @@ const NavItem = ({ icon: Icon, label, to, isCollapsed }) => (
   </NavLink>
 );
 
-/* ─── Playlist Row Item ─── */
-const LibraryItem = ({ item, type = 'playlist', isCollapsed }) => {
+/* ─── Playlist Row/Grid Item ─── */
+const LibraryItem = ({ item, type = 'playlist', isCollapsed, isGrid }) => {
   const navigate = useNavigate();
   const image = item.images?.[0]?.url;
   const subtitle = type === 'liked'
     ? `Playlist • ${item.count || 0} songs`
     : `${item.type || 'Playlist'} • ${item.owner?.display_name || ''}`;
 
+  if (isGrid) {
+    return (
+      <div
+        onClick={() => {
+          if (type === 'liked') return navigate('/liked');
+          navigate(`/${item.type || 'playlist'}/${item.id}`);
+        }}
+        style={{
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'flex-start',
+          padding: '16px',
+          borderRadius: '8px',
+          background: 'rgba(255,255,255,0.02)',
+          cursor: 'pointer',
+          transition: 'background 0.2s',
+          width: '100%',
+          boxSizing: 'border-box'
+        }}
+        onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.08)'}
+        onMouseLeave={e => e.currentTarget.style.background = 'rgba(255,255,255,0.02)'}
+      >
+        <div style={{
+          width: '100%',
+          aspectRatio: '1/1',
+          borderRadius: type === 'artist' ? '50%' : '6px',
+          background: type === 'liked'
+            ? 'linear-gradient(135deg, #450af5, #c4efd9)'
+            : '#282828',
+          overflow: 'hidden',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          marginBottom: '16px',
+          boxShadow: '0 8px 24px rgba(0,0,0,0.5)'
+        }}>
+          {image ? (
+            <img src={image} alt={item.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+          ) : type === 'liked' ? (
+            <Heart size={48} fill="white" color="white" />
+          ) : (
+            <Music size={48} color="#b3b3b3" />
+          )}
+        </div>
+        <div style={{ width: '100%' }}>
+          <div style={{
+            fontSize: '15px',
+            fontWeight: 700,
+            color: type === 'liked' ? '#fff' : '#fff',
+            whiteSpace: 'nowrap',
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+            marginBottom: '4px'
+          }}>
+            {item.name}
+          </div>
+          <div style={{
+            fontSize: '13px',
+            color: '#a7a7a7',
+            whiteSpace: 'nowrap',
+            overflow: 'hidden',
+            textOverflow: 'ellipsis'
+          }}>
+            {subtitle}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Normal List Item
   return (
     <div
       onClick={() => {
         if (type === 'liked') return navigate('/liked');
-        localStorage.setItem('aura-fallback-meta', JSON.stringify(item));
-        navigate(`/${item.type || 'playlist'}/${item.id}`, { state: { fallbackData: item } });
+        navigate(`/${item.type || 'playlist'}/${item.id}`);
       }}
       style={{
         display: 'flex',
@@ -70,7 +140,6 @@ const LibraryItem = ({ item, type = 'playlist', isCollapsed }) => {
       onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.08)'}
       onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
     >
-      {/* Thumbnail */}
       <div style={{
         width: '48px',
         height: '48px',
@@ -93,7 +162,6 @@ const LibraryItem = ({ item, type = 'playlist', isCollapsed }) => {
         )}
       </div>
 
-      {/* Text */}
       {!isCollapsed && (
         <div style={{ minWidth: 0, flex: 1 }}>
           <div style={{
@@ -152,7 +220,6 @@ const Sidebar = () => {
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   
-  // Starting dynamically as either expanded or collapsed
   const [sidebarWidth, setSidebarWidth] = useState(72);
   const [isResizing, setIsResizing] = useState(false);
   
@@ -161,14 +228,15 @@ const Sidebar = () => {
 
   const MIN_COLLAPSED = 72;
   const MIN_EXPANDED = 280;
-  const MAX_WIDTH = 480;
+  const MAX_EXPANDED = 650; // New massive grid width
 
   const isCollapsed = sidebarWidth < 120;
+  const isGrid = sidebarWidth > 450; // Switches to grid view when wide enough
 
   // Initialize CSS var on mount
   useEffect(() => {
     document.documentElement.style.setProperty('--sidebar-width', `${sidebarWidth}px`);
-  }, []);
+  }, [sidebarWidth]);
 
   // Fetch library items on mount
   useEffect(() => {
@@ -181,17 +249,15 @@ const Sidebar = () => {
       if (!isResizing) return;
       let newWidth = e.clientX;
       
-      // Snap to collapsed or expanded zones
       if (newWidth < 160) {
         newWidth = MIN_COLLAPSED;
       } else if (newWidth >= 160 && newWidth < MIN_EXPANDED) {
         newWidth = MIN_EXPANDED;
-      } else if (newWidth > MAX_WIDTH) {
-        newWidth = MAX_WIDTH;
+      } else if (newWidth > MAX_EXPANDED) {
+        newWidth = MAX_EXPANDED;
       }
       
       setSidebarWidth(newWidth);
-      document.documentElement.style.setProperty('--sidebar-width', `${newWidth}px`);
     };
 
     const handleMouseUp = () => {
@@ -221,15 +287,18 @@ const Sidebar = () => {
   }, [searchOpen, isCollapsed]);
 
   const toggleSidebar = () => {
-    const newWidth = isCollapsed ? 320 : MIN_COLLAPSED;
+    const newWidth = isCollapsed ? MIN_EXPANDED : MIN_COLLAPSED;
     setSidebarWidth(newWidth);
-    document.documentElement.style.setProperty('--sidebar-width', `${newWidth}px`);
+  };
+
+  const toggleGrid = () => {
+    const newWidth = isGrid ? MIN_EXPANDED : MAX_EXPANDED;
+    setSidebarWidth(newWidth);
   };
 
   // Build the library list
   const allItems = [];
 
-  // Liked Songs always first
   allItems.push({
     _type: 'liked',
     id: 'liked-songs',
@@ -239,14 +308,12 @@ const Sidebar = () => {
     pinned: true
   });
 
-  // Add library items from API
   if (libraryItems) {
     libraryItems.forEach(item => {
       allItems.push(item);
     });
   }
 
-  // Add user-created playlists
   if (userPlaylists) {
     userPlaylists.forEach(p => {
       if (!allItems.find(x => x.id === p.id)) {
@@ -255,7 +322,6 @@ const Sidebar = () => {
     });
   }
 
-  // Filter
   const filteredItems = allItems.filter(item => {
     if (activeFilter === 'playlists' && item.type !== 'playlist' && item._type !== 'liked') return false;
     if (activeFilter === 'artists' && item.type !== 'artist') return false;
@@ -295,28 +361,26 @@ const Sidebar = () => {
         height: '100%',
         display: 'flex',
         flexDirection: 'column',
-        background: '#121212',
-        borderRight: '1px solid rgba(255,255,255,0.04)',
         position: 'relative',
         flexShrink: 0,
-        transition: isResizing ? 'none' : 'width 0.3s ease'
+        transition: isResizing ? 'none' : 'width 0.3s ease',
+        background: '#121212', // Unified single background
+        borderRadius: '8px',
+        overflow: 'hidden'
       }}
     >
-      {/* ─── Top Navigation ─── */}
       <div style={{
-        padding: '12px 8px 8px',
+        padding: isCollapsed ? '16px 8px 0' : '16px 16px 0',
         display: 'flex',
         flexDirection: 'column',
-        gap: '4px',
-        background: '#121212',
-        borderRadius: '8px 8px 0 0'
+        gap: '4px'
       }}>
         <div 
           style={{ 
-            padding: '8px 4px 16px',
+            padding: isCollapsed ? '8px 0' : '8px 12px',
             display: 'flex', 
             alignItems: 'center', 
-            justifyContent: 'flex-start',
+            justifyContent: isCollapsed ? 'center' : 'flex-start',
             cursor: 'pointer',
             transition: 'all 0.3s ease',
             whiteSpace: 'nowrap',
@@ -325,13 +389,16 @@ const Sidebar = () => {
           onClick={() => navigate('/')}
         >
           <div style={{ 
-            width: '48px', height: '48px', flexShrink: 0 
+            width: '28px', height: '28px', flexShrink: 0, borderRadius: '50%', background: '#fff', 
+            display: 'flex', alignItems: 'center', justifyContent: 'center'
           }}>
-            <img src="/logo.png" alt="AURA Logo" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+             {/* If logo.png exists, use it. Otherwise placeholder */}
+            <img src="/logo.png" alt="AURA Logo" style={{ width: '100%', height: '100%', objectFit: 'contain', borderRadius: '50%' }} onError={(e) => {e.target.style.display='none';}} />
+            <Music size={16} color="#000" style={{ position: 'absolute', zIndex: -1 }} />
           </div>
           <span style={{ 
-            fontWeight: 700, fontSize: '20px', color: '#fff', letterSpacing: '-0.5px',
-            marginLeft: isCollapsed ? '0' : '8px',
+            fontWeight: 700, fontSize: '18px', color: '#fff', letterSpacing: '-0.5px',
+            marginLeft: isCollapsed ? '0' : '16px',
             opacity: isCollapsed ? 0 : 1,
             width: isCollapsed ? 0 : 'auto',
             transition: 'all 0.3s ease',
@@ -345,18 +412,16 @@ const Sidebar = () => {
         flex: 1,
         display: 'flex',
         flexDirection: 'column',
-        background: '#121212',
-        borderRadius: '0 0 8px 8px',
-        marginTop: isCollapsed ? '4px' : '8px',
+        marginTop: '0px', // Tight gap! 
         overflow: 'hidden'
       }}>
         {/* Library Header */}
         <div style={{
-          padding: '12px 8px 0',
+          padding: isCollapsed ? '12px 4px 0' : '12px 16px 0',
           display: 'flex',
-          flexDirection: 'row',
+          flexDirection: isCollapsed ? 'column' : 'row',
           alignItems: 'center',
-          justifyContent: 'space-between',
+          justifyContent: isCollapsed ? 'center' : 'space-between',
           whiteSpace: 'nowrap',
           overflow: 'hidden'
         }}>
@@ -368,8 +433,8 @@ const Sidebar = () => {
               border: 'none',
               display: 'flex',
               alignItems: 'center',
-              justifyContent: 'flex-start',
-              padding: '8px 16px',
+              justifyContent: isCollapsed ? 'center' : 'flex-start',
+              padding: isCollapsed ? '12px 0' : '8px 12px',
               color: '#b3b3b3',
               fontWeight: 700,
               fontSize: '15px',
@@ -421,7 +486,7 @@ const Sidebar = () => {
               <Plus size={20} />
             </button>
             <button
-              title="Expand sidebar"
+              title="Expand library grid"
               style={{
                 background: 'none',
                 border: 'none',
@@ -437,9 +502,9 @@ const Sidebar = () => {
               }}
               onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.08)'; e.currentTarget.style.color = '#fff'; }}
               onMouseLeave={e => { e.currentTarget.style.background = 'none'; e.currentTarget.style.color = '#b3b3b3'; }}
-              onClick={toggleSidebar}
+              onClick={toggleGrid}
             >
-              <ArrowRight size={20} />
+              {isGrid ? <ArrowLeft size={20} /> : <ArrowRight size={20} />}
             </button>
           </div>
         </div>
@@ -474,7 +539,7 @@ const Sidebar = () => {
         {/* Search & Sort Row - Hidden when collapsed */}
         {!isCollapsed && (
           <div style={{
-            padding: '4px 16px 8px',
+            padding: '8px 16px',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between'
@@ -505,7 +570,7 @@ const Sidebar = () => {
                       color: '#fff',
                       fontSize: '13px',
                       outline: 'none',
-                      width: '140px',
+                      width: isGrid ? '200px' : '140px',
                       fontFamily: 'inherit'
                     }}
                   />
@@ -546,13 +611,19 @@ const Sidebar = () => {
           </div>
         )}
 
-        {/* ─── Scrollable Library List ─── */}
+        {/* ─── Scrollable Library List / Grid ─── */}
         <div
-          className="no-scrollbar"
+          className="no-scrollbar library-scroll"
           style={{
             flex: 1,
             overflowY: 'auto',
-            padding: isCollapsed ? '8px' : '0 8px 8px'
+            padding: isCollapsed ? '8px' : '0 8px 8px',
+            marginTop: '8px',
+            display: isGrid ? 'grid' : 'flex',
+            flexDirection: 'column',
+            gridTemplateColumns: isGrid ? 'repeat(auto-fill, minmax(160px, 1fr))' : 'none',
+            gap: isGrid ? '16px' : '0',
+            alignContent: 'start'
           }}
         >
           {filteredItems.map(item => (
@@ -561,6 +632,7 @@ const Sidebar = () => {
               item={item}
               type={item._type || item.type || 'playlist'}
               isCollapsed={isCollapsed}
+              isGrid={isGrid}
             />
           ))}
 
@@ -569,7 +641,8 @@ const Sidebar = () => {
               padding: '32px 16px',
               textAlign: 'center',
               color: '#a7a7a7',
-              fontSize: '14px'
+              fontSize: '14px',
+              gridColumn: '1 / -1'
             }}>
               {searchQuery ? 'No results found.' : 'Your library is empty.'}
             </div>
@@ -585,9 +658,9 @@ const Sidebar = () => {
           right: 0,
           top: 0,
           bottom: 0,
-          width: '4px',
+          width: '5px',
           cursor: 'col-resize',
-          background: isResizing ? 'var(--accent)' : 'transparent',
+          background: isResizing ? 'rgba(255,255,255,0.2)' : 'transparent',
           transition: 'background 0.2s',
           zIndex: 10
         }}

@@ -1,26 +1,12 @@
 import React from 'react';
-import { useParams, useLocation } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { useSpotify } from '../hooks/useSpotify';
 import { Play, Heart, Clock, MoreHorizontal } from 'lucide-react';
 import TrackRow from '../components/cards/TrackRow';
 
 const PlaylistDetail = () => {
   const { id } = useParams();
-  const { state } = useLocation();
-  let fallbackData = state?.fallbackData || null;
-  
-  if (!fallbackData) {
-    try {
-      const stored = JSON.parse(localStorage.getItem('aura-fallback-meta'));
-      if (stored && stored.id === id) {
-        fallbackData = stored;
-      }
-    } catch (e) {
-      console.error("Failed to parse fallback meta", e);
-    }
-  }
-
-  const { data: playlist, loading, error } = useSpotify('getPlaylist', id, fallbackData);
+  const { data: playlist, loading, error } = useSpotify('getPlaylist', id);
 
   if (loading) return <div style={{ color: 'var(--text-muted)' }}>Unfolding the playlist...</div>;
   if (error) return <div style={{ color: 'var(--text-muted)' }}>Failed to load playlist.</div>;

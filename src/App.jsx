@@ -4,6 +4,7 @@ import { AnimatePresence } from 'framer-motion';
 
 import Sidebar from './components/common/Sidebar';
 import Navbar from './components/common/Navbar';
+import RightSidebar from './components/common/RightSidebar';
 
 // Page Components
 import Home from './pages/Home';
@@ -25,6 +26,7 @@ const MainLayout = ({ children }) => {
           {children}
         </main>
       </div>
+      <RightSidebar />
     </div>
   );
 };

@@ -12,18 +12,17 @@ const PlaylistCard = ({ item, type = 'playlist' }) => {
   const subtext = type === 'artist' ? 'Artist' : (description || artists?.[0]?.name || '');
 
   const handleClick = () => {
-    localStorage.setItem('aura-fallback-meta', JSON.stringify(item));
-    navigate(`/${type}/${id}`, { state: { fallbackData: item } });
+    navigate(`/${type}/${id}`);
   };
 
   const handlePlay = (e) => {
     e.stopPropagation();
-    // If it's a track directly, we play it.
+    // If it's a playlist/album, we could fetch tracks and play the first one.
+    // For now, if there's no track directly, we'll just navigate.
     if (type === 'track') {
        playTrack(item);
     } else {
-       localStorage.setItem('aura-fallback-meta', JSON.stringify(item));
-       navigate(`/${type}/${id}`, { state: { fallbackData: item } });
+       navigate(`/${type}/${id}`);
     }
   };
 
