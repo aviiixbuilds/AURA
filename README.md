@@ -277,3 +277,6 @@ Distributed under the MIT License. See `LICENSE` for more information.
 <div align="center">
 Built with ❤️ by [aviiixbuilds](https://github.com/aviiixbuilds)
 </div>
+
+## Contributors
+- [Sunny Pandey](https://github.com/pandeysunny016-dot)
