@@ -1,3 +1,4 @@
+import React from 'react';
 import { Play, Pause, Heart } from 'lucide-react';
 import PlaylistImage from '../common/PlaylistImage';
 import { usePlayer } from '../../context/PlayerContext';

@@ -1,3 +1,4 @@
+import React from 'react';
 import { Music, Heart, Disc } from 'lucide-react';
 
 const getGradient = (str) => {
