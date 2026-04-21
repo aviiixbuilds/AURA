@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { X, Play, Pause, SkipBack, SkipForward, Heart } from 'lucide-react';
 import { usePlayer } from '../../context/PlayerContext';
 import { useLibrary } from '../../context/LibraryContext';
+import PlaylistImage from '../common/PlaylistImage';
 
 const AmbientMode = () => {
   const { 
@@ -34,14 +35,13 @@ const AmbientMode = () => {
           flexDirection: 'column', alignItems: 'center', justifyContent: 'center'
         }}
       >
-        {/* Animated Background */}
         <div style={{ 
           position: 'absolute', inset: 0, 
-          backgroundImage: `url(${currentTrack.album?.images?.[0]?.url || currentTrack.images?.[0]?.url})`,
-          backgroundSize: 'cover', backgroundPosition: 'center',
           filter: 'blur(80px) brightness(0.4)', transform: 'scale(1.2)',
           zIndex: -1
-        }}></div>
+        }}>
+           <PlaylistImage item={currentTrack} type="track" size={200} />
+        </div>
 
         {/* Close Button */}
         <button 
@@ -61,16 +61,16 @@ const AmbientMode = () => {
           display: 'flex', flexDirection: 'column', alignItems: 'center', 
           gap: '40px', maxWidth: '600px', width: '90%', textAlign: 'center' 
         }}>
-          <motion.img 
+          <motion.div 
             initial={{ scale: 0.8, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
-            src={currentTrack.album?.images?.[0]?.url || currentTrack.images?.[0]?.url} 
-            alt={currentTrack.name}
             style={{ 
-              width: '400px', height: '400px', borderRadius: '12px', 
+              width: '400px', height: '400px', borderRadius: '12px', overflow: 'hidden',
               boxShadow: '0 20px 60px rgba(0,0,0,0.8)' 
             }}
-          />
+          >
+            <PlaylistImage item={currentTrack} type="track" size={400} />
+          </motion.div>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
             <h1 style={{ fontSize: '48px', fontWeight: 900 }}>{currentTrack.name}</h1>

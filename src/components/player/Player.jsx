@@ -5,6 +5,7 @@ import {
 } from 'lucide-react';
 import { usePlayer } from '../../context/PlayerContext';
 import { useLibrary } from '../../context/LibraryContext';
+import PlaylistImage from '../common/PlaylistImage';
 
 const Player = ({ toggleLyrics }) => {
   const { 
@@ -46,11 +47,7 @@ const Player = ({ toggleLyrics }) => {
           cursor: 'pointer'
         }} onClick={() => currentTrack && setIsAmbientMode(true)}>
           {currentTrack && (
-            <img 
-              src={currentTrack.album?.images?.[0]?.url || currentTrack.images?.[0]?.url} 
-              alt={currentTrack.name} 
-              style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
-            />
+            <PlaylistImage item={currentTrack} type="track" size={56} />
           )}
         </div>
         <div style={{ display: 'flex', flexDirection: 'column', overflow: 'hidden', minWidth: 0 }}>

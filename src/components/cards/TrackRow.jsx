@@ -1,5 +1,5 @@
-import React from 'react';
 import { Play, Pause, Heart } from 'lucide-react';
+import PlaylistImage from '../common/PlaylistImage';
 import { usePlayer } from '../../context/PlayerContext';
 import { useLibrary } from '../../context/LibraryContext';
 
@@ -40,20 +40,9 @@ const TrackRow = ({ track, index, showAlbum = true }) => {
       </div>
 
       <div style={{ display: 'flex', alignItems: 'center', gap: '12px', minWidth: 0 }}>
-        {(() => {
-          const imgUrl = track.album?.images?.[0]?.url || track.images?.[0]?.url || track.album?.images?.[track.album?.images?.length - 1]?.url;
-          return imgUrl ? (
-            <img 
-              src={imgUrl} 
-              alt={track.name} 
-              style={{ width: '40px', height: '40px', borderRadius: '4px', objectFit: 'cover' }} 
-            />
-          ) : (
-            <div style={{ width: '40px', height: '40px', borderRadius: '4px', backgroundColor: '#282828', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <span style={{color: '#555', fontSize: '10px'}}>{track.name.charAt(0)}</span>
-            </div>
-          );
-        })()}
+        <div style={{ width: '40px', height: '40px', borderRadius: '4px', overflow: 'hidden', flexShrink: 0 }}>
+           <PlaylistImage item={track} type="track" size={40} />
+        </div>
         <div style={{ display: 'flex', flexDirection: 'column', minWidth: 0 }}>
           <span style={{ 
             fontWeight: 600, fontSize: '14px', whiteSpace: 'nowrap', 

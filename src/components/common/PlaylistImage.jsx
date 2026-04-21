@@ -1,12 +1,32 @@
-import React from 'react';
-import { Music, Heart } from 'lucide-react';
+import { Music, Heart, Disc } from 'lucide-react';
+
+const getGradient = (str) => {
+  const gradients = [
+    ['#FF4E50', '#F9D423'],
+    ['#e96443', '#904e95'],
+    ['#00c6ff', '#0072ff'],
+    ['#7028e4', '#e207b1'],
+    ['#00b09b', '#96c93d'],
+    ['#f83600', '#f9d423'],
+    ['#6a11cb', '#2575fc'],
+    ['#ff0844', '#ffb199']
+  ];
+  let hash = 0;
+  const s = str || 'default';
+  for (let i = 0; i < s.length; i++) {
+    hash = s.charCodeAt(i) + ((hash << 5) - hash);
+  }
+  const pair = gradients[Math.abs(hash) % gradients.length];
+  return `linear-gradient(45deg, ${pair[0]}, ${pair[1]})`;
+};
 
 const PlaylistImage = ({ item, size = 64, style = {}, type = 'playlist' }) => {
-  const imageUrl = item?.images?.[0]?.url;
+  const [isBroken, setIsBroken] = React.useState(false);
+  const imageUrl = !isBroken ? (item?.images?.[0]?.url || item?.album?.images?.[0]?.url) : null;
   
   // Extract track covers for the 2x2 grid fallback
   const getGridImages = () => {
-    if (type !== 'playlist') return [];
+    if (type !== 'playlist' && type !== 'liked') return [];
     
     const trackItems = item?.tracks?.items || item?.tracks || [];
     const images = [];
@@ -30,7 +50,8 @@ const PlaylistImage = ({ item, size = 64, style = {}, type = 'playlist' }) => {
     return (
       <img
         src={imageUrl}
-        alt={item.name}
+        alt={item?.name || 'Art'}
+        onError={() => setIsBroken(true)}
         style={{
           width: '100%',
           height: '100%',
@@ -82,18 +103,27 @@ const PlaylistImage = ({ item, size = 64, style = {}, type = 'playlist' }) => {
     );
   }
 
-  // 4. Final Fallback (Icon)
+  // 4. Final Fallback (Gradient Icon)
   return (
     <div style={{
       width: '100%',
       height: '100%',
-      background: '#282828',
+      background: getGradient(item?.name),
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
+      boxShadow: 'inset 0 0 20px rgba(0,0,0,0.1)',
       ...style
     }}>
-      <Music size={size * 0.4} color="#b3b3b3" />
+      {type === 'artist' ? (
+        <img 
+          src={`https://api.dicebear.com/7.x/initials/svg?seed=${item?.name || 'A'}`} 
+          alt="" 
+          style={{ width: '100%', height: '100%', borderRadius: '50%' }} 
+        />
+      ) : (
+        <Disc size={size * 0.4} color="white" style={{ opacity: 0.8 }} />
+      )}
     </div>
   );
 };

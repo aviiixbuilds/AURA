@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { X, Heart, Maximize2, ArrowUpRight } from 'lucide-react';
 import { usePlayer } from '../../context/PlayerContext';
 import { useLibrary } from '../../context/LibraryContext';
+import PlaylistImage from './PlaylistImage';
 
 const MIN_WIDTH = 280;
 const MAX_WIDTH = 600;
@@ -64,11 +65,8 @@ const RightSidebar = () => {
 
   if (!currentTrack || !isOpen) return null;
 
-  const image = currentTrack.album?.images?.[0]?.url
-    || currentTrack.images?.[0]?.url
-    || `https://picsum.photos/seed/${encodeURIComponent(trackName)}/400/400`;
-
   const trackIsLiked = isLiked(currentTrack.id);
+
 
   return (
     <>
@@ -84,16 +82,9 @@ const RightSidebar = () => {
             cursor: 'zoom-out',
           }}
         >
-          <img
-            src={image}
-            alt={trackName}
-            style={{
-              maxWidth: '80vmin', maxHeight: '80vmin',
-              width: '80vmin', height: '80vmin',
-              objectFit: 'cover', borderRadius: '12px',
-              boxShadow: '0 32px 80px rgba(0,0,0,0.8)',
-            }}
-          />
+          <div style={{ width: '80vmin', height: '80vmin', borderRadius: '12px', overflow: 'hidden', boxShadow: '0 32px 80px rgba(0,0,0,0.8)' }}>
+            <PlaylistImage item={currentTrack} type="track" size={600} />
+          </div>
           <div style={{ marginTop: '32px', textAlign: 'center' }}>
             <div style={{ fontSize: '24px', fontWeight: 800, color: '#fff' }}>{trackName}</div>
             <div style={{ fontSize: '16px', color: '#b3b3b3', marginTop: '8px' }}>{artistName}</div>
@@ -200,16 +191,8 @@ const RightSidebar = () => {
           onClick={() => setIsFullscreen(true)}
         >
           <div style={{ position: 'relative', width: '100%', borderRadius: '8px', overflow: 'hidden' }}>
-            <img
-              src={image}
-              alt="Album Art"
-              style={{
-                width: '100%',
-                aspectRatio: '1 / 1',
-                objectFit: 'cover',
-                display: 'block',
-              }}
-            />
+            <PlaylistImage item={currentTrack} type="track" size={width} />
+
             {/* Hover overlay hint */}
             <div style={{
               position: 'absolute', inset: 0,
@@ -279,9 +262,13 @@ const RightSidebar = () => {
         }}>
           {/* Artist header image (use album art as bg) */}
           <div style={{
+            position: 'absolute', inset: 0, zIndex: -1, overflow: 'hidden'
+          }}>
+            <PlaylistImage item={currentTrack} type="track" size={120} style={{ filter: 'brightness(0.6)' }} />
+          </div>
+          <div style={{
             width: '100%', height: '120px',
-            backgroundImage: `linear-gradient(rgba(0,0,0,0.2), rgba(0,0,0,0.7)), url(${image})`,
-            backgroundSize: 'cover', backgroundPosition: 'center',
+            background: 'linear-gradient(rgba(0,0,0,0.2), rgba(0,0,0,0.7))',
             display: 'flex', alignItems: 'flex-end', padding: '12px',
             boxSizing: 'border-box',
           }}>
