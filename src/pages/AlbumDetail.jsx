@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom';
 import { useSpotify } from '../hooks/useSpotify';
 import { Play, Heart, Clock, MoreHorizontal } from 'lucide-react';
 import TrackRow from '../components/cards/TrackRow';
+import PlaylistImage from '../components/common/PlaylistImage';
 
 const AlbumDetail = () => {
   const { id } = useParams();
@@ -13,7 +14,7 @@ const AlbumDetail = () => {
   if (!album) return <div style={{ color: 'var(--text-muted)' }}>Album not found.</div>;
 
   const { name, images, artists, release_date, total_tracks, tracks } = album;
-  const image = images?.[0]?.url || 'https://via.placeholder.com/300';
+
   const year = release_date ? new Date(release_date).getFullYear() : '';
 
   return (
@@ -27,11 +28,9 @@ const AlbumDetail = () => {
         background: 'linear-gradient(transparent, rgba(0,0,0,0.5))',
         marginBottom: '24px'
       }}>
-        <img 
-          src={image} 
-          alt={name} 
-          style={{ width: '232px', height: '232px', borderRadius: '4px', boxShadow: '0 8px 32px rgba(0,0,0,0.5)' }} 
-        />
+        <div style={{ width: '232px', height: '232px', borderRadius: '4px', overflow: 'hidden', boxShadow: '0 8px 32px rgba(0,0,0,0.5)', flexShrink: 0 }}>
+          <PlaylistImage item={album} type="album" size={232} />
+        </div>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
           <span style={{ fontSize: '12px', fontWeight: 700, textTransform: 'uppercase' }}>Album</span>
           <h1 style={{ fontSize: '72px', fontWeight: 900, margin: '8px 0' }}>{name}</h1>

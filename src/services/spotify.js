@@ -157,7 +157,7 @@ const MOCK_PLAYLISTS = [
   {
     id: 'mp5', name: 'Chill Hits', type: 'playlist',
     description: 'Kick back to the best new and recent chill hits.',
-    images: [{ url: 'https://i.scdn.co/image/ab67706f0000000378b1a3ed2a5f8d3d57fe8e47' }],
+    images: [],
     owner: { display_name: 'Spotify' },
     tracks: { total: 50, items: MOCK_TRACKS.slice(4, 10).map(t => ({ track: t })) },
     followers: { total: 6000000 }
@@ -165,7 +165,7 @@ const MOCK_PLAYLISTS = [
   {
     id: 'mp6', name: 'Hot Country', type: 'playlist',
     description: 'Country\'s hottest songs right now.',
-    images: [{ url: 'https://i.scdn.co/image/ab67706f0000000304c4b00a80e2e0de7a4cbca3' }],
+    images: [],
     owner: { display_name: 'Spotify' },
     tracks: { total: 50, items: MOCK_TRACKS.slice(1, 7).map(t => ({ track: t })) },
     followers: { total: 5000000 }

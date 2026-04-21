@@ -7,6 +7,7 @@ import {
 } from 'lucide-react';
 import { useLibrary } from '../../context/LibraryContext';
 import { usePlayer } from '../../context/PlayerContext';
+import PlaylistImage from './PlaylistImage';
 
 /* ─── Small Navigation Links (Home) ─── */
 const NavItem = ({ icon: Icon, label, to, isCollapsed }) => (
@@ -45,7 +46,6 @@ const NavItem = ({ icon: Icon, label, to, isCollapsed }) => (
 /* ─── Playlist Row/Grid Item ─── */
 const LibraryItem = ({ item, type = 'playlist', isCollapsed, isGrid }) => {
   const navigate = useNavigate();
-  const image = item.images?.[0]?.url;
   const subtitle = type === 'liked'
     ? `Playlist • ${item.count || 0} songs`
     : `${item.type || 'Playlist'} • ${item.owner?.display_name || ''}`;
@@ -86,13 +86,7 @@ const LibraryItem = ({ item, type = 'playlist', isCollapsed, isGrid }) => {
           marginBottom: '16px',
           boxShadow: '0 8px 24px rgba(0,0,0,0.5)'
         }}>
-          {image ? (
-            <img src={image} alt={item.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-          ) : type === 'liked' ? (
-            <Heart size={48} fill="white" color="white" />
-          ) : (
-            <Music size={48} color="#b3b3b3" />
-          )}
+          <PlaylistImage item={item} type={type} size={80} />
         </div>
         <div style={{ width: '100%' }}>
           <div style={{
@@ -153,13 +147,7 @@ const LibraryItem = ({ item, type = 'playlist', isCollapsed, isGrid }) => {
         alignItems: 'center',
         justifyContent: 'center'
       }}>
-        {image ? (
-          <img src={image} alt={item.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-        ) : type === 'liked' ? (
-          <Heart size={20} fill="white" color="white" />
-        ) : (
-          <Music size={20} color="#b3b3b3" />
-        )}
+        <PlaylistImage item={item} type={type} size={48} />
       </div>
 
       {!isCollapsed && (

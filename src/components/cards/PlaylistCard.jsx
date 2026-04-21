@@ -3,12 +3,13 @@ import { Play } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 import { usePlayer } from '../../context/PlayerContext';
+import PlaylistImage from '../common/PlaylistImage';
 
 const PlaylistCard = ({ item, type = 'playlist' }) => {
   const navigate = useNavigate();
   const { playTrack } = usePlayer();
   const { name, images, description, id, artists } = item;
-  const image = images?.[0]?.url || 'https://via.placeholder.com/150';
+
   const subtext = type === 'artist' ? 'Artist' : (description || artists?.[0]?.name || '');
 
   const handleClick = () => {
@@ -40,12 +41,8 @@ const PlaylistCard = ({ item, type = 'playlist' }) => {
         group: 'true'
       }}
     >
-      <div style={{ position: 'relative', marginBottom: '16px' }}>
-        <img 
-          src={image} 
-          alt={name} 
-          style={{ width: '100%', aspectRatio: '1/1', objectFit: 'cover', borderRadius: '4px', boxShadow: '0 8px 16px rgba(0,0,0,0.5)' }} 
-        />
+      <div style={{ position: 'relative', marginBottom: '16px', aspectRatio: '1/1', borderRadius: '4px', overflow: 'hidden', boxShadow: '0 8px 16px rgba(0,0,0,0.5)' }}>
+        <PlaylistImage item={item} type={type} size={200} />
         <div className="play-button" style={{ 
           position: 'absolute', right: '8px', bottom: '8px', 
           background: 'var(--accent)', borderRadius: '50%', width: '48px', height: '48px',

@@ -40,13 +40,20 @@ const TrackRow = ({ track, index, showAlbum = true }) => {
       </div>
 
       <div style={{ display: 'flex', alignItems: 'center', gap: '12px', minWidth: 0 }}>
-        {track.album?.images?.[0] && (
-          <img 
-            src={track.album.images[track.album.images.length - 1].url} 
-            alt={track.name} 
-            style={{ width: '40px', height: '40px', borderRadius: '4px' }} 
-          />
-        )}
+        {(() => {
+          const imgUrl = track.album?.images?.[0]?.url || track.images?.[0]?.url || track.album?.images?.[track.album?.images?.length - 1]?.url;
+          return imgUrl ? (
+            <img 
+              src={imgUrl} 
+              alt={track.name} 
+              style={{ width: '40px', height: '40px', borderRadius: '4px', objectFit: 'cover' }} 
+            />
+          ) : (
+            <div style={{ width: '40px', height: '40px', borderRadius: '4px', backgroundColor: '#282828', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <span style={{color: '#555', fontSize: '10px'}}>{track.name.charAt(0)}</span>
+            </div>
+          );
+        })()}
         <div style={{ display: 'flex', flexDirection: 'column', minWidth: 0 }}>
           <span style={{ 
             fontWeight: 600, fontSize: '14px', whiteSpace: 'nowrap', 

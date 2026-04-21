@@ -32,13 +32,44 @@ export const PlayerProvider = ({ children }) => {
       setProgress(prev => {
         const next = prev + 1;
         if (next >= duration) {
-          setIsPlaying(false);
           stopSimulation();
+          handleNextTrack();
           return duration;
         }
         return next;
       });
     }, 1000);
+  };
+
+  const playNext = () => {
+    // Need access to current values. We use setState callbacks or refs if needed, 
+    // but queue and currentTrack are in the closure here.
+    // Instead of relying on closure for handleEnded, we'll use a ref for the latest queue state to avoid stale closures in useEffect.
+  };
+
+  const queueRef = useRef([]);
+  const currentTrackRef = useRef(null);
+
+  useEffect(() => {
+    queueRef.current = queue;
+    currentTrackRef.current = currentTrack;
+  }, [queue, currentTrack]);
+
+  const handleNextTrack = () => {
+    const q = queueRef.current;
+    const ct = currentTrackRef.current;
+    if (!q.length || !ct) {
+      setIsPlaying(false);
+      setProgress(0);
+      return;
+    }
+    const currentIndex = q.findIndex(t => t.id === ct.id);
+    if (currentIndex >= 0 && currentIndex < q.length - 1) {
+      playTrack(q[currentIndex + 1]);
+    } else {
+      setIsPlaying(false);
+      setProgress(0);
+    }
   };
 
   useEffect(() => {
@@ -48,13 +79,12 @@ export const PlayerProvider = ({ children }) => {
     const updateProgress = () => {
       if (!isSimulated) {
         setProgress(audio.currentTime);
-        setDuration(audio.duration || currentTrack?.duration_ms / 1000 || 0);
+        setDuration(audio.duration || currentTrackRef.current?.duration_ms / 1000 || 0);
       }
     };
 
     const handleEnded = () => {
-      setIsPlaying(false);
-      setProgress(0);
+      handleNextTrack();
     };
 
     audio.addEventListener('timeupdate', updateProgress);
@@ -65,15 +95,19 @@ export const PlayerProvider = ({ children }) => {
       audio.removeEventListener('ended', handleEnded);
       stopSimulation();
     };
-  }, [volume, isSimulated, currentTrack]);
+  }, [volume, isSimulated]);
 
   useEffect(() => {
     localStorage.setItem('aura-volume', volume);
     audioRef.current.volume = volume;
   }, [volume]);
 
-  const playTrack = (track) => {
+  const playTrack = (track, newQueue = null) => {
     if (!track) return;
+
+    if (newQueue) {
+      setQueue(newQueue);
+    }
 
     if (currentTrack?.id === track.id) {
       togglePlay();
