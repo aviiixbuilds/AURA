@@ -3,17 +3,22 @@ import { useParams } from 'react-router-dom';
 import { useSpotify } from '../hooks/useSpotify';
 import { Play, Heart, Clock, MoreHorizontal } from 'lucide-react';
 import TrackRow from '../components/cards/TrackRow';
+import { usePlayer } from '../context/PlayerContext';
+import { useLibrary } from '../context/LibraryContext';
 import PlaylistImage from '../components/common/PlaylistImage';
 
 const AlbumDetail = () => {
   const { id } = useParams();
   const { data: album, loading, error } = useSpotify('getAlbum', id);
+  const { playTrack } = usePlayer();
+  const { toggleLike, isLiked } = useLibrary();
 
-  if (loading) return <div style={{ color: 'var(--text-muted)' }}>Loading the album...</div>;
-  if (error) return <div style={{ color: 'var(--text-muted)' }}>Failed to load album.</div>;
-  if (!album) return <div style={{ color: 'var(--text-muted)' }}>Album not found.</div>;
+  if (loading) return <div style={{ color: 'var(--text-muted)', padding: '40px', textAlign: 'center' }}>Loading the album...</div>;
+  if (error) return <div style={{ color: 'var(--text-muted)', padding: '40px', textAlign: 'center' }}>Failed to load album.</div>;
+  if (!album) return <div style={{ color: 'var(--text-muted)', padding: '40px', textAlign: 'center' }}>Album not found.</div>;
 
   const { name, images, artists, release_date, total_tracks, tracks } = album;
+  const albumIsLiked = album ? isLiked(album.id) : false;
 
   const year = release_date ? new Date(release_date).getFullYear() : '';
 
@@ -46,15 +51,46 @@ const AlbumDetail = () => {
 
       {/* Actions */}
       <div style={{ display: 'flex', alignItems: 'center', gap: '32px', marginBottom: '32px' }}>
-        <button style={{ 
-          background: 'var(--accent)', border: 'none', borderRadius: '50%', 
-          width: '56px', height: '56px', display: 'flex', alignItems: 'center', 
-          justifyContent: 'center', color: 'black', cursor: 'pointer' 
-        }}>
-          <Play size={28} className="fill-current" />
-        </button>
-        <Heart size={32} style={{ color: 'var(--text-muted)', cursor: 'pointer' }} />
-        <MoreHorizontal size={32} style={{ color: 'var(--text-muted)', cursor: 'pointer' }} />
+        <div className="tooltip-container">
+          <button 
+            onClick={() => {
+              if (tracks?.items?.length) {
+                playTrack(tracks.items[0], tracks.items);
+              }
+            }}
+            style={{ 
+              background: 'var(--accent)', border: 'none', borderRadius: '50%', 
+              width: '56px', height: '56px', display: 'flex', alignItems: 'center', 
+              justifyContent: 'center', color: 'black', cursor: 'pointer',
+              transition: 'transform 0.2s'
+            }}
+            className="control-button"
+          >
+            <Play size={28} className="fill-current" />
+          </button>
+          <span className="tooltip tooltip-bottom">Play {name}</span>
+        </div>
+
+        <div className="tooltip-container">
+          <button
+            onClick={() => album && toggleLike(album)}
+            style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '4px', color: albumIsLiked ? 'var(--accent)' : 'var(--text-muted)' }}
+            className="control-button"
+          >
+            <Heart size={32} fill={albumIsLiked ? 'var(--accent)' : 'none'} />
+          </button>
+          <span className="tooltip tooltip-bottom">{albumIsLiked ? "Remove from Your Library" : "Save to Your Library"}</span>
+        </div>
+
+        <div className="tooltip-container">
+          <button
+            style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '4px', color: 'var(--text-muted)' }}
+            className="control-button"
+          >
+            <MoreHorizontal size={32} />
+          </button>
+          <span className="tooltip tooltip-bottom">More options for {name}</span>
+        </div>
       </div>
 
       {/* Track List Header */}

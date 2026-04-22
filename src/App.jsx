@@ -22,7 +22,7 @@ const MainLayout = ({ children }) => {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', width: '100vw', background: '#000' }}>
       <Navbar />
-      <div style={{ display: 'flex', flex: 1, overflow: 'hidden', gap: '8px', padding: '0 8px 8px' }}>
+      <div style={{ display: 'flex', flex: 1, overflow: 'visible', gap: '8px', padding: '0 8px 8px' }}>
         <Sidebar />
         <main className="no-scrollbar" style={{ flex: 1, overflowY: 'auto', padding: '24px', background: '#121212', borderRadius: '8px' }}>
           {children}

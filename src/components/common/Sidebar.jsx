@@ -413,9 +413,11 @@ const Sidebar = () => {
                 display: 'block'
               }}>Your Library</span>
             </button>
-            <span className={`tooltip ${isCollapsed ? 'tooltip-right' : ''}`}>
-              {isCollapsed ? "Expand Your Library" : "Collapse Your Library"}
-            </span>
+            {isCollapsed && (
+              <span className="tooltip tooltip-right">
+                Expand Your Library
+              </span>
+            )}
           </div>
 
           <div style={{ 
@@ -446,9 +448,9 @@ const Sidebar = () => {
                 }}
                 className="control-button"
               >
-                <Plus size={isCollapsed ? 24 : 20} />
+                  <Plus size={isCollapsed ? 24 : 20} />
               </button>
-              <span className={`tooltip ${isCollapsed ? 'tooltip-right' : ''}`}>Create playlist</span>
+              <span className={`tooltip ${isCollapsed ? 'tooltip-right' : ''}`}>Create playlist or folder</span>
             </div>
             {!isCollapsed && (
               <div className="tooltip-container">
@@ -544,38 +546,47 @@ const Sidebar = () => {
                   />
                 </div>
               ) : (
-                <button
-                  onClick={() => setSearchOpen(true)}
-                  style={{
-                    background: 'none',
-                    border: 'none',
-                    color: '#b3b3b3',
-                    cursor: 'pointer',
-                    padding: '4px',
-                    display: 'flex',
-                    alignItems: 'center'
-                  }}
-                >
-                  <SearchIcon size={16} />
-                </button>
+                <div className="tooltip-container">
+                  <button
+                    onClick={() => setSearchOpen(true)}
+                    style={{
+                      background: 'none',
+                      border: 'none',
+                      color: '#b3b3b3',
+                      cursor: 'pointer',
+                      padding: '4px',
+                      display: 'flex',
+                      alignItems: 'center'
+                    }}
+                    className="control-button"
+                  >
+                    <SearchIcon size={16} />
+                  </button>
+                  <span className="tooltip">Search in Your Library</span>
+                </div>
               )}
             </div>
 
-            <button style={{
-              background: 'none',
-              border: 'none',
-              color: '#b3b3b3',
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '6px',
-              fontSize: '13px',
-              fontWeight: 600,
-              fontFamily: 'inherit'
-            }}>
-              Recents
-              <ListFilter size={16} />
-            </button>
+            <div className="tooltip-container">
+              <button style={{
+                background: 'none',
+                border: 'none',
+                color: '#b3b3b3',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '6px',
+                fontSize: '13px',
+                fontWeight: 600,
+                fontFamily: 'inherit'
+              }}
+              className="control-button"
+              >
+                Recents
+                <ListFilter size={16} />
+              </button>
+              <span className="tooltip">Sort by</span>
+            </div>
           </div>
         )}
 

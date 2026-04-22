@@ -190,7 +190,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .tooltip-right {
-  left: calc(100% + 15px) !important;
+  left: calc(100% + 20px) !important;
   top: 50% !important;
   bottom: auto !important;
   transform: translateY(-50%) translateX(-10px) !important;
