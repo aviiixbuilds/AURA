@@ -108,7 +108,7 @@ const AlbumDetail = () => {
       {/* Track List */}
       <div style={{ display: 'flex', flexDirection: 'column', marginTop: '16px' }}>
         {tracks?.items?.map((track, index) => (
-          <TrackRow key={(track.id || index) + '-' + index} track={track} index={index} showAlbum={false} />
+          <TrackRow key={(track.id || index) + '-' + index} track={track} index={index} showAlbum={false} collection={tracks.items} />
         ))}
         {(!tracks?.items || tracks.items.length === 0) && (
           <div style={{ padding: '32px', textAlign: 'center', color: 'var(--text-muted)' }}>

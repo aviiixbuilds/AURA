@@ -4,7 +4,7 @@ import PlaylistImage from '../common/PlaylistImage';
 import { usePlayer } from '../../context/PlayerContext';
 import { useLibrary } from '../../context/LibraryContext';
 
-const TrackRow = ({ track, index, showAlbum = true }) => {
+const TrackRow = ({ track, index, showAlbum = true, collection = null }) => {
   const { currentTrack, isPlaying, playTrack } = usePlayer();
   const { toggleLike, isLiked } = useLibrary();
   const isActive = currentTrack?.id === track.id;
@@ -18,7 +18,7 @@ const TrackRow = ({ track, index, showAlbum = true }) => {
 
   return (
     <div 
-      onClick={() => playTrack(track)}
+      onClick={() => playTrack(track, collection)}
       className="hover:bg-white/10"
       style={{ 
         display: 'grid', 

@@ -15,6 +15,8 @@ export const PlayerProvider = ({ children }) => {
   const [queue, setQueue] = useState([]);
   const [isAmbientMode, setIsAmbientMode] = useState(false);
   const [isSimulated, setIsSimulated] = useState(false);
+  const [isShuffle, setIsShuffle] = useState(false);
+  const [repeatMode, setRepeatMode] = useState('off'); // 'off', 'all', 'one'
 
   const audioRef = useRef(new Audio());
   const simulationIntervalRef = useRef(null);
@@ -41,10 +43,77 @@ export const PlayerProvider = ({ children }) => {
     }, 1000);
   };
 
-  const playNext = () => {
-    // Need access to current values. We use setState callbacks or refs if needed, 
-    // but queue and currentTrack are in the closure here.
-    // Instead of relying on closure for handleEnded, we'll use a ref for the latest queue state to avoid stale closures in useEffect.
+  const skipNext = () => {
+    const q = queueRef.current;
+    const ct = currentTrackRef.current;
+    if (!q.length || !ct) return;
+
+    if (repeatMode === 'one') {
+      // Re-play the same track
+      seek(0);
+      if (!isSimulated) {
+        audioRef.current.currentTime = 0;
+        audioRef.current.play().catch(() => {});
+      }
+      setIsPlaying(true);
+      return;
+    }
+
+    if (isShuffle && q.length > 1) {
+      let randomIndex = Math.floor(Math.random() * q.length);
+      // Try to avoid playing the same song if possible
+      if (q[randomIndex].id === ct.id) {
+        randomIndex = (randomIndex + 1) % q.length;
+      }
+      playTrack(q[randomIndex]);
+      return;
+    }
+
+    const currentIndex = q.findIndex(t => t.id === ct.id);
+    if (currentIndex >= 0 && currentIndex < q.length - 1) {
+      playTrack(q[currentIndex + 1]);
+    } else if (repeatMode === 'all' && q.length > 0) {
+      playTrack(q[0]);
+    } else {
+      setIsPlaying(false);
+      setProgress(0);
+    }
+  };
+
+  const skipPrevious = () => {
+    // If we're deep into a song, just restart it
+    if (progress > 3) {
+      seek(0);
+      if (!isSimulated) {
+        audioRef.current.currentTime = 0;
+        audioRef.current.play().catch(() => {});
+      }
+      setIsPlaying(true);
+      return;
+    }
+
+    const q = queueRef.current;
+    const ct = currentTrackRef.current;
+    if (!q.length || !ct) return;
+
+    const currentIndex = q.findIndex(t => t.id === ct.id);
+    if (currentIndex > 0) {
+      playTrack(q[currentIndex - 1]);
+    } else if (repeatMode === 'all' && q.length > 0) {
+      playTrack(q[q.length - 1]);
+    } else {
+      seek(0);
+    }
+  };
+
+  const toggleShuffle = () => setIsShuffle(!isShuffle);
+  
+  const toggleRepeat = () => {
+    setRepeatMode(prev => {
+      if (prev === 'off') return 'all';
+      if (prev === 'all') return 'one';
+      return 'off';
+    });
   };
 
   const queueRef = useRef([]);
@@ -56,20 +125,7 @@ export const PlayerProvider = ({ children }) => {
   }, [queue, currentTrack]);
 
   const handleNextTrack = () => {
-    const q = queueRef.current;
-    const ct = currentTrackRef.current;
-    if (!q.length || !ct) {
-      setIsPlaying(false);
-      setProgress(0);
-      return;
-    }
-    const currentIndex = q.findIndex(t => t.id === ct.id);
-    if (currentIndex >= 0 && currentIndex < q.length - 1) {
-      playTrack(q[currentIndex + 1]);
-    } else {
-      setIsPlaying(false);
-      setProgress(0);
-    }
+    skipNext();
   };
 
   useEffect(() => {
@@ -174,9 +230,15 @@ export const PlayerProvider = ({ children }) => {
     queue,
     isAmbientMode,
     setIsAmbientMode,
+    isShuffle,
+    repeatMode,
     playTrack,
     togglePlay,
-    seek
+    seek,
+    skipNext,
+    skipPrevious,
+    toggleShuffle,
+    toggleRepeat
   };
 
   return (

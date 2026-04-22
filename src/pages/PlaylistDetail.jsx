@@ -108,11 +108,14 @@ const PlaylistDetail = () => {
 
       {/* Track List */}
       <div style={{ display: 'flex', flexDirection: 'column', marginTop: '16px' }}>
-        {tracks?.items?.map((item, index) => {
-          const track = item.track || item;
-          if (!track) return null;
-          return <TrackRow key={(track.id || index) + '-' + index} track={track} index={index} />;
-        })}
+        {(() => {
+          const queue = tracks?.items?.map(i => i.track || i).filter(Boolean) || [];
+          return tracks?.items?.map((item, index) => {
+            const track = item.track || item;
+            if (!track) return null;
+            return <TrackRow key={(track.id || index) + '-' + index} track={track} index={index} collection={queue} />;
+          });
+        })()}
         {(!tracks?.items || tracks.items.length === 0) && (
           <div style={{ padding: '32px', textAlign: 'center', color: 'var(--text-muted)' }}>
             No tracks available for this playlist.

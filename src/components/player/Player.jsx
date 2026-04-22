@@ -10,7 +10,8 @@ import PlaylistImage from '../common/PlaylistImage';
 const Player = ({ toggleLyrics }) => {
   const { 
     currentTrack, isPlaying, togglePlay, progress, duration, 
-    volume, setVolume, seek, isAmbientMode, setIsAmbientMode 
+    volume, setVolume, seek, isAmbientMode, setIsAmbientMode,
+    isShuffle, repeatMode, skipNext, skipPrevious, toggleShuffle, toggleRepeat
   } = usePlayer();
   const { toggleLike, isLiked } = useLibrary();
 
@@ -126,12 +127,21 @@ const Player = ({ toggleLyrics }) => {
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '24px', color: currentTrack ? 'var(--text-muted)' : '#404040' }}>
           <div className="tooltip-container">
-            <Shuffle size={18} className={`control-button ${currentTrack ? "cursor-pointer" : ""}`} />
-            <span className="tooltip">Enable shuffle</span>
+            <Shuffle 
+              size={18} 
+              className={`control-button ${currentTrack ? "cursor-pointer" : ""}`} 
+              onClick={() => currentTrack && toggleShuffle()}
+              style={{ color: isShuffle ? '#1DB954' : 'inherit' }}
+            />
+            <span className="tooltip">{isShuffle ? "Disable shuffle" : "Enable shuffle"}</span>
           </div>
 
           <div className="tooltip-container">
-            <SkipBack size={20} className={`control-button fill-current ${currentTrack ? "cursor-pointer" : ""}`} />
+            <SkipBack 
+              size={20} 
+              className={`control-button fill-current ${currentTrack ? "cursor-pointer" : ""}`} 
+              onClick={() => currentTrack && skipPrevious()}
+            />
             <span className="tooltip">Previous</span>
           </div>
 
@@ -148,13 +158,32 @@ const Player = ({ toggleLyrics }) => {
           </div>
 
           <div className="tooltip-container">
-            <SkipForward size={20} className={`control-button fill-current ${currentTrack ? "cursor-pointer" : ""}`} />
+            <SkipForward 
+              size={20} 
+              className={`control-button fill-current ${currentTrack ? "cursor-pointer" : ""}`} 
+              onClick={() => currentTrack && skipNext()}
+            />
             <span className="tooltip">Next</span>
           </div>
 
           <div className="tooltip-container">
-            <Repeat size={18} className={`control-button ${currentTrack ? "cursor-pointer" : ""}`} />
-            <span className="tooltip">Enable repeat</span>
+            <Repeat 
+              size={18} 
+              className={`control-button ${currentTrack ? "cursor-pointer" : ""}`} 
+              onClick={() => currentTrack && toggleRepeat()}
+              style={{ color: repeatMode !== 'off' ? '#1DB954' : 'inherit' }}
+            />
+            {repeatMode === 'one' && (
+              <span style={{ 
+                position: 'absolute', top: '-4px', right: '-4px', fontSize: '9px', 
+                background: '#1DB954', color: 'black', borderRadius: '50%', 
+                width: '12px', height: '12px', display: 'flex', alignItems: 'center', 
+                justifyContent: 'center', fontWeight: 'bold' 
+              }}>1</span>
+            )}
+            <span className="tooltip">
+              {repeatMode === 'off' ? "Enable repeat" : repeatMode === 'all' ? "Enable repeat one" : "Disable repeat"}
+            </span>
           </div>
         </div>
         
