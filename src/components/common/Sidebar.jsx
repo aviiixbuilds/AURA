@@ -384,36 +384,39 @@ const Sidebar = () => {
           whiteSpace: 'nowrap',
           overflow: 'hidden'
         }}>
-          <button
-            onClick={toggleSidebar}
-            title={isCollapsed ? "Expand Your Library" : "Collapse Your Library"}
-            style={{
-              background: 'none',
-              border: 'none',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: isCollapsed ? 'center' : 'flex-start',
-              padding: isCollapsed ? '12px 0' : '8px 12px',
-              color: '#b3b3b3',
-              fontWeight: 700,
-              fontSize: '15px',
-              transition: 'all 0.3s ease',
-              cursor: 'pointer',
-            }}
-            onMouseEnter={e => e.currentTarget.style.color = '#fff'}
-            onMouseLeave={e => e.currentTarget.style.color = '#b3b3b3'}
-          >
-            <div style={{ flexShrink: 0, display: 'flex' }}>
-              <Library size={24} />
-            </div>
-            <span style={{ 
-              marginLeft: isCollapsed ? '0' : '20px',
-              opacity: isCollapsed ? 0 : 1,
-              width: isCollapsed ? 0 : 'auto',
-              transition: 'all 0.3s ease',
-              display: 'block'
-            }}>Your Library</span>
-          </button>
+          <div className="tooltip-container">
+            <button
+              onClick={toggleSidebar}
+              style={{
+                background: 'none',
+                border: 'none',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: isCollapsed ? 'center' : 'flex-start',
+                padding: isCollapsed ? '12px 0' : '8px 12px',
+                color: '#b3b3b3',
+                fontWeight: 700,
+                fontSize: '15px',
+                transition: 'all 0.3s ease',
+                cursor: 'pointer',
+              }}
+              className="control-button"
+            >
+              <div style={{ flexShrink: 0, display: 'flex' }}>
+                <Library size={24} />
+              </div>
+              <span style={{ 
+                marginLeft: isCollapsed ? '0' : '20px',
+                opacity: isCollapsed ? 0 : 1,
+                width: isCollapsed ? 0 : 'auto',
+                transition: 'all 0.3s ease',
+                display: 'block'
+              }}>Your Library</span>
+            </button>
+            <span className={`tooltip ${isCollapsed ? 'tooltip-right' : ''}`}>
+              {isCollapsed ? "Expand Your Library" : "Collapse Your Library"}
+            </span>
+          </div>
 
           <div style={{ 
             display: 'flex', 
@@ -425,49 +428,51 @@ const Sidebar = () => {
             transition: 'opacity 0.3s ease',
             marginTop: isCollapsed ? '12px' : '0'
           }}>
-            <button
-              onClick={handleCreatePlaylist}
-              title="Create playlist"
-              style={{
-                background: isCollapsed ? 'rgba(255,255,255,0.05)' : 'none',
-                border: 'none',
-                color: '#b3b3b3',
-                cursor: 'pointer',
-                borderRadius: '50%',
-                width: isCollapsed ? '48px' : '32px',
-                height: isCollapsed ? '48px' : '32px',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                transition: 'all 0.2s'
-              }}
-              onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.1)'; e.currentTarget.style.color = '#fff'; }}
-              onMouseLeave={e => { e.currentTarget.style.background = isCollapsed ? 'rgba(255,255,255,0.05)' : 'none'; e.currentTarget.style.color = '#b3b3b3'; }}
-            >
-              <Plus size={isCollapsed ? 24 : 20} />
-            </button>
-            {!isCollapsed && (
+            <div className="tooltip-container">
               <button
-                title="Expand library grid"
+                onClick={handleCreatePlaylist}
                 style={{
-                  background: 'none',
+                  background: isCollapsed ? 'rgba(255,255,255,0.05)' : 'none',
                   border: 'none',
                   color: '#b3b3b3',
                   cursor: 'pointer',
                   borderRadius: '50%',
-                  width: '32px',
-                  height: '32px',
+                  width: isCollapsed ? '48px' : '32px',
+                  height: isCollapsed ? '48px' : '32px',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
                   transition: 'all 0.2s'
                 }}
-                onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.08)'; e.currentTarget.style.color = '#fff'; }}
-                onMouseLeave={e => { e.currentTarget.style.background = 'none'; e.currentTarget.style.color = '#b3b3b3'; }}
-                onClick={toggleGrid}
+                className="control-button"
               >
-                {isGrid ? <ArrowLeft size={20} /> : <ArrowRight size={20} />}
+                <Plus size={isCollapsed ? 24 : 20} />
               </button>
+              <span className={`tooltip ${isCollapsed ? 'tooltip-right' : ''}`}>Create playlist</span>
+            </div>
+            {!isCollapsed && (
+              <div className="tooltip-container">
+                <button
+                  style={{
+                    background: 'none',
+                    border: 'none',
+                    color: '#b3b3b3',
+                    cursor: 'pointer',
+                    borderRadius: '50%',
+                    width: '32px',
+                    height: '32px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    transition: 'all 0.2s'
+                  }}
+                  className="control-button"
+                  onClick={toggleGrid}
+                >
+                  {isGrid ? <ArrowLeft size={20} /> : <ArrowRight size={20} />}
+                </button>
+                <span className="tooltip">{isGrid ? "Show as list" : "Show as grid"}</span>
+              </div>
             )}
           </div>
         </div>

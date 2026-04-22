@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { 
   Play, Pause, SkipBack, SkipForward, Repeat, Shuffle, 
   Volume2, Maximize2, Mic2, ListMusic, Heart 
@@ -14,6 +14,14 @@ const Player = ({ toggleLyrics }) => {
   } = usePlayer();
   const { toggleLike, isLiked } = useLibrary();
 
+  const [isDraggingProgress, setIsDraggingProgress] = useState(false);
+  const [isDraggingVolume, setIsDraggingVolume] = useState(false);
+  const [tempProgress, setTempProgress] = useState(0);
+  const [tempVolume, setTempVolume] = useState(volume);
+
+  const progressRef = useRef(null);
+  const volumeRef = useRef(null);
+
   const trackIsLiked = currentTrack ? isLiked(currentTrack.id) : false;
 
   const formatTime = (time) => {
@@ -22,6 +30,47 @@ const Player = ({ toggleLyrics }) => {
     const seconds = Math.floor(time % 60);
     return `${minutes}:${seconds.toString().padStart(2, '0')}`;
   };
+
+  // Dragging logic
+  useEffect(() => {
+    const handleMouseMove = (e) => {
+      if (isDraggingProgress && progressRef.current) {
+        const rect = progressRef.current.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const pct = Math.max(0, Math.min(1, x / rect.width));
+        setTempProgress(pct * duration);
+      }
+      if (isDraggingVolume && volumeRef.current) {
+        const rect = volumeRef.current.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const pct = Math.max(0, Math.min(1, x / rect.width));
+        setVolume(pct);
+      }
+    };
+
+    const handleMouseUp = () => {
+      if (isDraggingProgress) {
+        seek(tempProgress);
+        setIsDraggingProgress(false);
+      }
+      if (isDraggingVolume) {
+        setIsDraggingVolume(false);
+      }
+    };
+
+    if (isDraggingProgress || isDraggingVolume) {
+      window.addEventListener('mousemove', handleMouseMove);
+      window.addEventListener('mouseup', handleMouseUp);
+    }
+
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('mouseup', handleMouseUp);
+    };
+  }, [isDraggingProgress, isDraggingVolume, duration, tempProgress, seek, setVolume]);
+
+  const displayProgress = isDraggingProgress ? tempProgress : progress;
+  const progressPct = duration > 0 ? (displayProgress / duration) * 100 : 0;
 
   return (
     <footer style={{ 
@@ -76,8 +125,16 @@ const Player = ({ toggleLyrics }) => {
         gap: '8px', width: '40%' 
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '24px', color: currentTrack ? 'var(--text-muted)' : '#404040' }}>
-          <Shuffle size={18} className={currentTrack ? "cursor-pointer hover:text-white" : ""} />
-          <SkipBack size={20} className={currentTrack ? "fill-current cursor-pointer hover:text-white" : "fill-current"} />
+          <div className="tooltip-container">
+            <Shuffle size={18} className={`control-button ${currentTrack ? "cursor-pointer" : ""}`} />
+            <span className="tooltip">Enable shuffle</span>
+          </div>
+
+          <div className="tooltip-container">
+            <SkipBack size={20} className={`control-button fill-current ${currentTrack ? "cursor-pointer" : ""}`} />
+            <span className="tooltip">Previous</span>
+          </div>
+
           <div 
             onClick={() => currentTrack && togglePlay()}
             style={{ 
@@ -85,42 +142,72 @@ const Player = ({ toggleLyrics }) => {
               display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'black',
               cursor: currentTrack ? 'pointer' : 'default', transition: 'transform 0.1s active'
             }}
+            className="control-button"
           >
             {isPlaying ? <Pause size={20} className="fill-current" /> : <Play size={20} className="fill-current" />}
           </div>
-          <SkipForward size={20} className={currentTrack ? "fill-current cursor-pointer hover:text-white" : "fill-current"} />
-          <Repeat size={18} className={currentTrack ? "cursor-pointer hover:text-white" : ""} />
+
+          <div className="tooltip-container">
+            <SkipForward size={20} className={`control-button fill-current ${currentTrack ? "cursor-pointer" : ""}`} />
+            <span className="tooltip">Next</span>
+          </div>
+
+          <div className="tooltip-container">
+            <Repeat size={18} className={`control-button ${currentTrack ? "cursor-pointer" : ""}`} />
+            <span className="tooltip">Enable repeat</span>
+          </div>
         </div>
         
         <div style={{ width: '100%', display: 'flex', alignItems: 'center', gap: '12px' }}>
           <span style={{ fontSize: '11px', color: 'var(--text-muted)', minWidth: '35px', textAlign: 'right' }}>
-            {currentTrack ? formatTime(progress) : '--:--'}
+            {currentTrack ? formatTime(displayProgress) : '--:--'}
           </span>
           <div 
+            ref={progressRef}
             style={{ 
               flex: 1, height: '4px', background: 'rgba(255,255,255,0.1)', 
               borderRadius: '2px', position: 'relative', cursor: currentTrack ? 'pointer' : 'default',
             }}
-            onClick={(e) => {
+            onMouseDown={(e) => {
               if (!currentTrack) return;
-              const rect = e.currentTarget.getBoundingClientRect();
+              const rect = progressRef.current.getBoundingClientRect();
               const x = e.clientX - rect.left;
-              const pct = x / rect.width;
-              seek(pct * duration);
+              const pct = Math.max(0, Math.min(1, x / rect.width));
+              setTempProgress(pct * duration);
+              setIsDraggingProgress(true);
             }}
             onMouseEnter={e => {
-              if (currentTrack) e.currentTarget.firstChild.style.background = '#1DB954';
+              if (currentTrack) {
+                e.currentTarget.firstChild.style.background = '#1DB954';
+                e.currentTarget.lastChild.style.opacity = '1';
+              }
             }}
             onMouseLeave={e => {
-              if (currentTrack) e.currentTarget.firstChild.style.background = 'white';
+              if (currentTrack && !isDraggingProgress) {
+                e.currentTarget.firstChild.style.background = 'white';
+                e.currentTarget.lastChild.style.opacity = '0';
+              }
             }}
           >
             <div style={{ 
-              width: `${currentTrack ? (progress / duration) * 100 : 0}%`, 
+              width: `${progressPct}%`, 
               height: '100%', 
-              background: 'white', 
+              background: isDraggingProgress ? '#1DB954' : 'white', 
               borderRadius: '2px',
-              transition: 'background 0.2s'
+              transition: isDraggingProgress ? 'none' : 'background 0.2s'
+            }}></div>
+            <div style={{
+              position: 'absolute',
+              left: `${progressPct}%`,
+              top: '50%',
+              transform: 'translate(-50%, -50%)',
+              width: '12px',
+              height: '12px',
+              borderRadius: '50%',
+              background: 'white',
+              opacity: isDraggingProgress ? 1 : 0,
+              transition: 'opacity 0.2s',
+              boxShadow: '0 2px 4px rgba(0,0,0,0.5)'
             }}></div>
           </div>
           <span style={{ fontSize: '11px', color: 'var(--text-muted)', minWidth: '35px' }}>
@@ -134,35 +221,46 @@ const Player = ({ toggleLyrics }) => {
         display: 'flex', alignItems: 'center', gap: '16px', 
         justifyContent: 'flex-end', width: '30%', color: 'var(--text-muted)' 
       }}>
-        <Mic2 size={18} className={currentTrack ? "cursor-pointer hover:text-white" : ""} onClick={toggleLyrics} />
-        <ListMusic size={18} className={currentTrack ? "cursor-pointer hover:text-white" : ""} />
+        <div className="tooltip-container">
+          <Mic2 size={18} className={`control-button ${currentTrack ? "cursor-pointer" : ""}`} onClick={toggleLyrics} />
+          <span className="tooltip">Lyrics</span>
+        </div>
+
+        <div className="tooltip-container">
+          <ListMusic size={18} className={`control-button ${currentTrack ? "cursor-pointer" : ""}`} />
+          <span className="tooltip">Queue</span>
+        </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', width: '120px' }}>
           <Volume2 size={18} />
           <div 
+            ref={volumeRef}
             style={{ 
               flex: 1, height: '4px', background: 'rgba(255,255,255,0.1)', 
               borderRadius: '2px', position: 'relative', cursor: 'pointer'
             }}
-            onClick={(e) => {
-              const rect = e.currentTarget.getBoundingClientRect();
+            onMouseDown={(e) => {
+              const rect = volumeRef.current.getBoundingClientRect();
               const x = e.clientX - rect.left;
               setVolume(Math.max(0, Math.min(1, x / rect.width)));
+              setIsDraggingVolume(true);
             }}
             onMouseEnter={e => {
               e.currentTarget.firstChild.style.background = '#1DB954';
               e.currentTarget.lastChild.style.opacity = '1';
             }}
             onMouseLeave={e => {
-              e.currentTarget.firstChild.style.background = 'white';
-              e.currentTarget.lastChild.style.opacity = '0';
+              if (!isDraggingVolume) {
+                e.currentTarget.firstChild.style.background = 'white';
+                e.currentTarget.lastChild.style.opacity = '0';
+              }
             }}
           >
             <div style={{ 
               width: `${volume * 100}%`, 
               height: '100%', 
-              background: 'white', 
+              background: isDraggingVolume ? '#1DB954' : 'white', 
               borderRadius: '2px',
-              transition: 'background 0.2s'
+              transition: isDraggingVolume ? 'none' : 'background 0.2s'
             }}></div>
             <div style={{
               position: 'absolute',
@@ -173,7 +271,7 @@ const Player = ({ toggleLyrics }) => {
               height: '12px',
               borderRadius: '50%',
               background: 'white',
-              opacity: 0,
+              opacity: isDraggingVolume ? 1 : 0,
               transition: 'opacity 0.2s',
               boxShadow: '0 2px 4px rgba(0,0,0,0.5)'
             }}></div>

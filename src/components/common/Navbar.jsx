@@ -71,27 +71,29 @@ const Navbar = () => {
         justifyContent: 'center'
       }}>
         {/* Home Button */}
-        <button 
-          onClick={() => navigate('/')}
-          style={{ 
-            background: 'rgba(255,255,255,0.1)', 
-            border: 'none', 
-            color: location.pathname === '/' ? '#fff' : '#b3b3b3', 
-            borderRadius: '50%', 
-            width: '48px', 
-            height: '48px', 
-            cursor: 'pointer',
-            display: 'flex', 
-            alignItems: 'center', 
-            justifyContent: 'center',
-            flexShrink: 0,
-            transition: 'transform 0.2s'
-          }}
-          onMouseEnter={e => e.currentTarget.style.transform = 'scale(1.05)'}
-          onMouseLeave={e => e.currentTarget.style.transform = 'scale(1)'}
-        >
-          <HomeIcon size={24} />
-        </button>
+        <div className="tooltip-container">
+          <button 
+            onClick={() => navigate('/')}
+            style={{ 
+              background: 'rgba(255,255,255,0.1)', 
+              border: 'none', 
+              color: location.pathname === '/' ? '#fff' : '#b3b3b3', 
+              borderRadius: '50%', 
+              width: '48px', 
+              height: '48px', 
+              cursor: 'pointer',
+              display: 'flex', 
+              alignItems: 'center', 
+              justifyContent: 'center',
+              flexShrink: 0,
+              transition: 'transform 0.2s'
+            }}
+            className="control-button"
+          >
+            <HomeIcon size={24} />
+          </button>
+          <span className="tooltip">Home</span>
+        </div>
 
         {/* Search Bar */}
         <div style={{ 
@@ -128,15 +130,18 @@ const Navbar = () => {
             }}
           />
           <div style={{ width: '1px', height: '24px', background: 'rgba(255,255,255,0.2)' }} />
-          <button 
-            style={{ 
-              background: 'none', border: 'none', color: '#b3b3b3', 
-              cursor: 'pointer', display: 'flex', alignItems: 'center' 
-            }}
-            title="Browse"
-          >
-            <Package size={20} />
-          </button>
+          <div className="tooltip-container">
+            <button 
+              style={{ 
+                background: 'none', border: 'none', color: '#b3b3b3', 
+                cursor: 'pointer', display: 'flex', alignItems: 'center' 
+              }}
+              className="control-button"
+            >
+              <Package size={20} />
+            </button>
+            <span className="tooltip">Browse</span>
+          </div>
         </div>
       </div>
 

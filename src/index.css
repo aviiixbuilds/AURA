@@ -128,3 +128,80 @@ h1, h2, h3, h4, h5, h6 {
     padding: 0 16px !important;
   }
 }
+
+/* Tooltips and Control Hover Glow */
+.control-button {
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.control-button:hover {
+  transform: scale(1.08);
+  color: #fff !important;
+  filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.4));
+}
+
+.tooltip-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.tooltip {
+  position: absolute;
+  bottom: calc(100% + 12px);
+  left: 50%;
+  transform: translateX(-50%) translateY(10px);
+  background: #282828;
+  color: #fff;
+  padding: 8px 12px;
+  border-radius: 4px;
+  font-size: 14px;
+  font-weight: 500;
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  box-shadow: 0 8px 16px rgba(0,0,0,0.6);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 1000;
+}
+
+.tooltip-container:hover .tooltip {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+/* Tooltip directions */
+.tooltip-right {
+  left: calc(100% + 12px);
+  top: 50%;
+  bottom: auto;
+  transform: translateY(-50%) translateX(-10px);
+  left: auto; /* reset left if needed, but wait */
+}
+.tooltip-container:hover .tooltip-right {
+  transform: translateY(-50%) translateX(0);
+}
+
+/* Specific tooltip position overrides */
+.tooltip-right {
+  left: calc(100% + 15px) !important;
+  transform: translateY(-50%) translateX(-10px) !important;
+}
+.tooltip-container:hover .tooltip-right {
+  transform: translateY(-50%) translateX(0) !important;
+}
+
+.tooltip-left {
+  right: calc(100% + 15px) !important;
+  left: auto !important;
+  transform: translateY(-50%) translateX(10px) !important;
+}
+.tooltip-container:hover .tooltip-left {
+  transform: translateY(-50%) translateX(0) !important;
+}
+
