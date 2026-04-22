@@ -138,21 +138,47 @@ const Player = ({ toggleLyrics }) => {
         <ListMusic size={18} className={currentTrack ? "cursor-pointer hover:text-white" : ""} />
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', width: '120px' }}>
           <Volume2 size={18} />
-          <input 
-            type="range" 
-            min="0" max="1" step="0.01" 
-            value={volume} 
-            onChange={(e) => setVolume(parseFloat(e.target.value))}
+          <div 
             style={{ 
-              flex: 1, height: '4px', cursor: 'pointer', accentColor: 'white'
+              flex: 1, height: '4px', background: 'rgba(255,255,255,0.1)', 
+              borderRadius: '2px', position: 'relative', cursor: 'pointer'
             }}
-          />
+            onClick={(e) => {
+              const rect = e.currentTarget.getBoundingClientRect();
+              const x = e.clientX - rect.left;
+              setVolume(Math.max(0, Math.min(1, x / rect.width)));
+            }}
+            onMouseEnter={e => {
+              e.currentTarget.firstChild.style.background = '#1DB954';
+              e.currentTarget.lastChild.style.opacity = '1';
+            }}
+            onMouseLeave={e => {
+              e.currentTarget.firstChild.style.background = 'white';
+              e.currentTarget.lastChild.style.opacity = '0';
+            }}
+          >
+            <div style={{ 
+              width: `${volume * 100}%`, 
+              height: '100%', 
+              background: 'white', 
+              borderRadius: '2px',
+              transition: 'background 0.2s'
+            }}></div>
+            <div style={{
+              position: 'absolute',
+              left: `${volume * 100}%`,
+              top: '50%',
+              transform: 'translate(-50%, -50%)',
+              width: '12px',
+              height: '12px',
+              borderRadius: '50%',
+              background: 'white',
+              opacity: 0,
+              transition: 'opacity 0.2s',
+              boxShadow: '0 2px 4px rgba(0,0,0,0.5)'
+            }}></div>
+          </div>
         </div>
-        <Maximize2 
-          size={18} 
-          className={currentTrack ? "cursor-pointer hover:text-white" : ""} 
-          onClick={() => currentTrack && setIsAmbientMode(true)}
-        />
       </div>
     </footer>
   );

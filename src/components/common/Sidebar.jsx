@@ -368,52 +368,10 @@ const Sidebar = () => {
       }}
     >
       <div style={{
-        padding: isCollapsed ? '16px 8px 0' : '16px 16px 0',
-        display: 'flex',
-        flexDirection: 'column',
-        gap: '4px'
-      }}>
-        <div 
-          style={{ 
-            padding: isCollapsed ? '8px 0' : '8px 12px',
-            display: 'flex', 
-            alignItems: 'center', 
-            justifyContent: isCollapsed ? 'center' : 'flex-start',
-            cursor: 'pointer',
-            transition: 'all 0.3s ease',
-            whiteSpace: 'nowrap',
-            overflow: 'hidden'
-          }} 
-          onClick={() => navigate('/')}
-        >
-          <div style={{ 
-            width: '32px', height: '32px', flexShrink: 0, borderRadius: '50%', background: '#000', 
-            border: '2px solid #fff',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            overflow: 'hidden',
-            boxSizing: 'border-box'
-          }}>
-             {/* If logo.png exists, use it. Otherwise placeholder */}
-            <img src="/logo.png" alt="AURA Logo" style={{ width: '100%', height: '100%', objectFit: 'contain', borderRadius: '50%' }} onError={(e) => {e.target.style.display='none';}} />
-            <Music size={16} color="#000" style={{ position: 'absolute', zIndex: -1 }} />
-          </div>
-          <span style={{ 
-            fontWeight: 700, fontSize: '18px', color: '#fff', letterSpacing: '-0.5px',
-            marginLeft: isCollapsed ? '0' : '16px',
-            opacity: isCollapsed ? 0 : 1,
-            width: isCollapsed ? 0 : 'auto',
-            transition: 'all 0.3s ease',
-            display: 'block'
-          }}>AURA</span>
-        </div>
-        <NavItem icon={Home} label="Home" to="/" isCollapsed={isCollapsed} />
-      </div>
-
-      <div style={{
         flex: 1,
         display: 'flex',
         flexDirection: 'column',
-        marginTop: '0px', // Tight gap! 
+        marginTop: '0px', 
         overflow: 'hidden'
       }}>
         {/* Library Header */}
@@ -459,54 +417,58 @@ const Sidebar = () => {
 
           <div style={{ 
             display: 'flex', 
+            flexDirection: isCollapsed ? 'column' : 'row',
             alignItems: 'center', 
-            gap: '8px',
-            opacity: isCollapsed ? 0 : 1,
-            pointerEvents: isCollapsed ? 'none' : 'auto',
-            transition: 'opacity 0.3s ease'
+            gap: isCollapsed ? '8px' : '8px',
+            opacity: 1,
+            pointerEvents: 'auto',
+            transition: 'opacity 0.3s ease',
+            marginTop: isCollapsed ? '12px' : '0'
           }}>
             <button
               onClick={handleCreatePlaylist}
               title="Create playlist"
               style={{
-                background: 'none',
+                background: isCollapsed ? 'rgba(255,255,255,0.05)' : 'none',
                 border: 'none',
                 color: '#b3b3b3',
                 cursor: 'pointer',
                 borderRadius: '50%',
-                width: '32px',
-                height: '32px',
+                width: isCollapsed ? '48px' : '32px',
+                height: isCollapsed ? '48px' : '32px',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
                 transition: 'all 0.2s'
               }}
-              onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.08)'; e.currentTarget.style.color = '#fff'; }}
-              onMouseLeave={e => { e.currentTarget.style.background = 'none'; e.currentTarget.style.color = '#b3b3b3'; }}
+              onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.1)'; e.currentTarget.style.color = '#fff'; }}
+              onMouseLeave={e => { e.currentTarget.style.background = isCollapsed ? 'rgba(255,255,255,0.05)' : 'none'; e.currentTarget.style.color = '#b3b3b3'; }}
             >
-              <Plus size={20} />
+              <Plus size={isCollapsed ? 24 : 20} />
             </button>
-            <button
-              title="Expand library grid"
-              style={{
-                background: 'none',
-                border: 'none',
-                color: '#b3b3b3',
-                cursor: 'pointer',
-                borderRadius: '50%',
-                width: '32px',
-                height: '32px',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                transition: 'all 0.2s'
-              }}
-              onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.08)'; e.currentTarget.style.color = '#fff'; }}
-              onMouseLeave={e => { e.currentTarget.style.background = 'none'; e.currentTarget.style.color = '#b3b3b3'; }}
-              onClick={toggleGrid}
-            >
-              {isGrid ? <ArrowLeft size={20} /> : <ArrowRight size={20} />}
-            </button>
+            {!isCollapsed && (
+              <button
+                title="Expand library grid"
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  color: '#b3b3b3',
+                  cursor: 'pointer',
+                  borderRadius: '50%',
+                  width: '32px',
+                  height: '32px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  transition: 'all 0.2s'
+                }}
+                onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.08)'; e.currentTarget.style.color = '#fff'; }}
+                onMouseLeave={e => { e.currentTarget.style.background = 'none'; e.currentTarget.style.color = '#b3b3b3'; }}
+                onClick={toggleGrid}
+              >
+                {isGrid ? <ArrowLeft size={20} /> : <ArrowRight size={20} />}
+              </button>
+            )}
           </div>
         </div>
 
