@@ -140,8 +140,12 @@ h1, h2, h3, h4, h5, h6 {
 
 .control-button:hover {
   transform: scale(1.08);
-  color: #fff !important;
   filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.4));
+}
+
+/* Icons usually want to turn white, but not on white backgrounds */
+.control-button:not([style*="background: white"]):not([style*="background: #fff"]):hover {
+  color: #fff !important;
 }
 
 .tooltip-container {
