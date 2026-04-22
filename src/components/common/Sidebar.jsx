@@ -362,9 +362,9 @@ const Sidebar = () => {
         position: 'relative',
         flexShrink: 0,
         transition: isResizing ? 'none' : 'width 0.3s ease',
-        background: '#121212', // Unified single background
+        background: '#121212', 
         borderRadius: '8px',
-        overflow: 'hidden'
+        overflow: 'visible'
       }}
     >
       <div style={{
@@ -372,7 +372,7 @@ const Sidebar = () => {
         display: 'flex',
         flexDirection: 'column',
         marginTop: '0px', 
-        overflow: 'hidden'
+        overflow: 'visible'
       }}>
         {/* Library Header */}
         <div style={{
@@ -382,7 +382,7 @@ const Sidebar = () => {
           alignItems: 'center',
           justifyContent: isCollapsed ? 'center' : 'space-between',
           whiteSpace: 'nowrap',
-          overflow: 'hidden'
+          overflow: 'visible'
         }}>
           <div className="tooltip-container">
             <button

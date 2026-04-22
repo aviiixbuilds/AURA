@@ -167,7 +167,7 @@ h1, h2, h3, h4, h5, h6 {
   opacity: 0;
   box-shadow: 0 8px 16px rgba(0,0,0,0.6);
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-  z-index: 1000;
+  z-index: 10000; /* Extremely high z-index */
 }
 
 .tooltip-container:hover .tooltip {
@@ -176,20 +176,19 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 /* Tooltip directions */
-.tooltip-right {
-  left: calc(100% + 12px);
-  top: 50%;
+.tooltip-bottom {
+  top: calc(100% + 12px);
   bottom: auto;
-  transform: translateY(-50%) translateX(-10px);
-  left: auto; /* reset left if needed, but wait */
+  transform: translateX(-50%) translateY(-10px);
 }
-.tooltip-container:hover .tooltip-right {
-  transform: translateY(-50%) translateX(0);
+.tooltip-container:hover .tooltip-bottom {
+  transform: translateX(-50%) translateY(0);
 }
 
-/* Specific tooltip position overrides */
 .tooltip-right {
   left: calc(100% + 15px) !important;
+  top: 50% !important;
+  bottom: auto !important;
   transform: translateY(-50%) translateX(-10px) !important;
 }
 .tooltip-container:hover .tooltip-right {
@@ -199,6 +198,8 @@ h1, h2, h3, h4, h5, h6 {
 .tooltip-left {
   right: calc(100% + 15px) !important;
   left: auto !important;
+  top: 50% !important;
+  bottom: auto !important;
   transform: translateY(-50%) translateX(10px) !important;
 }
 .tooltip-container:hover .tooltip-left {

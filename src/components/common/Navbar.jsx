@@ -40,24 +40,32 @@ const Navbar = () => {
         </div>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <button 
-            onClick={() => navigate(-1)}
-            style={{ 
-              background: 'none', border: 'none', color: '#b3b3b3', 
-              cursor: 'pointer', display: 'flex', alignItems: 'center'
-            }}
-          >
-            <ChevronLeft size={24} />
-          </button>
-          <button 
-            onClick={() => navigate(1)}
-            style={{ 
-              background: 'none', border: 'none', color: '#b3b3b3', 
-              cursor: 'pointer', display: 'flex', alignItems: 'center'
-            }}
-          >
-            <ChevronRight size={24} />
-          </button>
+          <div className="tooltip-container">
+            <button 
+              onClick={() => navigate(-1)}
+              style={{ 
+                background: 'none', border: 'none', color: '#b3b3b3', 
+                cursor: 'pointer', display: 'flex', alignItems: 'center'
+              }}
+              className="control-button"
+            >
+              <ChevronLeft size={24} />
+            </button>
+            <span className="tooltip tooltip-bottom">Go back</span>
+          </div>
+          <div className="tooltip-container">
+            <button 
+              onClick={() => navigate(1)}
+              style={{ 
+                background: 'none', border: 'none', color: '#b3b3b3', 
+                cursor: 'pointer', display: 'flex', alignItems: 'center'
+              }}
+              className="control-button"
+            >
+              <ChevronRight size={24} />
+            </button>
+            <span className="tooltip tooltip-bottom">Go forward</span>
+          </div>
         </div>
       </div>
 
@@ -92,7 +100,7 @@ const Navbar = () => {
           >
             <HomeIcon size={24} />
           </button>
-          <span className="tooltip">Home</span>
+          <span className="tooltip tooltip-bottom">Home</span>
         </div>
 
         {/* Search Bar */}
@@ -140,35 +148,53 @@ const Navbar = () => {
             >
               <Package size={20} />
             </button>
-            <span className="tooltip">Browse</span>
+            <span className="tooltip tooltip-bottom">Browse</span>
           </div>
         </div>
       </div>
 
       {/* Right Section */}
       <div style={{ display: 'flex', alignItems: 'center', gap: '16px', minWidth: 'fit-content' }}>
-        <button style={{ 
-          background: 'white', border: 'none', color: 'black', 
-          padding: '8px 16px', borderRadius: '20px', fontWeight: 700, 
-          cursor: 'pointer', fontSize: '14px', whiteSpace: 'nowrap'
-        }}>
-          Explore Premium
-        </button>
+        <div className="tooltip-container">
+          <button style={{ 
+            background: 'white', border: 'none', color: 'black', 
+            padding: '8px 16px', borderRadius: '20px', fontWeight: 700, 
+            cursor: 'pointer', fontSize: '14px', whiteSpace: 'nowrap'
+          }}
+          className="control-button"
+          >
+            Explore Premium
+          </button>
+          <span className="tooltip tooltip-bottom">Upgrade to Premium</span>
+        </div>
         
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-           <button style={{ background: 'none', border: 'none', color: '#b3b3b3', cursor: 'pointer' }}>
-            <Bell size={20} />
-          </button>
-          <div style={{ 
-            background: 'rgba(255,255,255,0.1)', borderRadius: '50%', width: '36px', 
-            height: '36px', display: 'flex', alignItems: 'center', justifyContent: 'center',
-            cursor: 'pointer', overflow: 'hidden'
-          }}>
-            <User size={20} color="#fff" />
+          <div className="tooltip-container">
+            <button style={{ background: 'none', border: 'none', color: '#b3b3b3', cursor: 'pointer' }} className="control-button">
+              <Bell size={20} />
+            </button>
+            <span className="tooltip tooltip-bottom">What's New</span>
           </div>
-          <button style={{ background: 'none', border: 'none', color: '#b3b3b3', cursor: 'pointer' }}>
-            <Settings size={20} />
-          </button>
+
+          <div className="tooltip-container">
+            <div style={{ 
+              background: 'rgba(255,255,255,0.1)', borderRadius: '50%', width: '36px', 
+              height: '36px', display: 'flex', alignItems: 'center', justifyContent: 'center',
+              cursor: 'pointer', overflow: 'hidden'
+            }}
+            className="control-button"
+            >
+              <User size={20} color="#fff" />
+            </div>
+            <span className="tooltip tooltip-bottom">Profile</span>
+          </div>
+
+          <div className="tooltip-container">
+            <button style={{ background: 'none', border: 'none', color: '#b3b3b3', cursor: 'pointer' }} className="control-button">
+              <Settings size={20} />
+            </button>
+            <span className="tooltip tooltip-bottom">Settings</span>
+          </div>
         </div>
       </div>
     </nav>
