@@ -235,7 +235,10 @@ function findImages(raw) {
 
   for (const src of sources) {
     if (Array.isArray(src) && src.length > 0) {
-      return src.map(s => ({ url: s.url || s.sources?.[0]?.url || s.uri || '' })).filter(s => s.url);
+      return src.map(s => {
+        if (typeof s === 'string') return { url: s };
+        return { url: s.url || s.sources?.[0]?.url || s.uri || '' };
+      }).filter(s => s.url);
     }
   }
 
@@ -398,6 +401,11 @@ async function enhanceWithImages(result) {
 }
 
 class SpotifyService {
+
+  // Expose the iTunes fallback for use by components
+  async fetchiTunesImage(term, type = 'song') {
+    return await fetchiTunesImage(term, type);
+  }
 
   async getHomeData() {
     // We let search handle its own fallbacks, which now include deterministic variety

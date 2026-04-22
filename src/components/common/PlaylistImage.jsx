@@ -1,34 +1,50 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Heart } from 'lucide-react';
+import { spotify } from '../../services/spotify';
 
 const RAINBOW_GRADIENT = 'linear-gradient(45deg, #ff0000, #ff7300, #fffb00, #48ff00, #00ffd5, #002bff, #7a00ff, #ff00c8, #ff0000)';
 
 const PlaylistImage = ({ item, size = 64, style = {}, type = 'playlist' }) => {
-  const [isBroken, setIsBroken] = React.useState(false);
-  const imageUrl = !isBroken ? (item?.images?.[0]?.url || item?.album?.images?.[0]?.url) : null;
+  const [isBroken, setIsBroken] = useState(false);
+  const [fallbackUrl, setFallbackUrl] = useState(null);
   
+  // High-priority: primary images from item or album
+  const primaryUrl = item?.images?.[0]?.url || item?.album?.images?.[0]?.url || item?.images?.[0] || null;
+  const imageUrl = !isBroken ? (fallbackUrl || primaryUrl) : null;
+  
+  // Auto-recovery if image is missing or broken
+  useEffect(() => {
+    const recoverImage = async () => {
+      if ((!primaryUrl || isBroken) && !fallbackUrl && item?.name) {
+        const term = type === 'track' 
+          ? `${item.name} ${item.artists?.[0]?.name || ''}`
+          : item.name;
+        
+        // Use the global spotify service to fetch a fallback
+        const url = await spotify.fetchiTunesImage(term, type);
+        if (url) setFallbackUrl(url);
+      }
+    };
+    recoverImage();
+  }, [primaryUrl, isBroken, item?.name, type, fallbackUrl]);
+
   // Extract track covers for the 2x2 grid fallback
   const getGridImages = () => {
     if (type !== 'playlist' && type !== 'liked') return [];
-    
     const trackItems = item?.tracks?.items || item?.tracks || [];
     const images = [];
-    
     for (const trackItem of trackItems) {
       const track = trackItem.track || trackItem;
-      const img = track?.album?.images?.[0]?.url || track?.images?.[0]?.url;
-      if (img && !images.includes(img)) {
-        images.push(img);
-      }
+      const img = track?.album?.images?.[0]?.url || track?.images?.[0]?.url || track?.images?.[0];
+      if (img && !images.includes(img)) images.push(img);
       if (images.length === 4) break;
     }
-    
     return images;
   };
 
   const gridImages = imageUrl ? [] : getGridImages();
 
-  // 1. Primary Image
+  // 1. Primary Image (or Fallback from iTunes)
   if (imageUrl) {
     return (
       <img
