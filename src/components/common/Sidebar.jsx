@@ -86,7 +86,17 @@ const LibraryItem = ({ item, type = 'playlist', isCollapsed, isGrid }) => {
           marginBottom: '16px',
           boxShadow: '0 8px 24px rgba(0,0,0,0.5)'
         }}>
-          <PlaylistImage item={item} type={type} size={80} />
+          <div style={{ 
+            width: 'calc(100% - 4px)', height: 'calc(100% - 4px)', 
+            display: 'flex', alignItems: 'center', justifyContent: 'center', 
+            background: '#000', 
+            border: '1.5px solid white',
+            borderRadius: type === 'artist' ? '50%' : '4px', 
+            overflow: 'hidden',
+            boxShadow: '0 4px 12px rgba(0,0,0,0.5)'
+          }}>
+            <PlaylistImage item={item} type={type} size={80} />
+          </div>
         </div>
         <div style={{ width: '100%' }}>
           <div style={{
@@ -377,8 +387,11 @@ const Sidebar = () => {
           onClick={() => navigate('/')}
         >
           <div style={{ 
-            width: '28px', height: '28px', flexShrink: 0, borderRadius: '50%', background: '#fff', 
-            display: 'flex', alignItems: 'center', justifyContent: 'center'
+            width: '32px', height: '32px', flexShrink: 0, borderRadius: '50%', background: '#000', 
+            border: '2px solid #fff',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            overflow: 'hidden',
+            boxSizing: 'border-box'
           }}>
              {/* If logo.png exists, use it. Otherwise placeholder */}
             <img src="/logo.png" alt="AURA Logo" style={{ width: '100%', height: '100%', objectFit: 'contain', borderRadius: '50%' }} onError={(e) => {e.target.style.display='none';}} />

@@ -119,6 +119,16 @@ const MOCK_TRACKS = [
   { id: 'mt8', name: 'Watermelon Sugar', artists: [{ id: 'ma2', name: 'Harry Styles' }], album: { name: 'Fine Line', images: [{ url: 'https://i.scdn.co/image/ab67616d0000b2732e8ed79e177ff6011076f5f0' }] }, duration_ms: 174273, preview_url: null },
   { id: 'mt9', name: 'good 4 u', artists: [{ id: 'ma9', name: 'Olivia Rodrigo' }], album: { name: 'SOUR', images: [{ url: 'https://i.scdn.co/image/ab67616d0000b273a91c10fe9472d9bd89802e5a' }] }, duration_ms: 178147, preview_url: null },
   { id: 'mt10', name: 'Peaches', artists: [{ id: 'ma4', name: 'Justin Bieber' }], album: { name: 'Justice', images: [{ url: 'https://i.scdn.co/image/ab67616d0000b2735ef878a782c987d664963d5d' }] }, duration_ms: 198061, preview_url: null },
+  { id: 'mt11', name: 'Flowers', artists: [{ id: 'ma11', name: 'Miley Cyrus' }], album: { name: 'Endless Summer Vacation', images: [{ url: 'https://i.scdn.co/image/ab67616d0000b273f421f15391a62d46e3a63b0a' }] }, duration_ms: 200442, preview_url: null },
+  { id: 'mt12', name: 'Cruel Summer', artists: [{ id: 'ma7', name: 'Taylor Swift' }], album: { name: 'Lover', images: [{ url: 'https://i.scdn.co/image/ab67616d0000b273e787cffec20aa2a396a61647' }] }, duration_ms: 178426, preview_url: null },
+  { id: 'mt13', name: 'Vampire', artists: [{ id: 'ma9', name: 'Olivia Rodrigo' }], album: { name: 'GUTS', images: [{ url: 'https://i.scdn.co/image/ab67616d0000b273e9599540b79316d84d728639' }] }, duration_ms: 219724, preview_url: null },
+  { id: 'mt14', name: 'Kill Bill', artists: [{ id: 'ma14', name: 'SZA' }], album: { name: 'SOS', images: [{ url: 'https://i.scdn.co/image/ab67616d0000b27370dbc9f47669d120ad874813' }] }, duration_ms: 153946, preview_url: null },
+  { id: 'mt15', name: 'Starboy', artists: [{ id: 'ma1', name: 'The Weeknd' }], album: { name: 'Starboy', images: [{ url: 'https://i.scdn.co/image/ab67616d0000b2734718e2b124f79258eb7bc552' }] }, duration_ms: 230453, preview_url: null },
+  { id: 'mt16', name: 'About Damn Time', artists: [{ id: 'ma16', name: 'Lizzo' }], album: { name: 'Special', images: [{ url: 'https://i.scdn.co/image/ab67616d0000b273e92823610214a1f6305a413d' }] }, duration_ms: 191852, preview_url: null },
+  { id: 'mt17', name: 'Paint The Town Red', artists: [{ id: 'ma17', name: 'Doja Cat' }], album: { name: 'Scarlet', images: [{ url: 'https://i.scdn.co/image/ab67616d0000b273e9599540b79316d84d728639' }] }, duration_ms: 231750, preview_url: null },
+  { id: 'mt18', name: 'Seven', artists: [{ id: 'ma18', name: 'Jung Kook' }], album: { name: 'Golden', images: [{ url: 'https://i.scdn.co/image/ab67616d0000b27387d7b05537548773c3820980' }] }, duration_ms: 184444, preview_url: null },
+  { id: 'mt19', name: 'Rich Flex', artists: [{ id: 'ma19', name: 'Drake' }, { id: 'ma20', name: '21 Savage' }], album: { name: 'Her Loss', images: [{ url: 'https://i.scdn.co/image/ab67616d0000b273007077a944208a0d249f0556' }] }, duration_ms: 239359, preview_url: null },
+  { id: 'mt20', name: 'Unholy', artists: [{ id: 'ma21', name: 'Sam Smith' }, { id: 'ma22', name: 'Kim Petras' }], album: { name: 'Gloria', images: [{ url: 'https://i.scdn.co/image/ab67616d0000b273007077a944208a0d249f0556' }] }, duration_ms: 156943, preview_url: null },
 ];
 
 const MOCK_PLAYLISTS = [
@@ -127,7 +137,7 @@ const MOCK_PLAYLISTS = [
     description: 'Jung Kook is on top of the world!',
     images: [{ url: 'https://i.scdn.co/image/ab67706f00000003bd0e19e810bb4b55ab164a95' }],
     owner: { display_name: 'Spotify' },
-    tracks: { total: 50, items: MOCK_TRACKS.map(t => ({ track: t })) },
+    tracks: { total: 50, items: MOCK_TRACKS.slice(0, 15).map(t => ({ track: t })) },
     followers: { total: 35000000 }
   },
   {
@@ -135,7 +145,7 @@ const MOCK_PLAYLISTS = [
     description: 'Music that defines what\'s happening in hip-hop.',
     images: [{ url: 'https://i.scdn.co/image/ab67706f00000003652d0ab2f88d7d63dc8553d8' }],
     owner: { display_name: 'Spotify' },
-    tracks: { total: 50, items: MOCK_TRACKS.slice(0, 5).map(t => ({ track: t })) },
+    tracks: { total: 50, items: MOCK_TRACKS.filter(t => ['Drake', '21 Savage', 'SZA'].some(a => t.artists[0].name.includes(a))).map(t => ({ track: t })) },
     followers: { total: 14000000 }
   },
   {
@@ -143,7 +153,7 @@ const MOCK_PLAYLISTS = [
     description: 'Pegate! The most lit Latin music right now.',
     images: [{ url: 'https://i.scdn.co/image/ab67706f00000003c3af4c0a1d91a17c04cf5fe8' }],
     owner: { display_name: 'Spotify' },
-    tracks: { total: 50, items: MOCK_TRACKS.slice(2, 8).map(t => ({ track: t })) },
+    tracks: { total: 50, items: MOCK_TRACKS.slice(5, 12).map(t => ({ track: t })) },
     followers: { total: 11000000 }
   },
   {
@@ -151,7 +161,7 @@ const MOCK_PLAYLISTS = [
     description: 'Get happy with today\'s feel-good hits',
     images: [{ url: 'https://i.scdn.co/image/ab67706f00000003ad43e8946843c738657f9c09' }],
     owner: { display_name: 'Spotify' },
-    tracks: { total: 50, items: MOCK_TRACKS.slice(3, 9).map(t => ({ track: t })) },
+    tracks: { total: 50, items: MOCK_TRACKS.filter(t => ['Harry Styles', 'Lizzo', 'Dua Lipa'].some(a => t.artists[0].name.includes(a))).map(t => ({ track: t })) },
     followers: { total: 8000000 }
   },
   {
@@ -159,7 +169,7 @@ const MOCK_PLAYLISTS = [
     description: 'Kick back to the best new and recent chill hits.',
     images: [],
     owner: { display_name: 'Spotify' },
-    tracks: { total: 50, items: MOCK_TRACKS.slice(4, 10).map(t => ({ track: t })) },
+    tracks: { total: 50, items: MOCK_TRACKS.slice(10, 20).map(t => ({ track: t })) },
     followers: { total: 6000000 }
   },
   {
@@ -167,7 +177,7 @@ const MOCK_PLAYLISTS = [
     description: 'Country\'s hottest songs right now.',
     images: [],
     owner: { display_name: 'Spotify' },
-    tracks: { total: 50, items: MOCK_TRACKS.slice(1, 7).map(t => ({ track: t })) },
+    tracks: { total: 50, items: MOCK_TRACKS.slice(0, 8).map(t => ({ track: t })) },
     followers: { total: 5000000 }
   },
 ];
@@ -212,8 +222,9 @@ function normalizeTrack(item) {
       name: raw.albumOfTrack?.name || raw.album?.name || '',
       images: albumArt.map(s => ({ url: s.url }))
     },
-    duration_ms: raw.duration?.totalMilliseconds || raw.duration_ms || 180000,
-    preview_url: raw.preview_url || null
+    duration_ms: raw.duration?.totalMilliseconds || raw.duration_ms || raw.duration?.total_ms || 180000,
+    preview_url: raw.preview_url || raw.audio?.items?.[0]?.url || null,
+    playCount: raw.playCount || 0
   };
 }
 
@@ -273,16 +284,15 @@ function normalizeArtist(item) {
 class SpotifyService {
 
   async getHomeData() {
-    try {
-      const [trending, newMusic] = await Promise.all([
-        this.search('trending hits 2025', 'multi'),
-        this.search('new releases 2025', 'multi')
-      ]);
-      return { featured: trending, newReleases: newMusic };
-    } catch {
-      console.warn('Falling back to mock home data.');
-      return { featured: mockSearchResults, newReleases: mockSearchResults };
-    }
+    // We let search handle its own fallbacks, which now include deterministic variety
+    const [featured, newReleases] = await Promise.all([
+      this.search('trending hits', 'multi'),
+      this.search('new releases', 'multi')
+    ]);
+    return { 
+      featured: featured || mockSearchResults, 
+      newReleases: newReleases || { ...mockSearchResults, tracks: { items: MOCK_TRACKS.slice(5, 15) } }
+    };
   }
 
   async search(query, type = 'multi') {
@@ -315,11 +325,26 @@ class SpotifyService {
     } catch {
       console.warn('Search API failed. Returning mock results.');
       const q = query.toLowerCase();
+      const idHash = query.split('').reduce((acc, c) => acc + c.charCodeAt(0), 0);
+      
       const filteredPlaylists = MOCK_PLAYLISTS.filter(p => p.name.toLowerCase().includes(q));
       const playlists = filteredPlaylists.length ? filteredPlaylists : MOCK_PLAYLISTS;
       playlists.forEach(cachePlaylistMeta);
+      
+      // Filter tracks by query, but if none match, provide a deterministic subset
+      let tracks = MOCK_TRACKS.filter(t => t.name.toLowerCase().includes(q) || t.artists[0]?.name.toLowerCase().includes(q));
+      if (tracks.length === 0) {
+        tracks = [...MOCK_TRACKS]
+          .sort((a, b) => {
+            const hashA = (a.id.split('').reduce((acc, c) => acc + c.charCodeAt(0), 0) * (idHash + 1)) % 100;
+            const hashB = (b.id.split('').reduce((acc, c) => acc + c.charCodeAt(0), 0) * (idHash + 1)) % 100;
+            return hashA - hashB;
+          })
+          .slice(0, 10);
+      }
+
       return {
-        tracks: { items: MOCK_TRACKS.filter(t => t.name.toLowerCase().includes(q) || t.artists[0]?.name.toLowerCase().includes(q)).slice(0, 10).length ? MOCK_TRACKS.filter(t => t.name.toLowerCase().includes(q) || t.artists[0]?.name.toLowerCase().includes(q)).slice(0, 10) : MOCK_TRACKS },
+        tracks: { items: tracks.slice(0, 10) },
         albums: { items: MOCK_ALBUMS.filter(a => a.name.toLowerCase().includes(q)).length ? MOCK_ALBUMS.filter(a => a.name.toLowerCase().includes(q)).slice(0, 6) : MOCK_ALBUMS },
         artists: { items: MOCK_ARTISTS.filter(a => a.name.toLowerCase().includes(q)).length ? MOCK_ARTISTS.filter(a => a.name.toLowerCase().includes(q)).slice(0, 6) : MOCK_ARTISTS },
         playlists: { items: playlists },
@@ -341,15 +366,36 @@ class SpotifyService {
 
     // Try live API
     try {
-      const data = await apiFetch(`/playlist/?id=${id}`);
-      const tracks = (data.tracks?.items || []).map(item => ({
-        track: normalizeTrack(item.track || item)
-      }));
+      // Some versions of the API use /playlist/ some use /playlist_details/
+      let data;
+      try {
+        data = await apiFetch(`/playlist/?id=${id}`);
+      } catch {
+        data = await apiFetch(`/playlist_metadata/?id=${id}`);
+      }
+      
+      let tracks = [];
+      if (data.tracks?.items) {
+        tracks = data.tracks.items.map(item => ({
+          track: normalizeTrack(item.track || item)
+        }));
+      } else {
+        // Try fetching tracks separately if they are missing
+        try {
+          const trackData = await apiFetch(`/playlist_tracks/?id=${id}&offset=0&limit=100`);
+          tracks = (trackData.items || trackData.tracks?.items || []).map(item => ({
+            track: normalizeTrack(item.track || item)
+          }));
+        } catch (e) {
+          console.warn("Could not fetch separate tracks for playlist", id);
+        }
+      }
+
       return {
         id: data.id || id,
-        name: data.name || '',
+        name: data.name || data.title || '',
         description: data.description || '',
-        images: (data.images || []).map(img => ({ url: img.url || '' })),
+        images: (data.images || data.coverArt?.sources || []).map(img => ({ url: img.url || '' })),
         owner: { display_name: data.owner?.display_name || data.owner?.name || 'Spotify' },
         tracks: {
           total: data.tracks?.totalCount || data.tracks?.total || tracks.length,
@@ -359,20 +405,39 @@ class SpotifyService {
       };
     } catch {
       console.warn(`Playlist ${id} API failed. Using cached metadata or mock fallback.`);
-      // Use the cached real metadata (name, image, description) + mock tracks
       const cached = playlistMetaCache.get(id);
+      
+      // Generate a unique set of tracks for this ID so they don't look identical
+      const idHash = id.split('').reduce((acc, c) => acc + c.charCodeAt(0), 0);
+      const trackCount = 8 + (Math.abs(idHash) % 8); // 8 to 15 tracks
+      const shuffledTracks = [...MOCK_TRACKS]
+        .sort((a, b) => {
+          const hashA = (a.id.split('').reduce((acc, c) => acc + c.charCodeAt(0), 0) * (idHash + 1)) % 100;
+          const hashB = (b.id.split('').reduce((acc, c) => acc + c.charCodeAt(0), 0) * (idHash + 1)) % 100;
+          return hashA - hashB;
+        })
+        .slice(0, trackCount);
+
       if (cached) {
         return {
           ...cached,
           tracks: {
-            total: MOCK_TRACKS.length,
-            items: MOCK_TRACKS.map(t => ({ track: t }))
+            total: shuffledTracks.length,
+            items: shuffledTracks.map(t => ({ track: t }))
           }
         };
       }
-      // Last resort: cycle through mock playlists based on id hash so they're not all identical
-      const mockIndex = Math.abs(id.split('').reduce((acc, c) => acc + c.charCodeAt(0), 0)) % MOCK_PLAYLISTS.length;
-      return { ...MOCK_PLAYLISTS[mockIndex], id };
+      // Last resort: Deterministic mock from our list
+      const mockIndex = Math.abs(idHash) % MOCK_PLAYLISTS.length;
+      const baseMock = MOCK_PLAYLISTS[mockIndex];
+      return { 
+        ...baseMock, 
+        id,
+        tracks: {
+          total: shuffledTracks.length,
+          items: shuffledTracks.map(t => ({ track: t }))
+        }
+      };
     }
   }
 
@@ -394,7 +459,9 @@ class SpotifyService {
       };
     } catch {
       console.warn(`Album ${id} API failed. Returning mock album.`);
-      return { ...MOCK_ALBUMS[0], id };
+      const idHash = id.split('').reduce((acc, c) => acc + c.charCodeAt(0), 0);
+      const mockIndex = Math.abs(idHash) % MOCK_ALBUMS.length;
+      return { ...MOCK_ALBUMS[mockIndex], id };
     }
   }
 
@@ -427,7 +494,15 @@ class SpotifyService {
       return { tracks };
     } catch {
       console.warn(`Artist top tracks API failed. Returning mock tracks.`);
-      return { tracks: MOCK_TRACKS.slice(0, 5) };
+      const idHash = id.split('').reduce((acc, c) => acc + c.charCodeAt(0), 0);
+      const shuffledTracks = [...MOCK_TRACKS]
+        .sort((a, b) => {
+          const hashA = (a.id.split('').reduce((acc, c) => acc + c.charCodeAt(0), 0) * (idHash + 1)) % 100;
+          const hashB = (b.id.split('').reduce((acc, c) => acc + c.charCodeAt(0), 0) * (idHash + 1)) % 100;
+          return hashA - hashB;
+        })
+        .slice(0, 5);
+      return { tracks: shuffledTracks };
     }
   }
 }

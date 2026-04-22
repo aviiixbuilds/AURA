@@ -1,25 +1,7 @@
 import React from 'react';
-import { Music, Heart, Disc } from 'lucide-react';
+import { Heart } from 'lucide-react';
 
-const getGradient = (str) => {
-  const gradients = [
-    ['#FF4E50', '#F9D423'],
-    ['#e96443', '#904e95'],
-    ['#00c6ff', '#0072ff'],
-    ['#7028e4', '#e207b1'],
-    ['#00b09b', '#96c93d'],
-    ['#f83600', '#f9d423'],
-    ['#6a11cb', '#2575fc'],
-    ['#ff0844', '#ffb199']
-  ];
-  let hash = 0;
-  const s = str || 'default';
-  for (let i = 0; i < s.length; i++) {
-    hash = s.charCodeAt(i) + ((hash << 5) - hash);
-  }
-  const pair = gradients[Math.abs(hash) % gradients.length];
-  return `linear-gradient(45deg, ${pair[0]}, ${pair[1]})`;
-};
+const RAINBOW_GRADIENT = 'linear-gradient(45deg, #ff0000, #ff7300, #fffb00, #48ff00, #00ffd5, #002bff, #7a00ff, #ff00c8, #ff0000)';
 
 const PlaylistImage = ({ item, size = 64, style = {}, type = 'playlist' }) => {
   const [isBroken, setIsBroken] = React.useState(false);
@@ -76,12 +58,9 @@ const PlaylistImage = ({ item, size = 64, style = {}, type = 'playlist' }) => {
         ...style
       }}>
         {gridImages.map((src, i) => (
-          <img
-            key={i}
-            src={src}
-            alt=""
-            style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-          />
+          <div key={i} style={{ width: '100%', height: '100%', position: 'relative' }}>
+            <PlaylistImage item={{ images: [{ url: src }] }} type="track" size={size / 2} />
+          </div>
         ))}
       </div>
     );
@@ -109,11 +88,11 @@ const PlaylistImage = ({ item, size = 64, style = {}, type = 'playlist' }) => {
     <div style={{
       width: '100%',
       height: '100%',
-      background: getGradient(item?.name),
+      background: RAINBOW_GRADIENT,
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
-      boxShadow: 'inset 0 0 20px rgba(0,0,0,0.1)',
+      boxShadow: 'inset 0 0 20px rgba(0,0,0,0.2)',
       ...style
     }}>
       {type === 'artist' ? (
@@ -123,7 +102,18 @@ const PlaylistImage = ({ item, size = 64, style = {}, type = 'playlist' }) => {
           style={{ width: '100%', height: '100%', borderRadius: '50%' }} 
         />
       ) : (
-        <Disc size={size * 0.4} color="white" style={{ opacity: 0.8 }} />
+        <div style={{ 
+          width: 'calc(100% - 2px)', height: 'calc(100% - 2px)', 
+          display: 'flex', alignItems: 'center', justifyContent: 'center', 
+          background: '#000', 
+          border: '1.5px solid white',
+          borderRadius: '50%', 
+          overflow: 'hidden',
+          boxShadow: '0 4px 12px rgba(0,0,0,0.5)',
+          ...style
+        }}>
+          <img src="/logo.png" alt="" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+        </div>
       )}
     </div>
   );
