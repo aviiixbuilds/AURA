@@ -207,11 +207,50 @@ const mockSearchResults = {
 // NORMALIZERS
 // ─────────────────────────────────────────────────────────────────────────────
 
+// ─────────────────────────────────────────────────────────────────────────────
+// IMAGE HELPERS
+// ─────────────────────────────────────────────────────────────────────────────
+
+/**
+ * Deeply searches for image sources in a raw Spotify object.
+ * Checks multiple possible nested structures used by different RapidAPI endpoints.
+ */
+function findImages(raw) {
+  if (!raw) return [];
+  
+  // Possible sources (in priority order)
+  const sources = [
+    raw.visuals?.avatarImage?.sources,
+    raw.visuals?.headerImage?.sources,
+    raw.coverArt?.sources,
+    raw.albumOfTrack?.coverArt?.sources,
+    raw.album?.images,
+    raw.images?.items,
+    raw.images,
+    raw.data?.visuals?.avatarImage?.sources,
+    raw.data?.albumOfTrack?.coverArt?.sources,
+    raw.item?.album?.images,
+    raw.track?.album?.images
+  ];
+
+  for (const src of sources) {
+    if (Array.isArray(src) && src.length > 0) {
+      return src.map(s => ({ url: s.url || s.sources?.[0]?.url || s.uri || '' })).filter(s => s.url);
+    }
+  }
+
+  return [];
+}
+
+/**
+ * Normalizes a track object from any Spotify API response format.
+ */
 function normalizeTrack(item) {
   if (!item) return null;
-  const raw = item.data || item;
-  const albumArt = raw.albumOfTrack?.coverArt?.sources || raw.album?.images || [];
-  return {
+  const raw = item.data || item.track || item;
+  const images = findImages(raw);
+  
+  const track = {
     id: raw.id || raw.uri?.split(':').pop() || '',
     name: raw.name || raw.title || '',
     artists: (raw.artists?.items || raw.artists || []).map(a => ({
@@ -220,18 +259,26 @@ function normalizeTrack(item) {
     })),
     album: {
       name: raw.albumOfTrack?.name || raw.album?.name || '',
-      images: albumArt.map(s => ({ url: s.url }))
+      images: images.length > 0 ? images : []
     },
     duration_ms: raw.duration?.totalMilliseconds || raw.duration_ms || raw.duration?.total_ms || 180000,
     preview_url: raw.preview_url || raw.audio?.items?.[0]?.url || null,
     playCount: raw.playCount || 0
   };
+
+  // If still no image and it's a mock/failed result, we'll try to find one via iTunes later
+  // but for now we return what we have.
+  return track;
 }
 
+/**
+ * Normalizes an album object.
+ */
 function normalizeAlbum(item) {
   if (!item) return null;
   const raw = item.data || item;
-  const images = raw.coverArt?.sources || raw.images || [];
+  const images = findImages(raw);
+  
   return {
     id: raw.id || raw.uri?.split(':').pop() || '',
     name: raw.name || '',
@@ -239,23 +286,27 @@ function normalizeAlbum(item) {
       id: a.uri?.split(':').pop() || a.id || '',
       name: a.profile?.name || a.name || ''
     })),
-    images: images.map(s => ({ url: s.url })),
+    images: images,
     release_date: raw.date?.isoString || raw.release_date || raw.year || '',
     total_tracks: raw.tracks?.totalCount || raw.total_tracks || 0,
-    tracks: { items: (raw.tracks?.items || []).map(t => normalizeTrack(t.track || t)) },
+    tracks: { items: (raw.tracks?.items || []).map(t => normalizeTrack(t)) },
     type: 'album'
   };
 }
 
+/**
+ * Normalizes a playlist object.
+ */
 function normalizePlaylist(item) {
   if (!item) return null;
   const raw = item.data || item;
-  const images = raw.images?.items || raw.images || [];
+  const images = findImages(raw);
+  
   return {
     id: raw.id || raw.uri?.split(':').pop() || '',
     name: raw.name || '',
     description: raw.description || '',
-    images: images.map(s => ({ url: s.sources?.[0]?.url || s.url || '' })),
+    images: images,
     owner: { display_name: raw.owner?.name || raw.owner?.display_name || 'Spotify' },
     tracks: { total: raw.tracks?.totalCount || raw.tracks?.total || 0, items: [] },
     followers: { total: raw.followers?.total || 0 },
@@ -263,14 +314,18 @@ function normalizePlaylist(item) {
   };
 }
 
+/**
+ * Normalizes an artist object.
+ */
 function normalizeArtist(item) {
   if (!item) return null;
   const raw = item.data || item;
-  const images = raw.visuals?.avatarImage?.sources || raw.images || [];
+  const images = findImages(raw);
+  
   return {
     id: raw.id || raw.uri?.split(':').pop() || '',
     name: raw.profile?.name || raw.name || '',
-    images: images.map(s => ({ url: s.url })),
+    images: images,
     followers: { total: raw.stats?.monthlyListeners || raw.followers?.total || 0 },
     genres: raw.profile?.genres || raw.genres || [],
     type: 'artist'
@@ -278,8 +333,69 @@ function normalizeArtist(item) {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// PUBLIC API SERVICE
+// EXTERNAL FALLBACKS (iTunes API)
 // ─────────────────────────────────────────────────────────────────────────────
+
+/**
+ * Fetches a high-quality cover art URL from iTunes Search API.
+ * This is used as a public, key-less fallback when Spotify quota is hit.
+ */
+async function fetchiTunesImage(term, type = 'song') {
+  try {
+    const entity = type === 'artist' ? 'musicArtist' : (type === 'album' ? 'album' : 'song');
+    const response = await fetch(`https://itunes.apple.com/search?term=${encodeURIComponent(term)}&entity=${entity}&limit=1`);
+    if (!response.ok) return null;
+    const data = await response.json();
+    const result = data.results?.[0];
+    if (!result) return null;
+    
+    // iTunes provides artworkUrl100, artworkUrl60, etc. 
+    // We can get a larger one by replacing the dimensions.
+    const url = result.artworkUrl100 || result.artworkUrl60;
+    return url ? url.replace('100x100bb.jpg', '600x600bb.jpg') : null;
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Background loop to enhance search results with real images if they are missing.
+ */
+async function enhanceWithImages(result) {
+  if (!result) return result;
+
+  const enhanceItem = async (item, type) => {
+    // If it already has an image, skip
+    const hasImage = item.images?.length > 0 || item.album?.images?.length > 0;
+    if (hasImage) return;
+
+    const term = type === 'track' 
+      ? `${item.name} ${item.artists?.[0]?.name}`
+      : item.name;
+    
+    const imageUrl = await fetchiTunesImage(term, type);
+    if (imageUrl) {
+      const imgObj = { url: imageUrl };
+      if (type === 'track') {
+        if (!item.album) item.album = { name: '', images: [] };
+        item.album.images = [imgObj];
+      } else {
+        item.images = [imgObj];
+      }
+    }
+  };
+
+  // Enhance first few items of each category to keep it fast
+  const promises = [
+    ...(result.tracks?.items?.slice(0, 5).map(i => enhanceItem(i, 'track')) || []),
+    ...(result.albums?.items?.slice(0, 4).map(i => enhanceItem(i, 'album')) || []),
+    ...(result.artists?.items?.slice(0, 4).map(i => enhanceItem(i, 'artist')) || []),
+    ...(result.playlists?.items?.slice(0, 4).map(i => enhanceItem(i, 'playlist')) || [])
+  ];
+
+  await Promise.all(promises);
+  return result;
+}
 
 class SpotifyService {
 
@@ -321,7 +437,7 @@ class SpotifyService {
           }
         });
       }
-      return result;
+      return await enhanceWithImages(result);
     } catch {
       console.warn('Search API failed. Returning mock results.');
       const q = query.toLowerCase();
@@ -343,12 +459,14 @@ class SpotifyService {
           .slice(0, 10);
       }
 
-      return {
+      const finalMock = {
         tracks: { items: tracks.slice(0, 10) },
         albums: { items: MOCK_ALBUMS.filter(a => a.name.toLowerCase().includes(q)).length ? MOCK_ALBUMS.filter(a => a.name.toLowerCase().includes(q)).slice(0, 6) : MOCK_ALBUMS },
         artists: { items: MOCK_ARTISTS.filter(a => a.name.toLowerCase().includes(q)).length ? MOCK_ARTISTS.filter(a => a.name.toLowerCase().includes(q)).slice(0, 6) : MOCK_ARTISTS },
         playlists: { items: playlists },
       };
+      
+      return await enhanceWithImages(finalMock);
     }
   }
 
@@ -391,7 +509,10 @@ class SpotifyService {
         }
       }
 
-      return {
+        followers: { total: data.followers?.total || 0 }
+      };
+
+      const finalPlaylist = {
         id: data.id || id,
         name: data.name || data.title || '',
         description: data.description || '',
@@ -403,6 +524,13 @@ class SpotifyService {
         },
         followers: { total: data.followers?.total || 0 }
       };
+
+      if (!finalPlaylist.images?.length) {
+        const imageUrl = await fetchiTunesImage(finalPlaylist.name, 'album');
+        if (imageUrl) finalPlaylist.images = [{ url: imageUrl }];
+      }
+
+      return finalPlaylist;
     } catch {
       console.warn(`Playlist ${id} API failed. Using cached metadata or mock fallback.`);
       const cached = playlistMetaCache.get(id);
@@ -419,18 +547,19 @@ class SpotifyService {
         .slice(0, trackCount);
 
       if (cached) {
-        return {
+        const result = {
           ...cached,
           tracks: {
             total: shuffledTracks.length,
             items: shuffledTracks.map(t => ({ track: t }))
           }
         };
+        return await enhanceWithImages(result);
       }
       // Last resort: Deterministic mock from our list
       const mockIndex = Math.abs(idHash) % MOCK_PLAYLISTS.length;
       const baseMock = MOCK_PLAYLISTS[mockIndex];
-      return { 
+      const result = { 
         ...baseMock, 
         id,
         tracks: {
@@ -438,6 +567,7 @@ class SpotifyService {
           items: shuffledTracks.map(t => ({ track: t }))
         }
       };
+      return await enhanceWithImages(result);
     }
   }
 
@@ -461,7 +591,8 @@ class SpotifyService {
       console.warn(`Album ${id} API failed. Returning mock album.`);
       const idHash = id.split('').reduce((acc, c) => acc + c.charCodeAt(0), 0);
       const mockIndex = Math.abs(idHash) % MOCK_ALBUMS.length;
-      return { ...MOCK_ALBUMS[mockIndex], id };
+      const result = { ...MOCK_ALBUMS[mockIndex], id };
+      return await enhanceWithImages(result);
     }
   }
 
