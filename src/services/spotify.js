@@ -509,9 +509,6 @@ class SpotifyService {
         }
       }
 
-        followers: { total: data.followers?.total || 0 }
-      };
-
       const finalPlaylist = {
         id: data.id || id,
         name: data.name || data.title || '',
