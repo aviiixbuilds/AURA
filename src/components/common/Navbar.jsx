@@ -34,7 +34,7 @@ const Navbar = () => {
             display: 'flex', alignItems: 'center', justifyContent: 'center',
             overflow: 'hidden'
           }}>
-            <img src="/logo.png" alt="Logo" style={{ width: '100%', height: '100%', objectFit: 'contain' }} onError={(e) => {e.target.style.display='none';}} />
+            <img src={`${import.meta.env.BASE_URL}logo.png`} alt="Logo" style={{ width: '100%', height: '100%', objectFit: 'contain' }} onError={(e) => {e.target.style.display='none';}} />
             <Music size={20} color="#000" style={{ position: 'absolute', zIndex: -1 }} />
           </div>
         </div>

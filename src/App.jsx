@@ -37,7 +37,7 @@ const MainLayout = ({ children }) => {
 
 function App() {
   return (
-    <Router>
+    <Router basename="/AURA">
       <MainLayout>
         <AnimatePresence mode="wait">
           <Routes>
