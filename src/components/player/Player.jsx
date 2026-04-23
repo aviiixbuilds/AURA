@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { 
   Play, Pause, SkipBack, SkipForward, Repeat, Shuffle, 
   Volume2, Maximize2, Mic2, ListMusic, Heart 
@@ -8,6 +9,7 @@ import { useLibrary } from '../../context/LibraryContext';
 import PlaylistImage from '../common/PlaylistImage';
 
 const Player = ({ toggleLyrics }) => {
+  const navigate = useNavigate();
   const { 
     currentTrack, isPlaying, togglePlay, progress, duration, 
     volume, setVolume, seek, isAmbientMode, setIsAmbientMode,
@@ -105,7 +107,25 @@ const Player = ({ toggleLyrics }) => {
             {currentTrack?.name}
           </span>
           <span style={{ fontSize: '12px', color: 'var(--text-muted)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-            {currentTrack?.artists?.map(a => a.name).join(', ')}
+            {currentTrack?.artists?.map((a, i) => (
+              <React.Fragment key={a.id || i}>
+                <span 
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    if (a.id) {
+                      navigate(`/artist/${a.id}`);
+                      if (isAmbientMode) setIsAmbientMode(false);
+                    }
+                  }}
+                  style={{ cursor: 'pointer' }}
+                  onMouseEnter={e => e.currentTarget.style.textDecoration = 'underline'}
+                  onMouseLeave={e => e.currentTarget.style.textDecoration = 'none'}
+                >
+                  {a.name}
+                </span>
+                {i < currentTrack.artists.length - 1 ? ', ' : ''}
+              </React.Fragment>
+            ))}
           </span>
         </div>
         <button 

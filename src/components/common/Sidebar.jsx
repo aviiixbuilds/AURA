@@ -46,16 +46,19 @@ const NavItem = ({ icon: Icon, label, to, isCollapsed }) => (
 /* ─── Playlist Row/Grid Item ─── */
 const LibraryItem = ({ item, type = 'playlist', isCollapsed, isGrid }) => {
   const navigate = useNavigate();
-  const subtitle = type === 'liked'
+  const targetType = item.type || type || 'playlist';
+  const subtitle = targetType === 'liked'
     ? `Playlist • ${item.count || 0} songs`
-    : `${item.type || 'Playlist'} • ${item.owner?.display_name || ''}`;
+    : targetType === 'artist'
+      ? 'Artist'
+      : `Playlist • ${item.owner?.display_name || 'Spotify'}`;
 
   if (isGrid) {
     return (
       <div
         onClick={() => {
-          if (type === 'liked') return navigate('/liked');
-          navigate(`/${item.type || 'playlist'}/${item.id}`);
+          if (targetType === 'liked') return navigate('/liked');
+          navigate(`/${targetType}/${item.id}`);
         }}
         style={{
           display: 'flex',
@@ -128,8 +131,8 @@ const LibraryItem = ({ item, type = 'playlist', isCollapsed, isGrid }) => {
   return (
     <div
       onClick={() => {
-        if (type === 'liked') return navigate('/liked');
-        navigate(`/${item.type || 'playlist'}/${item.id}`);
+        if (targetType === 'liked') return navigate('/liked');
+        navigate(`/${targetType}/${item.id}`);
       }}
       style={{
         display: 'flex',

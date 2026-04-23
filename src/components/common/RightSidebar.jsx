@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { X, Heart, Maximize2, ArrowUpRight } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { usePlayer } from '../../context/PlayerContext';
 import { useLibrary } from '../../context/LibraryContext';
 import PlaylistImage from './PlaylistImage';
@@ -9,6 +10,7 @@ const MAX_WIDTH = 600;
 const DEFAULT_WIDTH = 340;
 
 const RightSidebar = () => {
+  const navigate = useNavigate();
   const { currentTrack } = usePlayer();
   const { toggleLike, isLiked } = useLibrary();
   const [isOpen, setIsOpen] = useState(false);
@@ -228,6 +230,12 @@ const RightSidebar = () => {
             }}
               onMouseEnter={e => e.currentTarget.style.color = '#fff'}
               onMouseLeave={e => e.currentTarget.style.color = '#b3b3b3'}
+              onClick={(e) => {
+                e.stopPropagation();
+                if (currentTrack?.artists?.[0]?.id) {
+                  navigate(`/artist/${currentTrack.artists[0].id}`);
+                }
+              }}
             >
               {artistName}
             </div>
@@ -276,7 +284,16 @@ const RightSidebar = () => {
           </div>
 
           <div style={{ padding: '16px' }}>
-            <h4 style={{ fontSize: '15px', fontWeight: 700, margin: '0 0 6px', color: '#fff' }}>
+            <h4 
+              style={{ fontSize: '15px', fontWeight: 700, margin: '0 0 6px', color: '#fff', cursor: 'pointer' }}
+              onClick={(e) => {
+                e.stopPropagation();
+                if (currentTrack?.artists?.[0]?.id) {
+                  navigate(`/artist/${currentTrack.artists[0].id}`);
+                }
+              }}
+              className="hover:underline"
+            >
               {artistName}
             </h4>
             <div style={{

@@ -346,14 +346,23 @@ function normalizeArtist(item) {
 async function fetchiTunesImage(term, type = 'song') {
   try {
     const entity = type === 'artist' ? 'musicArtist' : (type === 'album' ? 'album' : 'song');
-    const response = await fetch(`https://itunes.apple.com/search?term=${encodeURIComponent(term)}&entity=${entity}&limit=1`);
+    let response = await fetch(`https://itunes.apple.com/search?term=${encodeURIComponent(term)}&entity=${entity}&limit=1`);
     if (!response.ok) return null;
-    const data = await response.json();
-    const result = data.results?.[0];
+    let data = await response.json();
+    let result = data.results?.[0];
+
+    // iTunes musicArtist entity often doesn't have artwork. 
+    // Fallback to searching for a song by that artist to get an image.
+    if (!result?.artworkUrl100 && type === 'artist') {
+      response = await fetch(`https://itunes.apple.com/search?term=${encodeURIComponent(term)}&entity=song&limit=1`);
+      if (response.ok) {
+        data = await response.json();
+        result = data.results?.[0];
+      }
+    }
+    
     if (!result) return null;
     
-    // iTunes provides artworkUrl100, artworkUrl60, etc. 
-    // We can get a larger one by replacing the dimensions.
     const url = result.artworkUrl100 || result.artworkUrl60;
     return url ? url.replace('100x100bb.jpg', '600x600bb.jpg') : null;
   } catch {

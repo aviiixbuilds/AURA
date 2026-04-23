@@ -42,23 +42,51 @@ const MainLayout = ({ children }) => {
   );
 };
 
+class ErrorBoundary extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = { hasError: false, error: null, info: null };
+  }
+  static getDerivedStateFromError(error) {
+    return { hasError: true, error };
+  }
+  componentDidCatch(error, info) {
+    console.error("ErrorBoundary caught an error", error, info);
+    this.setState({ info });
+  }
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div style={{ color: 'white', padding: '50px', background: 'red', minHeight: '100vh' }}>
+          <h2>Something went wrong.</h2>
+          <pre style={{ whiteSpace: 'pre-wrap' }}>{this.state.error?.toString()}</pre>
+          <pre style={{ whiteSpace: 'pre-wrap', fontSize: '12px' }}>{this.state.info?.componentStack}</pre>
+        </div>
+      );
+    }
+    return this.props.children;
+  }
+}
+
 function App() {
   return (
-    <Router basename="/AURA">
-      <MainLayout>
-        <AnimatePresence mode="wait">
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/search" element={<Search />} />
-            <Route path="/library" element={<Library />} />
-            <Route path="/playlist/:id" element={<PlaylistDetail />} />
-            <Route path="/album/:id" element={<AlbumDetail />} />
-            <Route path="/artist/:id" element={<ArtistPage />} />
-            <Route path="/liked" element={<LikedSongs />} />
-          </Routes>
-        </AnimatePresence>
-      </MainLayout>
-    </Router>
+    <ErrorBoundary>
+      <Router basename="/AURA">
+        <MainLayout>
+          <AnimatePresence mode="wait">
+            <Routes>
+              <Route path="/" element={<Home />} />
+              <Route path="/search" element={<Search />} />
+              <Route path="/library" element={<Library />} />
+              <Route path="/playlist/:id" element={<PlaylistDetail />} />
+              <Route path="/album/:id" element={<AlbumDetail />} />
+              <Route path="/artist/:id" element={<ArtistPage />} />
+              <Route path="/liked" element={<LikedSongs />} />
+            </Routes>
+          </AnimatePresence>
+        </MainLayout>
+      </Router>
+    </ErrorBoundary>
   );
 }
 

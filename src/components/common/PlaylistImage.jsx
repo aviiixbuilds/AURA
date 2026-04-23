@@ -7,6 +7,12 @@ const RAINBOW_GRADIENT = 'linear-gradient(45deg, #ff0000, #ff7300, #fffb00, #48f
 const PlaylistImage = ({ item, size = 64, style = {}, type = 'playlist' }) => {
   const [isBroken, setIsBroken] = useState(false);
   const [fallbackUrl, setFallbackUrl] = useState(null);
+
+  // Reset state when item changes to ensure image updates
+  useEffect(() => {
+    setIsBroken(false);
+    setFallbackUrl(null);
+  }, [item?.id, item?.name]);
   
   // High-priority: primary images from item or album
   const primaryUrl = item?.images?.[0]?.url || item?.album?.images?.[0]?.url || item?.images?.[0] || null;
