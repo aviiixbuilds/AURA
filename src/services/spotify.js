@@ -109,33 +109,33 @@ async function apiFetch(endpoint, retryCount = 0) {
 // ─────────────────────────────────────────────────────────────────────────────
 
 const MOCK_TRACKS = [
-  { id: 'mt1', name: 'Blinding Lights', artists: [{ id: 'ma1', name: 'The Weeknd' }], album: { name: 'After Hours', images: [{ url: 'https://i.scdn.co/image/ab67616d0000b2738863bc11d2aa12b54f5aeb36' }] }, duration_ms: 200040, preview_url: null },
-  { id: 'mt2', name: 'As It Was', artists: [{ id: 'ma2', name: 'Harry Styles' }], album: { name: "Harry's House", images: [{ url: 'https://i.scdn.co/image/ab67616d0000b273b46f74097655d7f353caab14' }] }, duration_ms: 167303, preview_url: null },
-  { id: 'mt3', name: 'Stay', artists: [{ id: 'ma3', name: 'The Kid LAROI' }, { id: 'ma4', name: 'Justin Bieber' }], album: { name: 'F*CK LOVE 3', images: [{ url: 'https://i.scdn.co/image/ab67616d0000b273dc30583ba717007b00cceb25' }] }, duration_ms: 141806, preview_url: null },
-  { id: 'mt4', name: 'Heat Waves', artists: [{ id: 'ma5', name: 'Glass Animals' }], album: { name: 'Dreamland', images: [{ url: 'https://i.scdn.co/image/ab67616d0000b273712701c5e263efc8726b1464' }] }, duration_ms: 238805, preview_url: null },
-  { id: 'mt5', name: 'Bad Habit', artists: [{ id: 'ma6', name: 'Steve Lacy' }], album: { name: 'Gemini Rights', images: [{ url: 'https://i.scdn.co/image/ab67616d0000b2732905a7c5d0f31b65e5c60c9a' }] }, duration_ms: 231041, preview_url: null },
-  { id: 'mt6', name: 'Anti-Hero', artists: [{ id: 'ma7', name: 'Taylor Swift' }], album: { name: 'Midnights', images: [{ url: 'https://i.scdn.co/image/ab67616d0000b273bb54dde68cd23e2a268ae0f5' }] }, duration_ms: 200690, preview_url: null },
-  { id: 'mt7', name: 'Levitating', artists: [{ id: 'ma8', name: 'Dua Lipa' }], album: { name: 'Future Nostalgia', images: [{ url: 'https://i.scdn.co/image/ab67616d0000b2734bc66095f8a70bc4e6593f4f' }] }, duration_ms: 203806, preview_url: null },
-  { id: 'mt8', name: 'Watermelon Sugar', artists: [{ id: 'ma2', name: 'Harry Styles' }], album: { name: 'Fine Line', images: [{ url: 'https://i.scdn.co/image/ab67616d0000b2732e8ed79e177ff6011076f5f0' }] }, duration_ms: 174273, preview_url: null },
-  { id: 'mt9', name: 'good 4 u', artists: [{ id: 'ma9', name: 'Olivia Rodrigo' }], album: { name: 'SOUR', images: [{ url: 'https://i.scdn.co/image/ab67616d0000b273a91c10fe9472d9bd89802e5a' }] }, duration_ms: 178147, preview_url: null },
-  { id: 'mt10', name: 'Peaches', artists: [{ id: 'ma4', name: 'Justin Bieber' }], album: { name: 'Justice', images: [{ url: 'https://i.scdn.co/image/ab67616d0000b2735ef878a782c987d664963d5d' }] }, duration_ms: 198061, preview_url: null },
-  { id: 'mt11', name: 'Flowers', artists: [{ id: 'ma11', name: 'Miley Cyrus' }], album: { name: 'Endless Summer Vacation', images: [{ url: 'https://i.scdn.co/image/ab67616d0000b273f421f15391a62d46e3a63b0a' }] }, duration_ms: 200442, preview_url: null },
-  { id: 'mt12', name: 'Cruel Summer', artists: [{ id: 'ma7', name: 'Taylor Swift' }], album: { name: 'Lover', images: [{ url: 'https://i.scdn.co/image/ab67616d0000b273e787cffec20aa2a396a61647' }] }, duration_ms: 178426, preview_url: null },
-  { id: 'mt13', name: 'Vampire', artists: [{ id: 'ma9', name: 'Olivia Rodrigo' }], album: { name: 'GUTS', images: [{ url: 'https://i.scdn.co/image/ab67616d0000b273e9599540b79316d84d728639' }] }, duration_ms: 219724, preview_url: null },
-  { id: 'mt14', name: 'Kill Bill', artists: [{ id: 'ma14', name: 'SZA' }], album: { name: 'SOS', images: [{ url: 'https://i.scdn.co/image/ab67616d0000b27370dbc9f47669d120ad874813' }] }, duration_ms: 153946, preview_url: null },
-  { id: 'mt15', name: 'Starboy', artists: [{ id: 'ma1', name: 'The Weeknd' }], album: { name: 'Starboy', images: [{ url: 'https://i.scdn.co/image/ab67616d0000b2734718e2b124f79258eb7bc552' }] }, duration_ms: 230453, preview_url: null },
-  { id: 'mt16', name: 'About Damn Time', artists: [{ id: 'ma16', name: 'Lizzo' }], album: { name: 'Special', images: [{ url: 'https://i.scdn.co/image/ab67616d0000b273e92823610214a1f6305a413d' }] }, duration_ms: 191852, preview_url: null },
-  { id: 'mt17', name: 'Paint The Town Red', artists: [{ id: 'ma17', name: 'Doja Cat' }], album: { name: 'Scarlet', images: [{ url: 'https://i.scdn.co/image/ab67616d0000b273e9599540b79316d84d728639' }] }, duration_ms: 231750, preview_url: null },
-  { id: 'mt18', name: 'Seven', artists: [{ id: 'ma18', name: 'Jung Kook' }], album: { name: 'Golden', images: [{ url: 'https://i.scdn.co/image/ab67616d0000b27387d7b05537548773c3820980' }] }, duration_ms: 184444, preview_url: null },
-  { id: 'mt19', name: 'Rich Flex', artists: [{ id: 'ma19', name: 'Drake' }, { id: 'ma20', name: '21 Savage' }], album: { name: 'Her Loss', images: [{ url: 'https://i.scdn.co/image/ab67616d0000b273007077a944208a0d249f0556' }] }, duration_ms: 239359, preview_url: null },
-  { id: 'mt20', name: 'Unholy', artists: [{ id: 'ma21', name: 'Sam Smith' }, { id: 'ma22', name: 'Kim Petras' }], album: { name: 'Gloria', images: [{ url: 'https://i.scdn.co/image/ab67616d0000b273007077a944208a0d249f0556' }] }, duration_ms: 156943, preview_url: null },
+  { id: 'mt1', name: 'Blinding Lights', artists: [{ id: 'ma1', name: 'The Weeknd' }], album: { name: 'After Hours', images: [] }, duration_ms: 200040, preview_url: null },
+  { id: 'mt2', name: 'As It Was', artists: [{ id: 'ma2', name: 'Harry Styles' }], album: { name: "Harry's House", images: [] }, duration_ms: 167303, preview_url: null },
+  { id: 'mt3', name: 'Stay', artists: [{ id: 'ma3', name: 'The Kid LAROI' }, { id: 'ma4', name: 'Justin Bieber' }], album: { name: 'F*CK LOVE 3', images: [] }, duration_ms: 141806, preview_url: null },
+  { id: 'mt4', name: 'Heat Waves', artists: [{ id: 'ma5', name: 'Glass Animals' }], album: { name: 'Dreamland', images: [] }, duration_ms: 238805, preview_url: null },
+  { id: 'mt5', name: 'Bad Habit', artists: [{ id: 'ma6', name: 'Steve Lacy' }], album: { name: 'Gemini Rights', images: [] }, duration_ms: 231041, preview_url: null },
+  { id: 'mt6', name: 'Anti-Hero', artists: [{ id: 'ma7', name: 'Taylor Swift' }], album: { name: 'Midnights', images: [] }, duration_ms: 200690, preview_url: null },
+  { id: 'mt7', name: 'Levitating', artists: [{ id: 'ma8', name: 'Dua Lipa' }], album: { name: 'Future Nostalgia', images: [] }, duration_ms: 203806, preview_url: null },
+  { id: 'mt8', name: 'Watermelon Sugar', artists: [{ id: 'ma2', name: 'Harry Styles' }], album: { name: 'Fine Line', images: [] }, duration_ms: 174273, preview_url: null },
+  { id: 'mt9', name: 'good 4 u', artists: [{ id: 'ma9', name: 'Olivia Rodrigo' }], album: { name: 'SOUR', images: [] }, duration_ms: 178147, preview_url: null },
+  { id: 'mt10', name: 'Peaches', artists: [{ id: 'ma4', name: 'Justin Bieber' }], album: { name: 'Justice', images: [] }, duration_ms: 198061, preview_url: null },
+  { id: 'mt11', name: 'Flowers', artists: [{ id: 'ma11', name: 'Miley Cyrus' }], album: { name: 'Endless Summer Vacation', images: [] }, duration_ms: 200442, preview_url: null },
+  { id: 'mt12', name: 'Cruel Summer', artists: [{ id: 'ma7', name: 'Taylor Swift' }], album: { name: 'Lover', images: [] }, duration_ms: 178426, preview_url: null },
+  { id: 'mt13', name: 'Vampire', artists: [{ id: 'ma9', name: 'Olivia Rodrigo' }], album: { name: 'GUTS', images: [] }, duration_ms: 219724, preview_url: null },
+  { id: 'mt14', name: 'Kill Bill', artists: [{ id: 'ma14', name: 'SZA' }], album: { name: 'SOS', images: [] }, duration_ms: 153946, preview_url: null },
+  { id: 'mt15', name: 'Starboy', artists: [{ id: 'ma1', name: 'The Weeknd' }], album: { name: 'Starboy', images: [] }, duration_ms: 230453, preview_url: null },
+  { id: 'mt16', name: 'About Damn Time', artists: [{ id: 'ma16', name: 'Lizzo' }], album: { name: 'Special', images: [] }, duration_ms: 191852, preview_url: null },
+  { id: 'mt17', name: 'Paint The Town Red', artists: [{ id: 'ma17', name: 'Doja Cat' }], album: { name: 'Scarlet', images: [] }, duration_ms: 231750, preview_url: null },
+  { id: 'mt18', name: 'Seven', artists: [{ id: 'ma18', name: 'Jung Kook' }], album: { name: 'Golden', images: [] }, duration_ms: 184444, preview_url: null },
+  { id: 'mt19', name: 'Rich Flex', artists: [{ id: 'ma19', name: 'Drake' }, { id: 'ma20', name: '21 Savage' }], album: { name: 'Her Loss', images: [] }, duration_ms: 239359, preview_url: null },
+  { id: 'mt20', name: 'Unholy', artists: [{ id: 'ma21', name: 'Sam Smith' }, { id: 'ma22', name: 'Kim Petras' }], album: { name: 'Gloria', images: [] }, duration_ms: 156943, preview_url: null },
 ];
 
 const MOCK_PLAYLISTS = [
   {
     id: 'mp1', name: 'Today\'s Top Hits', type: 'playlist',
     description: 'Jung Kook is on top of the world!',
-    images: [{ url: 'https://i.scdn.co/image/ab67706f00000003bd0e19e810bb4b55ab164a95' }],
+    images: [],
     owner: { display_name: 'Spotify' },
     tracks: { total: 50, items: MOCK_TRACKS.slice(0, 15).map(t => ({ track: t })) },
     followers: { total: 35000000 }
@@ -143,7 +143,7 @@ const MOCK_PLAYLISTS = [
   {
     id: 'mp2', name: 'RapCaviar', type: 'playlist',
     description: 'Music that defines what\'s happening in hip-hop.',
-    images: [{ url: 'https://i.scdn.co/image/ab67706f00000003652d0ab2f88d7d63dc8553d8' }],
+    images: [],
     owner: { display_name: 'Spotify' },
     tracks: { total: 50, items: MOCK_TRACKS.filter(t => ['Drake', '21 Savage', 'SZA'].some(a => t.artists[0].name.includes(a))).map(t => ({ track: t })) },
     followers: { total: 14000000 }
@@ -151,7 +151,7 @@ const MOCK_PLAYLISTS = [
   {
     id: 'mp3', name: 'Viva Latino', type: 'playlist',
     description: 'Pegate! The most lit Latin music right now.',
-    images: [{ url: 'https://i.scdn.co/image/ab67706f00000003c3af4c0a1d91a17c04cf5fe8' }],
+    images: [],
     owner: { display_name: 'Spotify' },
     tracks: { total: 50, items: MOCK_TRACKS.slice(5, 12).map(t => ({ track: t })) },
     followers: { total: 11000000 }
@@ -159,7 +159,7 @@ const MOCK_PLAYLISTS = [
   {
     id: 'mp4', name: 'Mood Booster', type: 'playlist',
     description: 'Get happy with today\'s feel-good hits',
-    images: [{ url: 'https://i.scdn.co/image/ab67706f00000003ad43e8946843c738657f9c09' }],
+    images: [],
     owner: { display_name: 'Spotify' },
     tracks: { total: 50, items: MOCK_TRACKS.filter(t => ['Harry Styles', 'Lizzo', 'Dua Lipa'].some(a => t.artists[0].name.includes(a))).map(t => ({ track: t })) },
     followers: { total: 8000000 }
@@ -183,17 +183,17 @@ const MOCK_PLAYLISTS = [
 ];
 
 const MOCK_ALBUMS = [
-  { id: 'ma1', name: 'After Hours', type: 'album', artists: [{ id: 'art1', name: 'The Weeknd' }], images: [{ url: 'https://i.scdn.co/image/ab67616d0000b2738863bc11d2aa12b54f5aeb36' }], release_date: '2020-03-20', total_tracks: 14, tracks: { items: MOCK_TRACKS.slice(0, 6) } },
-  { id: 'ma2', name: "Harry's House", type: 'album', artists: [{ id: 'art2', name: 'Harry Styles' }], images: [{ url: 'https://i.scdn.co/image/ab67616d0000b273b46f74097655d7f353caab14' }], release_date: '2022-05-20', total_tracks: 13, tracks: { items: MOCK_TRACKS.slice(1, 7) } },
-  { id: 'ma3', name: 'Midnights', type: 'album', artists: [{ id: 'art3', name: 'Taylor Swift' }], images: [{ url: 'https://i.scdn.co/image/ab67616d0000b273bb54dde68cd23e2a268ae0f5' }], release_date: '2022-10-21', total_tracks: 23, tracks: { items: MOCK_TRACKS.slice(2, 8) } },
-  { id: 'ma4', name: 'Future Nostalgia', type: 'album', artists: [{ id: 'art4', name: 'Dua Lipa' }], images: [{ url: 'https://i.scdn.co/image/ab67616d0000b2734bc66095f8a70bc4e6593f4f' }], release_date: '2020-03-27', total_tracks: 11, tracks: { items: MOCK_TRACKS.slice(3, 9) } },
+  { id: 'ma1', name: 'After Hours', type: 'album', artists: [{ id: 'art1', name: 'The Weeknd' }], images: [], release_date: '2020-03-20', total_tracks: 14, tracks: { items: MOCK_TRACKS.slice(0, 6) } },
+  { id: 'ma2', name: "Harry's House", type: 'album', artists: [{ id: 'art2', name: 'Harry Styles' }], images: [], release_date: '2022-05-20', total_tracks: 13, tracks: { items: MOCK_TRACKS.slice(1, 7) } },
+  { id: 'ma3', name: 'Midnights', type: 'album', artists: [{ id: 'art3', name: 'Taylor Swift' }], images: [], release_date: '2022-10-21', total_tracks: 23, tracks: { items: MOCK_TRACKS.slice(2, 8) } },
+  { id: 'ma4', name: 'Future Nostalgia', type: 'album', artists: [{ id: 'art4', name: 'Dua Lipa' }], images: [], release_date: '2020-03-27', total_tracks: 11, tracks: { items: MOCK_TRACKS.slice(3, 9) } },
 ];
 
 const MOCK_ARTISTS = [
-  { id: 'art1', name: 'The Weeknd', type: 'artist', images: [{ url: 'https://i.scdn.co/image/ab6761610000e5ebb99584e3e9e3c4e5f0a4c4b8' }], followers: { total: 90000000 }, genres: ['canadian pop', 'r&b'] },
-  { id: 'art2', name: 'Harry Styles', type: 'artist', images: [{ url: 'https://i.scdn.co/image/ab6761610000e5eb8865f5b4be4e87bdc2e43a31' }], followers: { total: 48000000 }, genres: ['pop'] },
-  { id: 'art3', name: 'Taylor Swift', type: 'artist', images: [{ url: 'https://i.scdn.co/image/ab6761610000e5ebb59e13da85833f1fedb5983b' }], followers: { total: 100000000 }, genres: ['pop', 'country pop'] },
-  { id: 'art4', name: 'Dua Lipa', type: 'artist', images: [{ url: 'https://i.scdn.co/image/ab6761610000e5eb30c1a4c074e019a68b59b3a4' }], followers: { total: 75000000 }, genres: ['pop', 'dance pop'] },
+  { id: 'art1', name: 'The Weeknd', type: 'artist', images: [], followers: { total: 90000000 }, genres: ['canadian pop', 'r&b'] },
+  { id: 'art2', name: 'Harry Styles', type: 'artist', images: [], followers: { total: 48000000 }, genres: ['pop'] },
+  { id: 'art3', name: 'Taylor Swift', type: 'artist', images: [], followers: { total: 100000000 }, genres: ['pop', 'country pop'] },
+  { id: 'art4', name: 'Dua Lipa', type: 'artist', images: [], followers: { total: 75000000 }, genres: ['pop', 'dance pop'] },
 ];
 
 const mockSearchResults = {
