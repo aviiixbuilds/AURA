@@ -1,6 +1,7 @@
 import React from 'react';
 import { useSpotify } from '../hooks/useSpotify';
 import PlaylistCard from '../components/cards/PlaylistCard';
+import FilterBar from '../components/common/FilterBar';
 
 const MoodCard = ({ title, emoji, color }) => (
   <div 
@@ -23,6 +24,7 @@ const MoodCard = ({ title, emoji, color }) => (
 
 const Home = () => {
   const { data: homeData, loading, error } = useSpotify('getHomeData');
+  const [activeFilter, setActiveFilter] = React.useState('All');
 
   const moods = [
     { title: 'Focused', emoji: '🧠', color: '#4c2b91' },
@@ -42,8 +44,16 @@ const Home = () => {
   const featured = homeData?.featured;
   const newReleases = homeData?.newReleases;
 
+  const filters = ['All', 'Music', 'Podcasts'];
+
   return (
-    <div className="animate-fade-in" style={{ display: 'flex', flexDirection: 'column', gap: '40px' }}>
+    <div className="animate-fade-in" style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+      <FilterBar 
+        filters={filters} 
+        activeFilter={activeFilter} 
+        onFilterChange={setActiveFilter} 
+      />
+
       {/* Hero Section */}
       <section>
         <h1 style={{ fontSize: '32px', marginBottom: '24px' }}>Good evening</h1>

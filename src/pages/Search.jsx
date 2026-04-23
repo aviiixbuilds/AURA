@@ -3,11 +3,15 @@ import { Search as SearchIcon, X } from 'lucide-react';
 import { spotify } from '../services/spotify';
 import PlaylistCard from '../components/cards/PlaylistCard';
 import TrackRow from '../components/cards/TrackRow';
+import FilterBar from '../components/common/FilterBar';
 
 const Search = () => {
   const [query, setQuery] = useState('');
   const [results, setResults] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [activeFilter, setActiveFilter] = useState('All');
+
+  const filters = ['All', 'Tracks', 'Albums', 'Artists', 'Playlists'];
 
   useEffect(() => {
     if (!query) {
@@ -31,7 +35,12 @@ const Search = () => {
   }, [query]);
 
   return (
-    <div className="animate-fade-in" style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
+    <div className="animate-fade-in" style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+      <FilterBar 
+        filters={filters} 
+        activeFilter={activeFilter} 
+        onFilterChange={setActiveFilter} 
+      />
       {/* Search Bar Container in Main Area */}
       <div style={{ position: 'relative', maxWidth: '500px' }}>
         <div style={{ 
@@ -98,7 +107,7 @@ const Search = () => {
       {results && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '40px' }}>
           {/* Tracks */}
-          {results.tracks?.items?.length > 0 && (
+          {results.tracks?.items?.length > 0 && (activeFilter === 'All' || activeFilter === 'Tracks') && (
             <section>
               <h2 style={{ fontSize: '24px', marginBottom: '16px' }}>Tracks</h2>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
@@ -110,7 +119,7 @@ const Search = () => {
           )}
 
           {/* Albums */}
-          {results.albums?.items?.length > 0 && (
+          {results.albums?.items?.length > 0 && (activeFilter === 'All' || activeFilter === 'Albums') && (
             <section>
               <h2 style={{ fontSize: '24px', marginBottom: '16px' }}>Albums</h2>
               <div style={{ 
@@ -126,7 +135,7 @@ const Search = () => {
           )}
 
           {/* Artists */}
-          {results.artists?.items?.length > 0 && (
+          {results.artists?.items?.length > 0 && (activeFilter === 'All' || activeFilter === 'Artists') && (
             <section>
               <h2 style={{ fontSize: '24px', marginBottom: '16px' }}>Artists</h2>
               <div style={{ 
@@ -142,7 +151,7 @@ const Search = () => {
           )}
 
           {/* Playlists */}
-          {results.playlists?.items?.length > 0 && (
+          {results.playlists?.items?.length > 0 && (activeFilter === 'All' || activeFilter === 'Playlists') && (
             <section>
               <h2 style={{ fontSize: '24px', marginBottom: '16px' }}>Playlists</h2>
               <div style={{ 
