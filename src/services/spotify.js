@@ -44,7 +44,10 @@ async function apiFetch(endpoint, retryCount = 0) {
   const cached = getCached(cacheKey);
   if (cached) return cached;
 
-  if (API_KEYS.length === 0) throw new Error('No API keys configured.');
+  if (API_KEYS.length === 0) {
+    console.warn('No API keys configured. Using mock data fallback.');
+    throw new Error('API_KEYS_EMPTY'); 
+  }
 
   const activeKey = API_KEYS[currentKeyIndex];
 
