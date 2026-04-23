@@ -372,7 +372,8 @@ const Sidebar = () => {
         display: 'flex',
         flexDirection: 'column',
         marginTop: '0px', 
-        overflow: 'visible'
+        overflow: 'visible',
+        minHeight: 0
       }}>
         {/* Library Header */}
         <div style={{
@@ -598,6 +599,7 @@ const Sidebar = () => {
             overflowY: 'auto',
             padding: isCollapsed ? '8px' : '0 8px 8px',
             marginTop: '8px',
+            minHeight: 0,
             display: isGrid ? 'grid' : 'flex',
             flexDirection: 'column',
             gridTemplateColumns: isGrid ? 'repeat(auto-fill, minmax(160px, 1fr))' : 'none',
