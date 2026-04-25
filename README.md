@@ -45,6 +45,31 @@ AURA is designed to be "always on." Our `spotify.js` service layer is a masterpi
 
 ---
 
+## ✨ Core Features
+
+AURA is packed with advanced JavaScript features and a custom-built state management system:
+
+### 🎵 Immersive Music Player
+*   **Persistent Playback**: Music continues seamlessly as you navigate through different pages.
+*   **Smart Queue**: Automatically generates queues based on the playlist or album you're listening to.
+*   **Playback Controls**: Full support for Shuffle, Repeat (Off/All/One), and Volume control.
+
+### 🔍 Advanced Search
+*   **Real-time Discovery**: Instant search results for tracks, albums, artists, and playlists.
+*   **Multi-Category Results**: Segmented search views that help you find exactly what you're looking for.
+
+### 💾 Local Storage Persistence
+*   **Liked Songs Playlist**: A dedicated, personal collection that is saved locally to your browser. No login required.
+*   **Recently Played Tracking**: A dynamic "Recents" section on the home screen that keeps track of your listening history in real-time.
+*   **Volume Memory**: AURA remembers your last volume setting even after you close the tab.
+
+### 🎨 AURA Dynamic UI
+*   **Glassmorphism Design**: A premium, modern aesthetic with blurred backgrounds and sleek transitions.
+*   **Ambient Mode**: A distraction-free listening experience with beautiful, animated backgrounds that respond to the music.
+*   **Responsive Layout**: Optimized for all screen sizes using CSS Container Queries and modern Flexbox/Grid.
+
+---
+
 ## 📂 Project Structure
 
 ```bash
