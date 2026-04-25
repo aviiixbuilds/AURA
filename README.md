@@ -72,52 +72,30 @@ AURA is packed with advanced JavaScript features and a custom-built state manage
 
 ## 📂 Project Structure
 
-```bash
-src/
-├── components/
-│   ├── common/      # FilterBar, Navbar, Sidebar
-│   ├── cards/       # PlaylistCard, TrackRow, MoodCard
-│   ├── player/      # MusicPlayer, AmbientMode
-│   └── sections/    # Contextual UI sections
-├── context/         # Player, Theme, and Library state
-├── hooks/           # useSpotify, usePlayer, etc.
-├── pages/           # Home, Search, Library, Detail views
-├── services/        # Core API logic and fallbacks
-└── assets/          # Brand assets and styles
-```
+AURA follows a modular, feature-first architecture to ensure scalability and clean separation of concerns:
 
----
+### 📦 `src/context/` (State Management)
+*   **`PlayerContext.jsx`**: The brain of the application. Handles audio playback, queue management, simulation logic, and global player state.
+*   **`LibraryContext.jsx`**: Manages user-specific data like Liked Songs, custom playlists, and Recently Played history with Local Storage persistence.
+*   **`ThemeContext.jsx`**: Controls the visual atmosphere and global styling variables.
 
-## 🚀 Getting Started
+### 🪝 `src/hooks/` (Custom Hooks)
+*   **`useSpotify.js`**: A custom hook for fetching data with automatic rotation between multiple API keys and fallback to mock data.
+*   **`usePlayer.js`**: Shortcut for accessing the global player state and controls.
 
-### Prerequisites
-- Node.js (Latest LTS recommended)
-- A RapidAPI Key (Optional, mocks work by default)
+### 🧩 `src/components/` (UI Components)
+*   **`common/`**: Core layout elements like **`Navbar`**, **`Sidebar`**, and the Portal-based **`Tooltip`** system.
+*   **`player/`**: The **`Player`** controls, volume bar, and the high-performance **`AmbientMode`** visualizer.
+*   **`cards/`**: Reusable display components like **`PlaylistCard`** and **`TrackRow`**.
 
-### Installation
+### 📄 `src/pages/` (Views)
+*   **`Home.jsx`**: The dynamic landing page with recent activity grids and personalized sections.
+*   **`LikedSongs.jsx`**: A dedicated view for the user's locally-saved song collection.
+*   **`Search.jsx`**: The multi-category search interface.
+*   **`PlaylistDetail.jsx`** / **`AlbumDetail.jsx`** / **`ArtistPage.jsx`**: Contextual detail views for different Spotify entities.
 
-1. **Clone the project**
-   ```bash
-   git clone https://github.com/aviiixbuilds/AURA.git
-   cd AURA
-   ```
-
-2. **Install Dependencies**
-   ```bash
-   npm install
-   ```
-
-3. **Configure Environment (Optional)**
-   Create a `.env` file in the root:
-   ```env
-   VITE_RAPIDAPI_KEY=your_key_here
-   VITE_RAPIDAPI_KEY_2=another_key_here
-   ```
-
-4. **Launch Development Server**
-   ```bash
-   npm run dev
-   ```
+### ⚙️ `src/services/` (API & Logic)
+*   **`spotify.js`**: The core service layer that handles communication with the Spotify API, iTunes fallback, and error handling.
 
 ---
 
