@@ -7,6 +7,7 @@ import {
 import { usePlayer } from '../../context/PlayerContext';
 import { useLibrary } from '../../context/LibraryContext';
 import PlaylistImage from '../common/PlaylistImage';
+import Tooltip from '../common/Tooltip';
 
 const Player = ({ toggleLyrics }) => {
   const navigate = useNavigate();
@@ -146,24 +147,22 @@ const Player = ({ toggleLyrics }) => {
         gap: '8px', width: '40%' 
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '24px', color: currentTrack ? 'var(--text-muted)' : '#404040' }}>
-          <div className="tooltip-container">
+          <Tooltip content={isShuffle ? "Disable shuffle" : "Enable shuffle"}>
             <Shuffle 
               size={18} 
               className={`control-button ${currentTrack ? "cursor-pointer" : ""}`} 
               onClick={() => currentTrack && toggleShuffle()}
               style={{ color: isShuffle ? '#1DB954' : 'inherit' }}
             />
-            <span className="tooltip">{isShuffle ? "Disable shuffle" : "Enable shuffle"}</span>
-          </div>
+          </Tooltip>
 
-          <div className="tooltip-container">
+          <Tooltip content="Previous">
             <SkipBack 
               size={20} 
               className={`control-button fill-current ${currentTrack ? "cursor-pointer" : ""}`} 
               onClick={() => currentTrack && skipPrevious()}
             />
-            <span className="tooltip">Previous</span>
-          </div>
+          </Tooltip>
 
           <div 
             onClick={() => currentTrack && togglePlay()}
@@ -177,34 +176,32 @@ const Player = ({ toggleLyrics }) => {
             {isPlaying ? <Pause size={20} className="fill-current" /> : <Play size={20} className="fill-current" />}
           </div>
 
-          <div className="tooltip-container">
+          <Tooltip content="Next">
             <SkipForward 
               size={20} 
               className={`control-button fill-current ${currentTrack ? "cursor-pointer" : ""}`} 
               onClick={() => currentTrack && skipNext()}
             />
-            <span className="tooltip">Next</span>
-          </div>
+          </Tooltip>
 
-          <div className="tooltip-container">
-            <Repeat 
-              size={18} 
-              className={`control-button ${currentTrack ? "cursor-pointer" : ""}`} 
-              onClick={() => currentTrack && toggleRepeat()}
-              style={{ color: repeatMode !== 'off' ? '#1DB954' : 'inherit' }}
-            />
-            {repeatMode === 'one' && (
-              <span style={{ 
-                position: 'absolute', top: '-4px', right: '-4px', fontSize: '9px', 
-                background: '#1DB954', color: 'black', borderRadius: '50%', 
-                width: '12px', height: '12px', display: 'flex', alignItems: 'center', 
-                justifyContent: 'center', fontWeight: 'bold' 
-              }}>1</span>
-            )}
-            <span className="tooltip">
-              {repeatMode === 'off' ? "Enable repeat" : repeatMode === 'all' ? "Enable repeat one" : "Disable repeat"}
-            </span>
-          </div>
+          <Tooltip content={repeatMode === 'off' ? "Enable repeat" : repeatMode === 'all' ? "Enable repeat one" : "Disable repeat"}>
+            <div style={{ position: 'relative' }}>
+              <Repeat 
+                size={18} 
+                className={`control-button ${currentTrack ? "cursor-pointer" : ""}`} 
+                onClick={() => currentTrack && toggleRepeat()}
+                style={{ color: repeatMode !== 'off' ? '#1DB954' : 'inherit' }}
+              />
+              {repeatMode === 'one' && (
+                <span style={{ 
+                  position: 'absolute', top: '-4px', right: '-4px', fontSize: '9px', 
+                  background: '#1DB954', color: 'black', borderRadius: '50%', 
+                  width: '12px', height: '12px', display: 'flex', alignItems: 'center', 
+                  justifyContent: 'center', fontWeight: 'bold', pointerEvents: 'none'
+                }}>1</span>
+              )}
+            </div>
+          </Tooltip>
         </div>
         
         <div style={{ width: '100%', display: 'flex', alignItems: 'center', gap: '12px' }}>
@@ -270,15 +267,13 @@ const Player = ({ toggleLyrics }) => {
         display: 'flex', alignItems: 'center', gap: '16px', 
         justifyContent: 'flex-end', width: '30%', color: 'var(--text-muted)' 
       }}>
-        <div className="tooltip-container">
+        <Tooltip content="Lyrics">
           <Mic2 size={18} className={`control-button ${currentTrack ? "cursor-pointer" : ""}`} onClick={toggleLyrics} />
-          <span className="tooltip">Lyrics</span>
-        </div>
+        </Tooltip>
 
-        <div className="tooltip-container">
+        <Tooltip content="Queue">
           <ListMusic size={18} className={`control-button ${currentTrack ? "cursor-pointer" : ""}`} />
-          <span className="tooltip">Queue</span>
-        </div>
+        </Tooltip>
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', width: '120px' }}>
           <Volume2 size={18} />
           <div 

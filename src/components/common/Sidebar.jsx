@@ -8,6 +8,7 @@ import {
 import { useLibrary } from '../../context/LibraryContext';
 import { usePlayer } from '../../context/PlayerContext';
 import PlaylistImage from './PlaylistImage';
+import Tooltip from './Tooltip';
 
 /* ─── Small Navigation Links (Home) ─── */
 const NavItem = ({ icon: Icon, label, to, isCollapsed }) => (
@@ -388,7 +389,7 @@ const Sidebar = () => {
           whiteSpace: 'nowrap',
           overflow: 'visible'
         }}>
-          <div className="tooltip-container">
+          <Tooltip content="Your Library" direction={isCollapsed ? 'right' : 'top'}>
             <button
               onClick={toggleSidebar}
               style={{
@@ -409,20 +410,9 @@ const Sidebar = () => {
               <div style={{ flexShrink: 0, display: 'flex' }}>
                 <Library size={24} />
               </div>
-              <span style={{ 
-                marginLeft: isCollapsed ? '0' : '20px',
-                opacity: isCollapsed ? 0 : 1,
-                width: isCollapsed ? 0 : 'auto',
-                transition: 'all 0.3s ease',
-                display: 'block'
-              }}>Your Library</span>
+              {!isCollapsed && <span style={{ marginLeft: '20px' }}>Your Library</span>}
             </button>
-            {isCollapsed && (
-              <span className="tooltip tooltip-right">
-                Expand Your Library
-              </span>
-            )}
-          </div>
+          </Tooltip>
 
           <div style={{ 
             display: 'flex', 
@@ -434,7 +424,7 @@ const Sidebar = () => {
             transition: 'opacity 0.3s ease',
             marginTop: isCollapsed ? '12px' : '0'
           }}>
-            <div className="tooltip-container">
+            <Tooltip content="Create playlist or folder" direction={isCollapsed ? 'right' : 'top'}>
               <button
                 onClick={handleCreatePlaylist}
                 style={{
@@ -454,8 +444,7 @@ const Sidebar = () => {
               >
                   <Plus size={isCollapsed ? 24 : 20} />
               </button>
-              <span className={`tooltip ${isCollapsed ? 'tooltip-right' : ''}`}>Create playlist or folder</span>
-            </div>
+            </Tooltip>
             {!isCollapsed && (
               <div className="tooltip-container">
                 <button
@@ -610,15 +599,27 @@ const Sidebar = () => {
             alignContent: 'start'
           }}
         >
-          {filteredItems.map(item => (
-            <LibraryItem
-              key={item.id}
-              item={item}
-              type={item._type || item.type || 'playlist'}
-              isCollapsed={isCollapsed}
-              isGrid={isGrid}
-            />
-          ))}
+          {filteredItems.map(item => {
+            const libraryItem = (
+              <LibraryItem
+                key={item.id}
+                item={item}
+                type={item._type || item.type || 'playlist'}
+                isCollapsed={isCollapsed}
+                isGrid={isGrid}
+              />
+            );
+
+            if (isCollapsed) {
+              return (
+                <Tooltip key={item.id} content={item.name} direction="right">
+                  {libraryItem}
+                </Tooltip>
+              );
+            }
+
+            return libraryItem;
+          })}
 
           {filteredItems.length === 0 && !isCollapsed && (
             <div style={{

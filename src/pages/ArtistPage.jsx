@@ -4,6 +4,7 @@ import { useSpotify } from '../hooks/useSpotify';
 import { Play, MoreHorizontal, CheckCircle } from 'lucide-react';
 import TrackRow from '../components/cards/TrackRow';
 import PlaylistImage from '../components/common/PlaylistImage';
+import Tooltip from '../components/common/Tooltip';
 import { usePlayer } from '../context/PlayerContext';
 import { useLibrary } from '../context/LibraryContext';
 
@@ -72,8 +73,8 @@ const ArtistPage = () => {
       </section>
 
       {/* Actions */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: '32px', marginBottom: '32px' }}>
-        <div className="tooltip-container">
+      <div style={{ display: 'flex', alignItems: 'center', gap: '32px', marginBottom: '32px', paddingLeft: '24px' }}>
+        <Tooltip content={isCurrentArtistPlaying ? 'Pause' : 'Play'}>
           <button 
             onClick={handlePlayArtist}
             style={{ 
@@ -95,32 +96,29 @@ const ArtistPage = () => {
               </svg>
             )}
           </button>
-          <span className="tooltip">{isCurrentArtistPlaying ? 'Pause' : 'Play'}</span>
-        </div>
+        </Tooltip>
 
-        <div className="tooltip-container">
+        <Tooltip content={isFollowing(id) ? "Unfollow" : "Follow"}>
           <button 
             onClick={() => toggleFollow(artist)}
             style={{ 
               background: 'transparent', border: '1px solid var(--text-muted)', 
-              color: artistIsFollowing ? 'var(--accent)' : 'white', 
+              color: isFollowing(id) ? 'var(--accent)' : 'white', 
               borderRadius: '24px', padding: '8px 24px', fontWeight: 700, 
               cursor: 'pointer', transition: 'all 0.2s',
-              borderColor: artistIsFollowing ? 'var(--accent)' : 'var(--text-muted)'
+              borderColor: isFollowing(id) ? 'var(--accent)' : 'var(--text-muted)'
             }}
             className="control-button"
           >
-            {artistIsFollowing ? 'FOLLOWING' : 'FOLLOW'}
+            {isFollowing(id) ? 'FOLLOWING' : 'FOLLOW'}
           </button>
-          <span className="tooltip">{artistIsFollowing ? 'Unfollow' : 'Follow'}</span>
-        </div>
-        
-        <div className="tooltip-container">
+        </Tooltip>
+
+        <Tooltip content={`More options for ${name}`}>
           <button style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer' }} className="control-button">
             <MoreHorizontal size={32} />
           </button>
-          <span className="tooltip">More options</span>
-        </div>
+        </Tooltip>
       </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '40px' }}>

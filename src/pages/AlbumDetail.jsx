@@ -6,6 +6,7 @@ import TrackRow from '../components/cards/TrackRow';
 import { usePlayer } from '../context/PlayerContext';
 import { useLibrary } from '../context/LibraryContext';
 import PlaylistImage from '../components/common/PlaylistImage';
+import Tooltip from '../components/common/Tooltip';
 
 const AlbumDetail = () => {
   const { id } = useParams();
@@ -69,7 +70,7 @@ const AlbumDetail = () => {
 
       {/* Actions */}
       <div style={{ display: 'flex', alignItems: 'center', gap: '32px', marginBottom: '32px', paddingLeft: '24px' }}>
-        <div className="tooltip-container">
+        <Tooltip content={`${isCurrentAlbumPlaying ? 'Pause' : 'Play'} ${name}`} direction="bottom">
           <button 
             onClick={() => {
               if (isCurrentAlbumPlaying) {
@@ -97,10 +98,9 @@ const AlbumDetail = () => {
               </svg>
             )}
           </button>
-          <span className="tooltip tooltip-bottom">{isCurrentAlbumPlaying ? 'Pause' : 'Play'} {name}</span>
-        </div>
+        </Tooltip>
 
-        <div className="tooltip-container">
+        <Tooltip content={albumIsLiked ? "Remove from Your Library" : "Save to Your Library"} direction="bottom">
           <button
             onClick={() => album && toggleLike(album)}
             style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '4px', color: albumIsLiked ? 'var(--accent)' : 'var(--text-muted)' }}
@@ -108,18 +108,16 @@ const AlbumDetail = () => {
           >
             <Heart size={32} fill={albumIsLiked ? 'var(--accent)' : 'none'} />
           </button>
-          <span className="tooltip tooltip-bottom">{albumIsLiked ? "Remove from Your Library" : "Save to Your Library"}</span>
-        </div>
+        </Tooltip>
 
-        <div className="tooltip-container">
+        <Tooltip content={`More options for ${name}`} direction="bottom">
           <button
             style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '4px', color: 'var(--text-muted)' }}
             className="control-button"
           >
             <MoreHorizontal size={32} />
           </button>
-          <span className="tooltip tooltip-bottom">More options for {name}</span>
-        </div>
+        </Tooltip>
       </div>
 
       {/* Track List Header */}

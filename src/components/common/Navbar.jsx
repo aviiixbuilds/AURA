@@ -5,6 +5,7 @@ import {
   Search as SearchIcon, Home as HomeIcon, Package,
   Bell, Music
 } from 'lucide-react';
+import Tooltip from './Tooltip';
 
 const Navbar = () => {
   const navigate = useNavigate();
@@ -40,7 +41,7 @@ const Navbar = () => {
         </div>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <div className="tooltip-container">
+          <Tooltip content="Go back" direction="bottom">
             <button 
               onClick={() => navigate(-1)}
               style={{ 
@@ -51,9 +52,8 @@ const Navbar = () => {
             >
               <ChevronLeft size={24} />
             </button>
-            <span className="tooltip tooltip-bottom">Go back</span>
-          </div>
-          <div className="tooltip-container">
+          </Tooltip>
+          <Tooltip content="Go forward" direction="bottom">
             <button 
               onClick={() => navigate(1)}
               style={{ 
@@ -64,8 +64,7 @@ const Navbar = () => {
             >
               <ChevronRight size={24} />
             </button>
-            <span className="tooltip tooltip-bottom">Go forward</span>
-          </div>
+          </Tooltip>
         </div>
       </div>
 
@@ -79,7 +78,7 @@ const Navbar = () => {
         justifyContent: 'center'
       }}>
         {/* Home Button */}
-        <div className="tooltip-container">
+        <Tooltip content="Home" direction="bottom">
           <button 
             onClick={() => navigate('/')}
             style={{ 
@@ -100,8 +99,7 @@ const Navbar = () => {
           >
             <HomeIcon size={24} />
           </button>
-          <span className="tooltip tooltip-bottom">Home</span>
-        </div>
+        </Tooltip>
 
         {/* Search Bar */}
         <div style={{ 
@@ -138,7 +136,7 @@ const Navbar = () => {
             }}
           />
           <div style={{ width: '1px', height: '24px', background: 'rgba(255,255,255,0.2)' }} />
-          <div className="tooltip-container">
+          <Tooltip content="Browse" direction="bottom">
             <button 
               style={{ 
                 background: 'none', border: 'none', color: '#b3b3b3', 
@@ -148,8 +146,7 @@ const Navbar = () => {
             >
               <Package size={20} />
             </button>
-            <span className="tooltip tooltip-bottom">Browse</span>
-          </div>
+          </Tooltip>
         </div>
       </div>
 
