@@ -27,10 +27,10 @@ const MainLayout = ({ children }) => {
         <main className="no-scrollbar" style={{ 
           flex: 1, 
           overflowY: 'auto', 
-          padding: '24px', 
           background: '#121212', 
           borderRadius: '8px',
-          minHeight: 0 
+          minHeight: 0,
+          position: 'relative' // Ensure sticky children position correctly
         }}>
           {children}
         </main>
