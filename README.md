@@ -101,6 +101,6 @@ src/
 Built by **Flashpoint Force**
 
 ### Contributors
-[**Aviral Dwivedi**](https://github.com/aviiixbuilds) • [**Sunny Pandey**](https://github.com/sunnypandey) • [**Ansh Jangir**](https://github.com/saamved)
+[**Aviral Dwivedi**](https://github.com/aviiixbuilds) • [**Sunny Pandey**](https://github.com/pandeysunny016-dot) • [**Ansh Jangir**](https://github.com/saamved)
 
 </div>
