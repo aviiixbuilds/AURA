@@ -1,17 +1,26 @@
 import React, { useState, useEffect } from 'react';
 import { Search as SearchIcon, X } from 'lucide-react';
+import { useLocation } from 'react-router-dom';
 import { spotify } from '../services/spotify';
 import PlaylistCard from '../components/cards/PlaylistCard';
 import TrackRow from '../components/cards/TrackRow';
 import FilterBar from '../components/common/FilterBar';
 
 const Search = () => {
+  const location = useLocation();
   const [query, setQuery] = useState('');
   const [results, setResults] = useState(null);
   const [loading, setLoading] = useState(false);
   const [activeFilter, setActiveFilter] = useState('All');
 
   const filters = ['All', 'Tracks', 'Albums', 'Artists', 'Playlists'];
+
+  // Sync query from URL
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const q = params.get('q');
+    if (q) setQuery(q);
+  }, [location.search]);
 
   useEffect(() => {
     if (!query) {
@@ -107,64 +116,81 @@ const Search = () => {
 
         {results && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '40px' }}>
-            {/* Tracks */}
-            {results.tracks?.items?.length > 0 && (activeFilter === 'All' || activeFilter === 'Tracks') && (
-              <section>
-                <h2 style={{ fontSize: '24px', marginBottom: '16px' }}>Tracks</h2>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                   {results.tracks.items.slice(0, 5).map((track, index) => (
-                     <TrackRow key={track.id + '-' + index} track={track} index={index} />
-                   ))}
-                </div>
-              </section>
-            )}
+            {/* Check if everything is empty */}
+            {!(results.tracks?.items?.length || results.albums?.items?.length || results.artists?.items?.length || results.playlists?.items?.length) ? (
+              <div style={{ 
+                textAlign: 'center', 
+                marginTop: '100px', 
+                display: 'flex', 
+                flexDirection: 'column', 
+                alignItems: 'center', 
+                gap: '12px' 
+              }}>
+                <h2 style={{ fontSize: '24px', fontWeight: 800 }}>No results found for "{query}"</h2>
+                <p style={{ color: 'var(--text-muted)', fontSize: '14px' }}>Please check your spelling or use different keywords.</p>
+              </div>
+            ) : (
+              <>
+                {/* Tracks */}
+                {results.tracks?.items?.length > 0 && (activeFilter === 'All' || activeFilter === 'Tracks') && (
+                  <section>
+                    <h2 style={{ fontSize: '24px', marginBottom: '16px' }}>Tracks</h2>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                      {results.tracks.items.slice(0, 5).map((track, index) => (
+                        <TrackRow key={track.id + '-' + index} track={track} index={index} />
+                      ))}
+                    </div>
+                  </section>
+                )}
 
-            {/* Albums */}
-            {results.albums?.items?.length > 0 && (activeFilter === 'All' || activeFilter === 'Albums') && (
-              <section>
-                <h2 style={{ fontSize: '24px', marginBottom: '16px' }}>Albums</h2>
-                <div style={{ 
-                  display: 'grid', 
-                  gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', 
-                  gap: '24px' 
-                }}>
-                  {results.albums.items.map(album => (
-                    <PlaylistCard key={album.id} item={album} type="album" />
-                  ))}
-                </div>
-              </section>
-            )}
+                {/* Albums */}
+                {results.albums?.items?.length > 0 && (activeFilter === 'All' || activeFilter === 'Albums') && (
+                  <section>
+                    <h2 style={{ fontSize: '24px', marginBottom: '16px' }}>Albums</h2>
+                    <div style={{ 
+                      display: 'grid', 
+                      gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', 
+                      gap: '24px' 
+                    }}>
+                      {results.albums.items.map(album => (
+                        <PlaylistCard key={album.id} item={album} type="album" />
+                      ))}
+                    </div>
+                  </section>
+                )}
 
-            {/* Artists */}
-            {results.artists?.items?.length > 0 && (activeFilter === 'All' || activeFilter === 'Artists') && (
-              <section>
-                <h2 style={{ fontSize: '24px', marginBottom: '16px' }}>Artists</h2>
-                <div style={{ 
-                  display: 'grid', 
-                  gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', 
-                  gap: '24px' 
-                }}>
-                  {results.artists.items.map(artist => (
-                    <PlaylistCard key={artist.id} item={artist} type="artist" />
-                  ))}
-                </div>
-              </section>
-            )}
+                {/* Artists */}
+                {results.artists?.items?.length > 0 && (activeFilter === 'All' || activeFilter === 'Artists') && (
+                  <section>
+                    <h2 style={{ fontSize: '24px', marginBottom: '16px' }}>Artists</h2>
+                    <div style={{ 
+                      display: 'grid', 
+                      gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', 
+                      gap: '24px' 
+                    }}>
+                      {results.artists.items.map(artist => (
+                        <PlaylistCard key={artist.id} item={artist} type="artist" />
+                      ))}
+                    </div>
+                  </section>
+                )}
 
-            {/* Playlists */}
-            {results.playlists?.items?.length > 0 && (activeFilter === 'All' || activeFilter === 'Playlists') && (
-              <section>
-                <h2 style={{ fontSize: '24px', marginBottom: '16px' }}>Playlists</h2>
-                <div style={{ 
-                  display: 'grid', 
-                  gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', 
-                  gap: '24px' 
-                }}>
-                  {results.playlists.items.map(playlist => (
-                    <PlaylistCard key={playlist.id} item={playlist} type="playlist" />
-                  ))}
-                </div>
-              </section>
+                {/* Playlists */}
+                {results.playlists?.items?.length > 0 && (activeFilter === 'All' || activeFilter === 'Playlists') && (
+                  <section>
+                    <h2 style={{ fontSize: '24px', marginBottom: '16px' }}>Playlists</h2>
+                    <div style={{ 
+                      display: 'grid', 
+                      gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', 
+                      gap: '24px' 
+                    }}>
+                      {results.playlists.items.map(playlist => (
+                        <PlaylistCard key={playlist.id} item={playlist} type="playlist" />
+                      ))}
+                    </div>
+                  </section>
+                )}
+              </>
             )}
           </div>
         )}

@@ -12,6 +12,17 @@ const Navbar = () => {
   const location = useLocation();
   const [searchValue, setSearchValue] = useState('');
 
+  // Sync input value with URL when navigating
+  React.useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const q = params.get('q');
+    if (q !== null) {
+      setSearchValue(q);
+    } else {
+      setSearchValue('');
+    }
+  }, [location.search]);
+
   return (
     <nav className="glass-nav" style={{ 
       height: '64px', 
@@ -121,9 +132,12 @@ const Navbar = () => {
             type="text" 
             placeholder="What do you want to play?"
             value={searchValue}
-            onChange={(e) => setSearchValue(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter') navigate(`/search?q=${searchValue}`);
+            onChange={(e) => {
+              const val = e.target.value;
+              setSearchValue(val);
+              // Navigate to search page immediately as the user types
+              // use replace: true to avoid filling history with every character
+              navigate(`/search?q=${encodeURIComponent(val)}`, { replace: true });
             }}
             style={{ 
               background: 'transparent', 
