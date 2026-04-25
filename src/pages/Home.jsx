@@ -47,13 +47,25 @@ const Home = () => {
   const filters = ['All', 'Music', 'Podcasts'];
 
   return (
-    <>
+    <div style={{ position: 'relative' }}>
+      {/* The "HUGE" Gradient Background */}
+      <div style={{
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        height: '300px', 
+        background: `linear-gradient(to bottom, rgba(7, 133, 121, 0.95) 0%, rgba(7, 133, 121, 0.3) 50%, transparent 100%)`,
+        zIndex: 0,
+        pointerEvents: 'none'
+      }} />
+
       <FilterBar 
         filters={filters} 
         activeFilter={activeFilter} 
         onFilterChange={setActiveFilter} 
       />
-      <div className="animate-fade-in" style={{ display: 'flex', flexDirection: 'column', gap: '24px', padding: '0 24px 24px 24px' }}>
+      <div className="animate-fade-in" style={{ display: 'flex', flexDirection: 'column', gap: '24px', padding: '0 24px 24px 24px', position: 'relative', zIndex: 1 }}>
         {/* Hero Section */}
         <section>
           <h1 style={{ fontSize: '32px', marginBottom: '24px', marginTop: '8px' }}>Good evening</h1>
@@ -147,7 +159,7 @@ const Home = () => {
           </section>
         )}
       </div>
-    </>
+    </div>
   );
 
 };
