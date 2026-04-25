@@ -72,7 +72,7 @@ class ErrorBoundary extends React.Component {
 function App() {
   return (
     <ErrorBoundary>
-      <Router basename="/AURA">
+      <Router basename={window.location.hostname.endsWith('github.io') ? '/AURA' : ''}>
         <MainLayout>
           <AnimatePresence mode="wait">
             <Routes>
