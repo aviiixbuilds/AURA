@@ -72,30 +72,31 @@ AURA is packed with advanced JavaScript features and a custom-built state manage
 
 ## 📂 Project Structure
 
-AURA follows a modular, feature-first architecture to ensure scalability and clean separation of concerns:
-
-### 📦 `src/context/` (State Management)
-*   **`PlayerContext.jsx`**: The brain of the application. Handles audio playback, queue management, simulation logic, and global player state.
-*   **`LibraryContext.jsx`**: Manages user-specific data like Liked Songs, custom playlists, and Recently Played history with Local Storage persistence.
-*   **`ThemeContext.jsx`**: Controls the visual atmosphere and global styling variables.
-
-### 🪝 `src/hooks/` (Custom Hooks)
-*   **`useSpotify.js`**: A custom hook for fetching data with automatic rotation between multiple API keys and fallback to mock data.
-*   **`usePlayer.js`**: Shortcut for accessing the global player state and controls.
-
-### 🧩 `src/components/` (UI Components)
-*   **`common/`**: Core layout elements like **`Navbar`**, **`Sidebar`**, and the Portal-based **`Tooltip`** system.
-*   **`player/`**: The **`Player`** controls, volume bar, and the high-performance **`AmbientMode`** visualizer.
-*   **`cards/`**: Reusable display components like **`PlaylistCard`** and **`TrackRow`**.
-
-### 📄 `src/pages/` (Views)
-*   **`Home.jsx`**: The dynamic landing page with recent activity grids and personalized sections.
-*   **`LikedSongs.jsx`**: A dedicated view for the user's locally-saved song collection.
-*   **`Search.jsx`**: The multi-category search interface.
-*   **`PlaylistDetail.jsx`** / **`AlbumDetail.jsx`** / **`ArtistPage.jsx`**: Contextual detail views for different Spotify entities.
-
-### ⚙️ `src/services/` (API & Logic)
-*   **`spotify.js`**: The core service layer that handles communication with the Spotify API, iTunes fallback, and error handling.
+```bash
+src/
+├── components/
+│   ├── common/         # Navbar.jsx, Sidebar.jsx, Tooltip.jsx, FilterBar.jsx
+│   ├── cards/          # PlaylistCard.jsx, TrackRow.jsx, PlaylistImage.jsx
+│   ├── player/         # Player.jsx, AmbientMode.jsx, VolumeControl.jsx
+│   └── sections/       # Contextual UI building blocks
+├── context/
+│   ├── PlayerContext.jsx  # Audio logic, Simulation, & Queue management
+│   ├── LibraryContext.jsx # Liked songs, Playlists, & Recents (Local Storage)
+│   └── ThemeContext.jsx   # Global visual atmosphere & UI tokens
+├── hooks/
+│   ├── useSpotify.js      # Data fetching, API rotation, & Mock handling
+│   └── usePlayer.js       # Global player state shortcut
+├── pages/
+│   ├── Home.jsx           # Main landing, Hero, & Recents grid
+│   ├── Search.jsx         # Multi-category discovery interface
+│   ├── LikedSongs.jsx     # Personal local collection view
+│   ├── PlaylistDetail.jsx # Dynamic playlist entity viewer
+│   ├── AlbumDetail.jsx    # Album-specific tracklist view
+│   └── ArtistPage.jsx     # Artist profile, followers, & top tracks
+├── services/
+│   └── spotify.js         # API Core, iTunes Fallback, & Data Normalization
+└── assets/                # Global index.css & Brand assets
+```
 
 ---
 
