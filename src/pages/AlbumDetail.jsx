@@ -13,14 +13,13 @@ const AlbumDetail = () => {
   const { currentTrack, isPlaying, playTrack, togglePlay } = usePlayer();
   const { toggleLike, isLiked } = useLibrary();
 
-  const isCurrentAlbumPlaying = isPlaying && tracks?.items?.some(i => (i.id || i.track?.id) === currentTrack?.id);
-
   if (loading) return <div style={{ color: 'var(--text-muted)', padding: '40px', textAlign: 'center' }}>Loading the album...</div>;
   if (error) return <div style={{ color: 'var(--text-muted)', padding: '40px', textAlign: 'center' }}>Failed to load album.</div>;
   if (!album) return <div style={{ color: 'var(--text-muted)', padding: '40px', textAlign: 'center' }}>Album not found.</div>;
 
   const { name, images, artists, release_date, total_tracks, tracks } = album;
   const albumIsLiked = album ? isLiked(album.id) : false;
+  const isCurrentAlbumPlaying = isPlaying && tracks?.items?.some(i => (i.id || i.track?.id) === currentTrack?.id);
 
   const year = release_date ? new Date(release_date).getFullYear() : '';
 

@@ -13,14 +13,13 @@ const PlaylistDetail = () => {
   const { currentTrack, isPlaying, playTrack, togglePlay } = usePlayer();
   const { toggleLike, isLiked } = useLibrary();
 
-  const isCurrentPlaylistPlaying = isPlaying && tracks?.items?.some(i => (i.track?.id || i.id) === currentTrack?.id);
-
   if (loading) return <div style={{ color: 'var(--text-muted)', padding: '40px', textAlign: 'center' }}>Unfolding the playlist...</div>;
   if (error) return <div style={{ color: 'var(--text-muted)', padding: '40px', textAlign: 'center' }}>Failed to load playlist.</div>;
   if (!playlist) return <div style={{ color: 'var(--text-muted)', padding: '40px', textAlign: 'center' }}>Playlist not found.</div>;
 
   const { name, images, description, owner, tracks, followers } = playlist;
   const playlistIsLiked = playlist ? isLiked(playlist.id) : false;
+  const isCurrentPlaylistPlaying = isPlaying && tracks?.items?.some(i => (i.track?.id || i.id) === currentTrack?.id);
 
   return (
     <div className="animate-fade-in" style={{ display: 'flex', flexDirection: 'column' }}>
