@@ -5,6 +5,7 @@ import { spotify } from '../services/spotify';
 import PlaylistCard from '../components/cards/PlaylistCard';
 import TrackRow from '../components/cards/TrackRow';
 import FilterBar from '../components/common/FilterBar';
+import Loader from '../components/common/Loader';
 
 const Search = () => {
   const location = useLocation();
@@ -112,7 +113,7 @@ const Search = () => {
           </section>
         )}
 
-        {loading && <div style={{ color: 'var(--text-muted)' }}>Searching the galaxy...</div>}
+        {loading && <Loader />}
 
         {results && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '40px' }}>

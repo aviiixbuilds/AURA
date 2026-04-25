@@ -7,6 +7,7 @@ import { usePlayer } from '../context/PlayerContext';
 import { useNavigate } from 'react-router-dom';
 import { Play, Heart, Plus } from 'lucide-react';
 import PlaylistImage from '../components/common/PlaylistImage';
+import Loader from '../components/common/Loader';
 
 const QuickCard = ({ item, type = 'playlist', customTitle, customImage, onClick }) => {
   const navigate = useNavigate();
@@ -91,7 +92,7 @@ const Home = () => {
   const [activeFilter, setActiveFilter] = React.useState('All');
 
   if (loading) {
-    return <div style={{ color: 'var(--text-muted)' }}>Loading the universe...</div>;
+    return <Loader />;
   }
 
   if (error) {

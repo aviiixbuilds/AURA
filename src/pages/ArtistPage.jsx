@@ -5,6 +5,7 @@ import { Play, MoreHorizontal, CheckCircle } from 'lucide-react';
 import TrackRow from '../components/cards/TrackRow';
 import PlaylistImage from '../components/common/PlaylistImage';
 import Tooltip from '../components/common/Tooltip';
+import Loader from '../components/common/Loader';
 import { usePlayer } from '../context/PlayerContext';
 import { useLibrary } from '../context/LibraryContext';
 
@@ -15,7 +16,7 @@ const ArtistPage = () => {
   const { currentTrack, isPlaying, playTrack, togglePlay } = usePlayer();
   const { toggleFollow, isFollowing } = useLibrary();
 
-  if (artLoading || topLoading) return <div style={{ color: 'var(--text-muted)' }}>Channeling the artist...</div>;
+  if (artLoading || topLoading) return <Loader />;
   if (artError) return <div style={{ color: 'var(--text-muted)' }}>Failed to load artist.</div>;
   if (!artist) return <div style={{ color: 'var(--text-muted)' }}>Artist not found.</div>;
 

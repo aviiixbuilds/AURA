@@ -7,6 +7,7 @@ import { usePlayer } from '../context/PlayerContext';
 import { useLibrary } from '../context/LibraryContext';
 import PlaylistImage from '../components/common/PlaylistImage';
 import Tooltip from '../components/common/Tooltip';
+import Loader from '../components/common/Loader';
 
 const AlbumDetail = () => {
   const { id } = useParams();
@@ -14,7 +15,7 @@ const AlbumDetail = () => {
   const { currentTrack, isPlaying, playTrack, togglePlay } = usePlayer();
   const { toggleLike, isLiked } = useLibrary();
 
-  if (loading) return <div style={{ color: 'var(--text-muted)', padding: '40px', textAlign: 'center' }}>Loading the album...</div>;
+  if (loading) return <Loader />;
   if (error) return <div style={{ color: 'var(--text-muted)', padding: '40px', textAlign: 'center' }}>Failed to load album.</div>;
   if (!album) return <div style={{ color: 'var(--text-muted)', padding: '40px', textAlign: 'center' }}>Album not found.</div>;
 
