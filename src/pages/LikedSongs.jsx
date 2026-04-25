@@ -11,24 +11,33 @@ const LikedSongs = () => {
       {/* Header Banner */}
       <section style={{ 
         display: 'flex', 
-        alignItems: 'flex-end', 
-        gap: '24px', 
-        padding: '24px 0',
+        alignItems: 'center', 
+        gap: 'clamp(16px, 4cqi, 40px)', 
+        padding: '40px 0 40px 24px',
         background: 'linear-gradient(transparent, rgba(0,0,0,0.5))',
         marginBottom: '24px'
       }}>
         <div style={{ 
-          width: '232px', height: '232px', borderRadius: '4px', 
+          width: 'clamp(140px, 20cqi, 232px)', 
+          height: 'clamp(140px, 20cqi, 232px)', 
+          borderRadius: '4px', 
           background: 'linear-gradient(135deg, #450af5, #c4efd9)',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
-          boxShadow: '0 8px 32px rgba(0,0,0,0.5)'
+          boxShadow: '0 8px 32px rgba(0,0,0,0.5)',
+          flexShrink: 0
         }}>
-          <Heart size={100} fill="white" color="white" />
+          <Heart size={80} fill="white" color="white" style={{ width: '40%', height: '40%' }} />
         </div>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', flex: 1, minWidth: 0 }}>
           <span style={{ fontSize: '12px', fontWeight: 700, textTransform: 'uppercase' }}>Playlist</span>
-          <h1 style={{ fontSize: '72px', fontWeight: 900, margin: '8px 0' }}>Liked Songs</h1>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '14px', fontWeight: 600 }}>
+          <h1 style={{ 
+            fontSize: 'clamp(32px, 7cqi, 96px)', 
+            fontWeight: 900, 
+            margin: '0 0 8px 0',
+            lineHeight: 1.1,
+            wordBreak: 'break-word'
+          }}>Liked Songs</h1>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '14px', fontWeight: 600, flexWrap: 'wrap' }}>
             <span>Your personal collection</span>
             <span style={{ color: 'var(--text-muted)' }}>• {likedSongs.length} songs</span>
           </div>

@@ -30,7 +30,8 @@ const MainLayout = ({ children }) => {
           background: '#121212', 
           borderRadius: '8px',
           minHeight: 0,
-          position: 'relative' // Ensure sticky children position correctly
+          position: 'relative', // Ensure sticky children position correctly
+          containerType: 'inline-size' // Enable container queries (cqi)
         }}>
           {children}
         </main>

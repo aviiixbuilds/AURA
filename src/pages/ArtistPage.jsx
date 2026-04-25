@@ -53,12 +53,18 @@ const ArtistPage = () => {
           <PlaylistImage item={artist} type="artist" size={1200} style={{ filter: 'brightness(0.6)' }} />
           <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(rgba(0,0,0,0.1), rgba(0,0,0,0.8))' }} />
         </div>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', zIndex: 1, flex: 1, minWidth: 0 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
             <CheckCircle size={24} style={{ color: '#3d91ff' }} fill="#3d91ff" />
             <span style={{ fontSize: '14px', fontWeight: 600 }}>Verified Artist</span>
           </div>
-          <h1 style={{ fontSize: '96px', fontWeight: 900, margin: '0 0 16px 0' }}>{name}</h1>
+          <h1 style={{ 
+            fontSize: 'clamp(48px, 12cqi, 128px)', 
+            fontWeight: 900, 
+            margin: '0 0 16px 0',
+            lineHeight: 1.1,
+            wordBreak: 'break-word'
+          }}>{name}</h1>
           <span style={{ fontSize: '16px', fontWeight: 600 }}>
             {followers?.total ? `${followers.total.toLocaleString()} monthly listeners` : ''}
           </span>
@@ -78,7 +84,16 @@ const ArtistPage = () => {
             }}
             className="control-button"
           >
-            {isCurrentArtistPlaying ? <MoreHorizontal size={28} className="fill-current" /> : <Play size={28} className="fill-current" />}
+            {isCurrentArtistPlaying ? (
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                <rect x="6" y="4" width="4" height="16" />
+                <rect x="14" y="4" width="4" height="16" />
+              </svg>
+            ) : (
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" style={{ marginLeft: '4px' }}>
+                <path d="M5 3l14 9-14 9V3z" />
+              </svg>
+            )}
           </button>
           <span className="tooltip">{isCurrentArtistPlaying ? 'Pause' : 'Play'}</span>
         </div>

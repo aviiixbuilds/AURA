@@ -10,8 +10,10 @@ import PlaylistImage from '../components/common/PlaylistImage';
 const AlbumDetail = () => {
   const { id } = useParams();
   const { data: album, loading, error } = useSpotify('getAlbum', id);
-  const { playTrack } = usePlayer();
+  const { currentTrack, isPlaying, playTrack, togglePlay } = usePlayer();
   const { toggleLike, isLiked } = useLibrary();
+
+  const isCurrentAlbumPlaying = isPlaying && tracks?.items?.some(i => (i.id || i.track?.id) === currentTrack?.id);
 
   if (loading) return <div style={{ color: 'var(--text-muted)', padding: '40px', textAlign: 'center' }}>Loading the album...</div>;
   if (error) return <div style={{ color: 'var(--text-muted)', padding: '40px', textAlign: 'center' }}>Failed to load album.</div>;
@@ -27,19 +29,36 @@ const AlbumDetail = () => {
       {/* Header Banner */}
       <section style={{ 
         display: 'flex', 
-        alignItems: 'flex-end', 
-        gap: '24px', 
-        padding: '24px 0',
+        alignItems: 'center', 
+        gap: 'clamp(16px, 4cqi, 40px)', 
+        padding: '40px 0 40px 24px',
         background: 'linear-gradient(transparent, rgba(0,0,0,0.5))',
         marginBottom: '24px'
       }}>
-        <div style={{ width: '232px', height: '232px', borderRadius: '4px', overflow: 'hidden', boxShadow: '0 8px 32px rgba(0,0,0,0.5)', flexShrink: 0 }}>
+        <div style={{ 
+          width: 'clamp(140px, 20cqi, 232px)', 
+          height: 'clamp(140px, 20cqi, 232px)', 
+          borderRadius: '4px', 
+          overflow: 'hidden', 
+          boxShadow: '0 8px 32px rgba(0,0,0,0.5)', 
+          flexShrink: 0 
+        }}>
           <PlaylistImage item={album} type="album" size={232} />
         </div>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', flex: 1, minWidth: 0 }}>
           <span style={{ fontSize: '12px', fontWeight: 700, textTransform: 'uppercase' }}>Album</span>
-          <h1 style={{ fontSize: '72px', fontWeight: 900, margin: '8px 0' }}>{name}</h1>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '14px', fontWeight: 600 }}>
+          <h1 style={{ 
+            fontSize: 'clamp(32px, 8cqi, 96px)', 
+            fontWeight: 900, 
+            margin: '0 0 8px 0', 
+            lineHeight: 1.1,
+            wordBreak: 'break-word',
+            display: '-webkit-box',
+            WebkitLineClamp: 3,
+            WebkitBoxOrient: 'vertical',
+            overflow: 'hidden'
+          }}>{name}</h1>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '14px', fontWeight: 600, flexWrap: 'wrap' }}>
             <span style={{ cursor: 'pointer' }} className="hover:underline">{artists?.[0]?.name}</span>
             <span style={{ color: 'var(--text-muted)' }}>
               {year ? ` • ${year}` : ''}
@@ -50,11 +69,13 @@ const AlbumDetail = () => {
       </section>
 
       {/* Actions */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: '32px', marginBottom: '32px' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '32px', marginBottom: '32px', paddingLeft: '24px' }}>
         <div className="tooltip-container">
           <button 
             onClick={() => {
-              if (tracks?.items?.length) {
+              if (isCurrentAlbumPlaying) {
+                togglePlay();
+              } else if (tracks?.items?.length) {
                 playTrack(tracks.items[0], tracks.items);
               }
             }}
@@ -66,9 +87,18 @@ const AlbumDetail = () => {
             }}
             className="control-button"
           >
-            <Play size={28} className="fill-current" />
+            {isCurrentAlbumPlaying ? (
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                <rect x="6" y="4" width="4" height="16" />
+                <rect x="14" y="4" width="4" height="16" />
+              </svg>
+            ) : (
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" style={{ marginLeft: '4px' }}>
+                <path d="M5 3l14 9-14 9V3z" />
+              </svg>
+            )}
           </button>
-          <span className="tooltip tooltip-bottom">Play {name}</span>
+          <span className="tooltip tooltip-bottom">{isCurrentAlbumPlaying ? 'Pause' : 'Play'} {name}</span>
         </div>
 
         <div className="tooltip-container">
