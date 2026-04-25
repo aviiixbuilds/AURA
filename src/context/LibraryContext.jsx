@@ -18,6 +18,10 @@ export const LibraryProvider = ({ children }) => {
 
   const [libraryItems, setLibraryItems] = useState([]);
   const [libraryLoading, setLibraryLoading] = useState(false);
+  const [recentlyPlayed, setRecentlyPlayed] = useState(() => {
+    const saved = localStorage.getItem('aura-recent-played');
+    return saved ? JSON.parse(saved) : [];
+  });
 
   const [stats, setStats] = useState({
     minutesListened: 0,
@@ -32,6 +36,10 @@ export const LibraryProvider = ({ children }) => {
   useEffect(() => {
     localStorage.setItem('aura-playlists', JSON.stringify(playlists));
   }, [playlists]);
+
+  useEffect(() => {
+    localStorage.setItem('aura-recent-played', JSON.stringify(recentlyPlayed));
+  }, [recentlyPlayed]);
 
   /**
    * Fetch trending/popular playlists to populate the sidebar library.
@@ -87,6 +95,7 @@ export const LibraryProvider = ({ children }) => {
   const isLiked = (trackId) => likedSongs.some(s => s.id === trackId);
 
   const addPlay = (track) => {
+    // Add to stats
     setStats(prev => {
       const artist = track.artists?.[0]?.name || 'Unknown';
       const newTopArtists = { ...prev.topArtists };
@@ -97,6 +106,13 @@ export const LibraryProvider = ({ children }) => {
         playCount: prev.playCount + 1,
         topArtists: newTopArtists
       };
+    });
+
+    // Add to recently played
+    setRecentlyPlayed(prev => {
+      const filtered = prev.filter(item => item.id !== track.id);
+      const newRecent = [{ ...track, _type: 'track' }, ...filtered].slice(0, 20);
+      return newRecent;
     });
   };
 
@@ -110,6 +126,7 @@ export const LibraryProvider = ({ children }) => {
     libraryItems,
     libraryLoading,
     stats,
+    recentlyPlayed,
     toggleLike,
     isLiked,
     addPlay,
