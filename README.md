@@ -75,27 +75,27 @@ AURA is packed with advanced JavaScript features and a custom-built state manage
 ```bash
 src/
 ├── components/
-│   ├── common/         # Navbar.jsx, Sidebar.jsx, Tooltip.jsx, FilterBar.jsx
-│   ├── cards/          # PlaylistCard.jsx, TrackRow.jsx, PlaylistImage.jsx
-│   ├── player/         # Player.jsx, AmbientMode.jsx, VolumeControl.jsx
-│   └── sections/       # Contextual UI building blocks
+│   ├── common/
+│   ├── cards/
+│   ├── player/
+│   └── sections/
 ├── context/
-│   ├── PlayerContext.jsx  # Audio logic, Simulation, & Queue management
-│   ├── LibraryContext.jsx # Liked songs, Playlists, & Recents (Local Storage)
-│   └── ThemeContext.jsx   # Global visual atmosphere & UI tokens
+│   ├── PlayerContext.jsx
+│   ├── LibraryContext.jsx
+│   └── ThemeContext.jsx
 ├── hooks/
-│   ├── useSpotify.js      # Data fetching, API rotation, & Mock handling
-│   └── usePlayer.js       # Global player state shortcut
+│   ├── useSpotify.js
+│   └── usePlayer.js
 ├── pages/
-│   ├── Home.jsx           # Main landing, Hero, & Recents grid
-│   ├── Search.jsx         # Multi-category discovery interface
-│   ├── LikedSongs.jsx     # Personal local collection view
-│   ├── PlaylistDetail.jsx # Dynamic playlist entity viewer
-│   ├── AlbumDetail.jsx    # Album-specific tracklist view
-│   └── ArtistPage.jsx     # Artist profile, followers, & top tracks
+│   ├── Home.jsx
+│   ├── Search.jsx
+│   ├── LikedSongs.jsx
+│   ├── PlaylistDetail.jsx
+│   ├── AlbumDetail.jsx
+│   └── ArtistPage.jsx
 ├── services/
-│   └── spotify.js         # API Core, iTunes Fallback, & Data Normalization
-└── assets/                # Global index.css & Brand assets
+│   └── spotify.js
+└── assets/
 ```
 
 ---
