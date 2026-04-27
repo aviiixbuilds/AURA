@@ -13,8 +13,6 @@
     "deploy": "gh-pages -d dist"
   },
   "dependencies": {
-    "@splinetool/react-spline": "^4.1.0",
-    "@splinetool/runtime": "^1.12.88",
     "framer-motion": "^12.38.0",
     "lucide-react": "^1.8.0",
     "node-vibrant": "^4.0.4",
