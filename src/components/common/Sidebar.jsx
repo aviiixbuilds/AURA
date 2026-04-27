@@ -9,6 +9,7 @@ import { useLibrary } from '../../context/LibraryContext';
 import { usePlayer } from '../../context/PlayerContext';
 import PlaylistImage from './PlaylistImage';
 import Tooltip from './Tooltip';
+import sidebarBgVideo from '../../assets/sidebar-bg.mp4';
 
 /* ─── Small Navigation Links (Home) ─── */
 const NavItem = ({ icon: Icon, label, to, isCollapsed }) => (
@@ -52,7 +53,7 @@ const LibraryItem = ({ item, type = 'playlist', isCollapsed, isGrid }) => {
     ? `Playlist • ${item.count || 0} songs`
     : targetType === 'artist'
       ? 'Artist'
-      : `Playlist • ${item.owner?.display_name || 'Spotify'}`;
+      : `Playlist • ${item.owner?.display_name?.replace('Spotify', 'AURA') || 'AURA'}`;
 
   if (isGrid) {
     return (
@@ -371,7 +372,37 @@ const Sidebar = () => {
         overflow: 'visible'
       }}
     >
+      {/* Animated Video Background */}
       <div style={{
+        position: 'absolute',
+        inset: 0,
+        borderRadius: '8px',
+        overflow: 'hidden',
+        zIndex: 0
+      }}>
+        <video
+          src={sidebarBgVideo}
+          autoPlay
+          loop
+          muted
+          playsInline
+          style={{
+            width: '100%',
+            height: '100%',
+            objectFit: 'cover',
+            opacity: 0.6 // Increased opacity for brighter video
+          }}
+        />
+        <div style={{
+          position: 'absolute',
+          inset: 0,
+          background: 'linear-gradient(to bottom, rgba(18,18,18,0.2) 0%, rgba(18,18,18,0.7) 100%)' // Lighter overlay
+        }} />
+      </div>
+
+      <div style={{
+        position: 'relative',
+        zIndex: 1,
         flex: 1,
         display: 'flex',
         flexDirection: 'column',

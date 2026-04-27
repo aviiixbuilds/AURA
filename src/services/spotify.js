@@ -136,7 +136,7 @@ const MOCK_PLAYLISTS = [
     id: 'mp1', name: 'Today\'s Top Hits', type: 'playlist',
     description: 'Jung Kook is on top of the world!',
     images: [],
-    owner: { display_name: 'Spotify' },
+    owner: { display_name: 'AURA' },
     tracks: { total: 50, items: MOCK_TRACKS.slice(0, 15).map(t => ({ track: t })) },
     followers: { total: 35000000 }
   },
@@ -144,7 +144,7 @@ const MOCK_PLAYLISTS = [
     id: 'mp2', name: 'RapCaviar', type: 'playlist',
     description: 'Music that defines what\'s happening in hip-hop.',
     images: [],
-    owner: { display_name: 'Spotify' },
+    owner: { display_name: 'AURA' },
     tracks: { total: 50, items: MOCK_TRACKS.filter(t => ['Drake', '21 Savage', 'SZA'].some(a => t.artists[0].name.includes(a))).map(t => ({ track: t })) },
     followers: { total: 14000000 }
   },
@@ -152,7 +152,7 @@ const MOCK_PLAYLISTS = [
     id: 'mp3', name: 'Viva Latino', type: 'playlist',
     description: 'Pegate! The most lit Latin music right now.',
     images: [],
-    owner: { display_name: 'Spotify' },
+    owner: { display_name: 'AURA' },
     tracks: { total: 50, items: MOCK_TRACKS.slice(5, 12).map(t => ({ track: t })) },
     followers: { total: 11000000 }
   },
@@ -160,7 +160,7 @@ const MOCK_PLAYLISTS = [
     id: 'mp4', name: 'Mood Booster', type: 'playlist',
     description: 'Get happy with today\'s feel-good hits',
     images: [],
-    owner: { display_name: 'Spotify' },
+    owner: { display_name: 'AURA' },
     tracks: { total: 50, items: MOCK_TRACKS.filter(t => ['Harry Styles', 'Lizzo', 'Dua Lipa'].some(a => t.artists[0].name.includes(a))).map(t => ({ track: t })) },
     followers: { total: 8000000 }
   },
@@ -168,7 +168,7 @@ const MOCK_PLAYLISTS = [
     id: 'mp5', name: 'Chill Hits', type: 'playlist',
     description: 'Kick back to the best new and recent chill hits.',
     images: [],
-    owner: { display_name: 'Spotify' },
+    owner: { display_name: 'AURA' },
     tracks: { total: 50, items: MOCK_TRACKS.slice(10, 20).map(t => ({ track: t })) },
     followers: { total: 6000000 }
   },
@@ -176,7 +176,7 @@ const MOCK_PLAYLISTS = [
     id: 'mp6', name: 'Hot Country', type: 'playlist',
     description: 'Country\'s hottest songs right now.',
     images: [],
-    owner: { display_name: 'Spotify' },
+    owner: { display_name: 'AURA' },
     tracks: { total: 50, items: MOCK_TRACKS.slice(0, 8).map(t => ({ track: t })) },
     followers: { total: 5000000 }
   },
@@ -310,7 +310,7 @@ function normalizePlaylist(item) {
     name: raw.name || '',
     description: raw.description || '',
     images: images,
-    owner: { display_name: raw.owner?.name || raw.owner?.display_name || 'Spotify' },
+    owner: { display_name: (raw.owner?.name || raw.owner?.display_name)?.replace('Spotify', 'AURA') || 'AURA' },
     tracks: { total: raw.tracks?.totalCount || raw.tracks?.total || 0, items: [] },
     followers: { total: raw.followers?.total || 0 },
     type: 'playlist'
@@ -531,7 +531,7 @@ class SpotifyService {
         name: data.name || data.title || '',
         description: data.description || '',
         images: (data.images || data.coverArt?.sources || []).map(img => ({ url: img.url || '' })),
-        owner: { display_name: data.owner?.display_name || data.owner?.name || 'Spotify' },
+        owner: { display_name: (data.owner?.display_name || data.owner?.name)?.replace('Spotify', 'AURA') || 'AURA' },
         tracks: {
           total: data.tracks?.totalCount || data.tracks?.total || tracks.length,
           items: tracks

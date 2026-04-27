@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { 
   ChevronLeft, ChevronRight, User, Settings, Wifi, 
   Search as SearchIcon, Home as HomeIcon, Package,
-  Bell, Music
+  Bell, Music, ExternalLink
 } from 'lucide-react';
 import Tooltip from './Tooltip';
 
@@ -11,9 +11,11 @@ const Navbar = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [searchValue, setSearchValue] = useState('');
+  const [isProfileOpen, setIsProfileOpen] = useState(false);
+  const profileRef = useRef(null);
 
   // Sync input value with URL when navigating
-  React.useEffect(() => {
+  useEffect(() => {
     const params = new URLSearchParams(location.search);
     const q = params.get('q');
     if (q !== null) {
@@ -22,6 +24,26 @@ const Navbar = () => {
       setSearchValue('');
     }
   }, [location.search]);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (profileRef.current && !profileRef.current.contains(event.target)) {
+        setIsProfileOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  const menuItems = [
+    { label: 'Account', external: true },
+    { label: 'Profile' },
+    { label: 'Recents' },
+    { label: 'Support', external: true },
+    { label: 'Download', external: true },
+    { label: 'Settings' },
+    { label: 'Log out' },
+  ];
 
   return (
     <nav className="glass-nav" style={{ 
@@ -136,7 +158,6 @@ const Navbar = () => {
               const val = e.target.value;
               setSearchValue(val);
               // Navigate to search page immediately as the user types
-              // use replace: true to avoid filling history with every character
               navigate(`/search?q=${encodeURIComponent(val)}`, { replace: true });
             }}
             style={{ 
@@ -187,17 +208,75 @@ const Navbar = () => {
             <span className="tooltip tooltip-bottom">What's New</span>
           </div>
 
-          <div className="tooltip-container">
-            <div style={{ 
-              background: 'rgba(255,255,255,0.1)', borderRadius: '50%', width: '36px', 
-              height: '36px', display: 'flex', alignItems: 'center', justifyContent: 'center',
-              cursor: 'pointer', overflow: 'hidden'
-            }}
-            className="control-button"
-            >
-              <User size={20} color="#fff" />
+          <div style={{ position: 'relative' }} ref={profileRef}>
+            <div className="tooltip-container">
+              <div 
+                onClick={() => setIsProfileOpen(!isProfileOpen)}
+                style={{ 
+                  background: 'rgba(255,255,255,0.1)', borderRadius: '50%', width: '36px', 
+                  height: '36px', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  cursor: 'pointer', overflow: 'hidden',
+                  border: isProfileOpen ? '2px solid white' : 'none',
+                  boxSizing: 'border-box'
+                }}
+                className="control-button"
+              >
+                <User size={20} color="#fff" />
+              </div>
+              {!isProfileOpen && <span className="tooltip tooltip-bottom">Profile</span>}
             </div>
-            <span className="tooltip tooltip-bottom">Profile</span>
+
+            {isProfileOpen && (
+              <div style={{
+                position: 'absolute',
+                top: 'calc(100% + 8px)',
+                right: 0,
+                width: '320px',
+                background: '#282828',
+                borderRadius: '6px',
+                boxShadow: '0 16px 24px rgba(0,0,0,0.5)',
+                padding: '4px',
+                zIndex: 1000,
+                display: 'flex',
+                flexDirection: 'column'
+              }}>
+                {menuItems.map((item, idx) => (
+                  <button
+                    key={idx}
+                    style={{
+                      background: 'transparent',
+                      border: 'none',
+                      color: 'white',
+                      padding: '12px 16px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      cursor: 'pointer',
+                      borderRadius: '4px',
+                      fontSize: '14px',
+                      fontWeight: 500,
+                      textAlign: 'left'
+                    }}
+                    onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(255,255,255,0.1)'}
+                    onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
+                  >
+                    <span>{item.label}</span>
+                    {item.external && <ExternalLink size={18} color="#b3b3b3" />}
+                  </button>
+                ))}
+                
+                <div style={{ margin: '8px 0', borderTop: '1px solid rgba(255,255,255,0.1)' }} />
+                
+                <div style={{ padding: '12px 16px 8px 16px' }}>
+                  <h3 style={{ fontSize: '15px', fontWeight: 700, margin: '0 0 16px 0', color: 'white' }}>
+                    Your Updates
+                  </h3>
+                  <div style={{ fontSize: '13px', color: '#b3b3b3', paddingBottom: '8px' }}>
+                    No new updates to show
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
 
           <div className="tooltip-container">

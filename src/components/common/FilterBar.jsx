@@ -29,7 +29,7 @@ const FilterBar = ({ filters, activeFilter, onFilterChange }) => {
         alignItems: 'center',
         gap: '12px', 
         padding: '24px 24px 16px 24px', 
-        backgroundColor: scrolled ? 'rgba(7, 133, 121, 1)' : 'transparent',
+        backgroundColor: scrolled ? 'rgba(0, 0, 220, 0.95)' : 'transparent',
         borderBottom: scrolled ? '1px solid rgba(255, 255, 255, 0.1)' : '1px solid transparent',
         transition: 'background-color 0.3s ease, border-bottom 0.3s ease',
       }}>
