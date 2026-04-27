@@ -1,6 +1,9 @@
 import { useState, useEffect } from 'react';
 import { spotify } from '../services/spotify';
 
+// Track initial global load
+let isInitialLoad = true;
+
 export const useSpotify = (method, ...args) => {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -13,7 +16,20 @@ export const useSpotify = (method, ...args) => {
       try {
         setLoading(true);
         setError(null);
+        
+        // Determine artificial delay
+        const delayMs = isInitialLoad ? 3000 : 1500;
+        if (isInitialLoad) isInitialLoad = false;
+
+        const startTime = Date.now();
         const result = await spotify[method](...args);
+        const elapsedTime = Date.now() - startTime;
+        
+        // Wait for the remainder of the delay to ensure loader shows properly
+        if (elapsedTime < delayMs) {
+          await new Promise(resolve => setTimeout(resolve, delayMs - elapsedTime));
+        }
+
         if (isMounted) {
           setData(result);
         }

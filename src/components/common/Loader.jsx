@@ -11,9 +11,14 @@ const Loader = ({ message = "INITIALIZING AURA...." }) => {
       alignItems: 'center', 
       justifyContent: 'center',
       gap: '24px',
-      background: 'transparent'
+      background: 'transparent',
+      animation: 'loader-fade-in 0.5s ease-out forwards'
     }}>
       <style dangerouslySetInnerHTML={{ __html: `
+        @keyframes loader-fade-in {
+          from { opacity: 0; }
+          to { opacity: 1; }
+        }
         @keyframes text-pulse-glow {
           0%, 100% { opacity: 0.6; text-shadow: 0 0 10px rgba(112,0,255,0.4); }
           50% { opacity: 1; text-shadow: 0 0 20px rgba(0,242,255,0.8); }
