@@ -25,7 +25,9 @@ const QuickCard = ({ item, type = 'playlist', customTitle, customImage, onClick 
 
   const handlePlayClick = (e) => {
     e.stopPropagation();
-    if (type === 'track' && item) {
+    if (onClick) {
+      onClick();
+    } else if (type === 'track' && item) {
       playTrack(item);
     } else if (item?.id) {
       navigate(`/${type}/${item.id}`);
@@ -140,18 +142,10 @@ const Home = () => {
             gridAutoRows: '64px',
             gap: '16px 24px'
           }}>
-            {/* 1. Last played song */}
-            {recentlyPlayed.length > 0 && (
-              <QuickCard 
-                item={recentlyPlayed[0]} 
-                type="track" 
-              />
-            )}
-
-            {/* 2. Liked Songs */}
+            {/* 1. Liked Songs */}
             <QuickCard 
               customTitle="Liked Songs"
-              onClick={() => navigate('/library/liked')}
+              onClick={() => navigate('/liked')}
               customImage={
                 <div style={{ 
                   width: '100%', height: '100%', 
@@ -163,12 +157,12 @@ const Home = () => {
               }
             />
 
-            {/* 3-8: From recently played or featured */}
-            {recentlyPlayed.slice(1, 7).map((item, idx) => (
+            {/* 2-8: From recently played or featured */}
+            {recentlyPlayed.slice(0, 7).map((item, idx) => (
               <QuickCard key={`recent-${idx}`} item={item} type={item._type || 'playlist'} />
             ))}
 
-            {recentlyPlayed.length < 7 && featured?.playlists?.items?.slice(0, 6 - (recentlyPlayed.length - 1)).map((item, idx) => (
+            {recentlyPlayed.length < 7 && featured?.playlists?.items?.slice(0, 7 - recentlyPlayed.length).map((item, idx) => (
               <QuickCard key={`feat-${idx}`} item={item} type="playlist" />
             ))}
           </div>
