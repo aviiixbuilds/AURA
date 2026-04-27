@@ -79,10 +79,8 @@ const Player = ({ toggleLyrics }) => {
   return (
     <footer style={{ 
       height: 'var(--player-height)', 
-      position: 'fixed', 
-      bottom: 0, 
-      left: 0, 
-      right: 0,
+      position: 'relative',
+      flexShrink: 0,
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'space-between',

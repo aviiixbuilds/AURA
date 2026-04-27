@@ -636,6 +636,7 @@ class SpotifyService {
       const artist = data.data?.artist || data.artist || data;
       const topTracks = artist.discography?.topTracks?.items || artist.discography?.popularReleases?.items || [];
       const tracks = topTracks.map(item => normalizeTrack(item.track || item)).filter(Boolean);
+      if (tracks.length === 0) throw new Error("No tracks found, using fallback");
       return { tracks };
     } catch {
       console.warn(`Artist top tracks API failed. Returning mock tracks.`);

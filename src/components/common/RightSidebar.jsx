@@ -9,6 +9,58 @@ const MIN_WIDTH = 280;
 const MAX_WIDTH = 600;
 const DEFAULT_WIDTH = 340;
 
+import { spotify } from '../../services/spotify';
+
+const ArtistHeaderImage = ({ artistId, artistName }) => {
+  const [imgUrl, setImgUrl] = useState(null);
+
+  useEffect(() => {
+    const fetchImg = async () => {
+      if (!artistId) return;
+      try {
+        const data = await spotify.getArtist(artistId);
+        const url = data?.images?.[0]?.url;
+        if (url) {
+          setImgUrl(url);
+        } else {
+          // Fallback to Wikipedia to get a real photo of the artist
+          try {
+            const wikiRes = await fetch(`https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(artistName)}`);
+            const wikiData = await wikiRes.json();
+            const wikiImg = wikiData.originalimage?.source || wikiData.thumbnail?.source;
+            if (wikiImg) {
+              setImgUrl(wikiImg);
+            } else {
+              // Final fallback to iTunes (might be a song cover)
+              const fallback = await spotify.fetchiTunesImage(artistName, 'artist');
+              if (fallback) setImgUrl(fallback);
+            }
+          } catch (err) {
+            console.error("Wiki fetch failed", err);
+          }
+        }
+      } catch (err) {
+        console.error("Failed to fetch artist image", err);
+      }
+    };
+    fetchImg();
+  }, [artistId, artistName]);
+
+  return (
+    <div style={{ width: '100%', height: '100%', background: '#282828' }}>
+      {imgUrl ? (
+        <img 
+          src={imgUrl} 
+          alt="" 
+          style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center 20%', filter: 'brightness(0.9)' }} 
+        />
+      ) : (
+        <div style={{ width: '100%', height: '100%', background: 'linear-gradient(45deg, #121212, #282828)' }} />
+      )}
+    </div>
+  );
+};
+
 const RightSidebar = () => {
   const navigate = useNavigate();
   const { currentTrack } = usePlayer();
@@ -266,24 +318,31 @@ const RightSidebar = () => {
           borderRadius: '8px',
           overflow: 'hidden',
           flexShrink: 0,
-          background: 'rgba(255,255,255,0.06)',
+          background: '#181818',
+          position: 'relative',
+          boxShadow: '0 4px 12px rgba(0,0,0,0.5)'
         }}>
-          {/* Artist header image (use album art as bg) */}
+          {/* Artist header image */}
           <div style={{
-            position: 'absolute', inset: 0, zIndex: -1, overflow: 'hidden'
+            position: 'absolute', inset: 0, zIndex: 0, overflow: 'hidden'
           }}>
-            <PlaylistImage item={currentTrack} type="track" size={120} style={{ filter: 'brightness(0.6)' }} />
+            <ArtistHeaderImage artistId={currentTrack?.artists?.[0]?.id} artistName={artistName} />
+            <div style={{
+              position: 'absolute', inset: 0,
+              background: 'linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.2) 30%, rgba(24,24,24,0.95) 60%, rgba(24,24,24,1) 100%)'
+            }} />
           </div>
           <div style={{
-            width: '100%', height: '120px',
-            background: 'linear-gradient(rgba(0,0,0,0.2), rgba(0,0,0,0.7))',
-            display: 'flex', alignItems: 'flex-end', padding: '12px',
+            position: 'relative',
+            zIndex: 1,
+            width: '100%', height: '140px',
+            display: 'flex', alignItems: 'flex-end', padding: '16px',
             boxSizing: 'border-box',
           }}>
-            <span style={{ fontSize: '13px', fontWeight: 700, color: '#fff' }}>About the artist</span>
+            <span style={{ fontSize: '15px', fontWeight: 700, color: '#fff', textShadow: '0 2px 8px rgba(0,0,0,0.8)' }}>About the artist</span>
           </div>
 
-          <div style={{ padding: '16px' }}>
+          <div style={{ padding: '0 16px 16px', position: 'relative', zIndex: 1 }}>
             <h4 
               style={{ fontSize: '15px', fontWeight: 700, margin: '0 0 6px', color: '#fff', cursor: 'pointer' }}
               onClick={(e) => {

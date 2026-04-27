@@ -22,6 +22,19 @@ const PlaylistImage = ({ item, size = 64, style = {}, type = 'playlist' }) => {
   useEffect(() => {
     const recoverImage = async () => {
       if ((!primaryUrl || isBroken) && !fallbackUrl && item?.name) {
+        // Special case for artists: Try Wikipedia for high-res portraits
+        if (type === 'artist') {
+          try {
+            const res = await fetch(`https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(item.name)}`);
+            const data = await res.json();
+            const wikiImg = data.originalimage?.source || data.thumbnail?.source;
+            if (wikiImg) {
+              setFallbackUrl(wikiImg);
+              return;
+            }
+          } catch (e) {}
+        }
+
         const term = type === 'track' 
           ? `${item.name} ${item.artists?.[0]?.name || ''}`
           : item.name;
@@ -50,7 +63,24 @@ const PlaylistImage = ({ item, size = 64, style = {}, type = 'playlist' }) => {
 
   const gridImages = imageUrl ? [] : getGridImages();
 
-  // 1. Primary Image (or Fallback from iTunes)
+  // 1. Special case for Liked Songs
+  if (type === 'liked') {
+    return (
+      <div style={{
+        width: '100%',
+        height: '100%',
+        background: 'linear-gradient(135deg, #450af5, #c4efd9)',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        ...style
+      }}>
+        <Heart size={size * 0.4} fill="white" color="white" />
+      </div>
+    );
+  }
+
+  // 2. Primary Image (or Fallback from iTunes)
   if (imageUrl) {
     return (
       <img
@@ -68,7 +98,7 @@ const PlaylistImage = ({ item, size = 64, style = {}, type = 'playlist' }) => {
     );
   }
 
-  // 2. 2x2 Grid Fallback
+  // 3. 2x2 Grid Fallback
   if (gridImages.length === 4) {
     return (
       <div style={{
@@ -84,23 +114,6 @@ const PlaylistImage = ({ item, size = 64, style = {}, type = 'playlist' }) => {
             <PlaylistImage item={{ images: [{ url: src }] }} type="track" size={size / 2} />
           </div>
         ))}
-      </div>
-    );
-  }
-
-  // 3. Special case for Liked Songs
-  if (type === 'liked') {
-    return (
-      <div style={{
-        width: '100%',
-        height: '100%',
-        background: 'linear-gradient(135deg, #450af5, #c4efd9)',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        ...style
-      }}>
-        <Heart size={size * 0.4} fill="white" color="white" />
       </div>
     );
   }

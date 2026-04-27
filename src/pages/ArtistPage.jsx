@@ -16,13 +16,32 @@ const ArtistPage = () => {
   const { currentTrack, isPlaying, playTrack, togglePlay } = usePlayer();
   const { toggleFollow, isFollowing } = useLibrary();
 
+  const [wikiImg, setWikiImg] = React.useState(null);
+
+  React.useEffect(() => {
+    // Reset the image whenever the artist changes to prevent stale images
+    setWikiImg(null);
+
+    if (artist && (!artist.images || artist.images.length === 0) && artist.name) {
+      fetch(`https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(artist.name)}`)
+        .then(res => res.json())
+        .then(data => {
+          const img = data.originalimage?.source || data.thumbnail?.source;
+          if (img) setWikiImg(img);
+        })
+        .catch(() => {});
+    }
+  }, [artist?.id]);
+
   if (artLoading || topLoading) return <Loader message="EXPLORING UNIVERSE.." />;
   if (artError) return <div style={{ color: 'var(--text-muted)' }}>Failed to load artist.</div>;
   if (!artist) return <div style={{ color: 'var(--text-muted)' }}>Artist not found.</div>;
 
   const { name, followers, genres } = artist;
   const genreList = Array.isArray(genres) ? genres : [];
-  
+
+  const artistImageUrl = wikiImg || artist?.images?.[0]?.url || null;
+
   const artistIsFollowing = isFollowing(id);
   
   const handlePlayArtist = () => {
@@ -52,12 +71,16 @@ const ArtistPage = () => {
         overflow: 'hidden'
       }}>
         <div style={{ position: 'absolute', inset: 0, zIndex: -1 }}>
-          <PlaylistImage item={artist} type="artist" size={1200} style={{ filter: 'brightness(0.6)' }} />
-          <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(rgba(0,0,0,0.1), rgba(0,0,0,0.8))' }} />
+          {artistImageUrl ? (
+            <img src={artistImageUrl} style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center 20%', filter: 'brightness(0.6)' }} alt={name} />
+          ) : (
+            <PlaylistImage item={artist} type="artist" size={1200} style={{ filter: 'brightness(0.6)' }} />
+          )}
+          <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to bottom, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.5) 50%, rgba(10,10,10,1) 100%)' }} />
         </div>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', zIndex: 1, flex: 1, minWidth: 0 }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', zIndex: 1, flex: 1, minWidth: 0, textShadow: '0 2px 16px rgba(0,0,0,0.8)' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <CheckCircle size={24} style={{ color: '#3d91ff' }} fill="#3d91ff" />
+            <CheckCircle size={24} style={{ color: '#3d91ff', filter: 'drop-shadow(0 0 4px rgba(0,0,0,0.5))' }} fill="#3d91ff" />
             <span style={{ fontSize: '14px', fontWeight: 600 }}>Verified Artist</span>
           </div>
           <h1 style={{ 
@@ -65,7 +88,8 @@ const ArtistPage = () => {
             fontWeight: 900, 
             margin: '0 0 16px 0',
             lineHeight: 1.1,
-            wordBreak: 'break-word'
+            wordBreak: 'break-word',
+            letterSpacing: '-0.04em'
           }}>{name}</h1>
           <span style={{ fontSize: '16px', fontWeight: 600 }}>
             {followers?.total ? `${followers.total.toLocaleString()} monthly listeners` : ''}
@@ -143,13 +167,18 @@ const ArtistPage = () => {
           <div style={{ 
             background: 'var(--bg-card)', padding: '24px', borderRadius: '12px',
             position: 'relative', overflow: 'hidden',
-            height: '300px', display: 'flex', flexDirection: 'column', justifyContent: 'flex-end'
+            height: '300px', display: 'flex', flexDirection: 'column', justifyContent: 'flex-end',
+            boxShadow: '0 8px 24px rgba(0,0,0,0.5)'
           }}>
              <div style={{ position: 'absolute', inset: 0, zIndex: 0 }}>
-               <PlaylistImage item={artist} type="artist" size={400} style={{ filter: 'brightness(0.4)' }} />
-               <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(rgba(0,0,0,0.2), rgba(0,0,0,0.8))' }} />
+               {artistImageUrl ? (
+                 <img src={artistImageUrl} style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center 20%', filter: 'brightness(0.6)' }} alt={name} />
+               ) : (
+                 <PlaylistImage item={artist} type="artist" size={400} style={{ filter: 'brightness(0.4)' }} />
+               )}
+               <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.4) 50%, rgba(18,18,18,0.95) 100%)' }} />
              </div>
-             <div style={{ position: 'relative', zIndex: 1 }}>
+             <div style={{ position: 'relative', zIndex: 1, textShadow: '0 2px 4px rgba(0,0,0,0.8)' }}>
              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                <span style={{ fontSize: '14px', fontWeight: 700 }}>Genres</span>
                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
@@ -158,8 +187,9 @@ const ArtistPage = () => {
                      const genreName = typeof genre === 'string' ? genre : (genre?.name || 'Unknown');
                      return (
                        <span key={i} style={{ 
-                         background: 'rgba(255,255,255,0.1)', padding: '4px 12px', 
-                         borderRadius: '16px', fontSize: '12px', textTransform: 'capitalize'
+                         background: 'rgba(255,255,255,0.15)', padding: '6px 14px', 
+                         borderRadius: '16px', fontSize: '13px', textTransform: 'capitalize',
+                         backdropFilter: 'blur(8px)', border: '1px solid rgba(255,255,255,0.1)'
                        }}>{genreName}</span>
                      );
                    })
