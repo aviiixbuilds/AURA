@@ -113,7 +113,7 @@ const Search = () => {
           </section>
         )}
 
-        {loading && <Loader />}
+        {loading && <Loader message="EXPLORING UNIVERSE.." />}
 
         {results && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '40px' }}>

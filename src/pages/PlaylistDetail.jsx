@@ -15,7 +15,7 @@ const PlaylistDetail = () => {
   const { currentTrack, isPlaying, playTrack, togglePlay } = usePlayer();
   const { toggleLike, isLiked } = useLibrary();
 
-  if (loading) return <Loader />;
+  if (loading) return <Loader message="PLAYLIST UNIVERSE UNFOLDING.." />;
   if (error) return <div style={{ color: 'var(--text-muted)', padding: '40px', textAlign: 'center' }}>Failed to load playlist.</div>;
   if (!playlist) return <div style={{ color: 'var(--text-muted)', padding: '40px', textAlign: 'center' }}>Playlist not found.</div>;
 

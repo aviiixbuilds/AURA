@@ -1,6 +1,6 @@
 import React from 'react';
 
-const Loader = () => {
+const Loader = ({ message = "INITIALIZING AURA...." }) => {
   return (
     <div style={{ 
       width: '100%', 
@@ -10,117 +10,95 @@ const Loader = () => {
       flexDirection: 'column',
       alignItems: 'center', 
       justifyContent: 'center',
-      gap: '40px',
-      background: 'transparent',
-      perspective: '1000px'
+      gap: '24px',
+      background: 'transparent'
     }}>
       <style dangerouslySetInnerHTML={{ __html: `
-        @keyframes orbit {
-          0% { transform: rotateX(45deg) rotateY(0deg) rotateZ(0deg); }
-          100% { transform: rotateX(45deg) rotateY(360deg) rotateZ(360deg); }
-        }
-        @keyframes pulse {
-          0%, 100% { transform: scale(1); opacity: 0.8; filter: blur(2px); }
-          50% { transform: scale(1.2); opacity: 1; filter: blur(0px); }
-        }
-        @keyframes float {
-          0%, 100% { transform: translateY(0); }
-          50% { transform: translateY(-20px); }
-        }
-        
-        .aura-loader-container {
-          position: relative;
-          width: 120px;
-          height: 120px;
-          transform-style: preserve-3d;
-          animation: orbit 4s linear infinite, float 3s ease-in-out infinite;
+        @keyframes text-pulse-glow {
+          0%, 100% { opacity: 0.6; text-shadow: 0 0 10px rgba(112,0,255,0.4); }
+          50% { opacity: 1; text-shadow: 0 0 20px rgba(0,242,255,0.8); }
         }
 
-        .aura-ring {
+        .video-orb-container {
+          position: relative;
+          width: 150px;
+          height: 150px;
+          border-radius: 50%;
+          overflow: visible;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          background: #000;
+          box-shadow: 0 0 100px 30px rgba(112, 0, 255, 0.15), 0 0 200px 80px rgba(0, 242, 255, 0.08);
+        }
+
+        .video-orb-container::before {
+          content: '';
           position: absolute;
-          top: 0;
-          left: 0;
           width: 100%;
           height: 100%;
-          border: 4px solid transparent;
           border-radius: 50%;
-          box-sizing: border-box;
+          background: radial-gradient(circle at center, rgba(0, 242, 255, 0.12), rgba(112, 0, 255, 0.08) 50%, transparent 90%);
+          transform: scale(4);
+          z-index: -1;
+          animation: text-pulse-glow 5s ease-in-out infinite;
         }
 
-        .ring-1 {
-          border-top-color: #00f2ff;
-          border-bottom-color: #00f2ff;
-          box-shadow: 0 0 20px #00f2ff, inset 0 0 20px #00f2ff;
-          animation: orbit 2s linear infinite reverse;
-        }
-
-        .ring-2 {
-          width: 80%;
-          height: 80%;
-          top: 10%;
-          left: 10%;
-          border-left-color: #7000ff;
-          border-right-color: #7000ff;
-          box-shadow: 0 0 20px #7000ff, inset 0 0 20px #7000ff;
-          animation: orbit 3s linear infinite;
-        }
-
-        .ring-3 {
-          width: 60%;
-          height: 60%;
-          top: 20%;
-          left: 20%;
-          border-top-color: #00ffaa;
-          border-bottom-color: #00ffaa;
-          box-shadow: 0 0 20px #00ffaa, inset 0 0 20px #00ffaa;
-          animation: pulse 1.5s ease-in-out infinite;
-        }
-
-        .aura-glow-core {
+        .video-clipper {
           position: absolute;
-          top: 45%;
-          left: 45%;
-          width: 10%;
-          height: 10%;
-          background: white;
+          width: 100%;
+          height: 100%;
           border-radius: 50%;
-          box-shadow: 0 0 30px 10px #00f2ff, 0 0 60px 20px rgba(0, 242, 255, 0.3);
-          animation: pulse 1s ease-in-out infinite;
+          overflow: hidden;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+
+        .video-orb {
+          width: 250%;
+          height: 250%;
+          object-fit: cover;
+        }
+
+        .orb-text {
+          position: absolute;
+          z-index: 20;
+          color: white;
+          font-size: 32px;
+          font-weight: 900;
+          letter-spacing: 8px;
+          text-shadow: 0 0 20px rgba(255,255,255,0.8);
+          pointer-events: none;
+          margin-left: 8px; /* offset for letter-spacing to keep it centered */
         }
       `}} />
       
-      <div className="aura-loader-container">
-        <div className="aura-ring ring-1"></div>
-        <div className="aura-ring ring-2"></div>
-        <div className="aura-ring ring-3"></div>
-        <div className="aura-glow-core"></div>
+      <div className="video-orb-container">
+        <span className="orb-text">AURA</span>
+        <div className="video-clipper">
+          <video 
+            className="video-orb" 
+            autoPlay 
+            loop 
+            muted 
+            playsInline
+          >
+            <source src="/loader-orb.mp4" type="video/mp4" />
+          </video>
+        </div>
       </div>
 
-      <div style={{ 
-        display: 'flex', 
-        flexDirection: 'column', 
-        alignItems: 'center', 
-        gap: '8px' 
+      <span style={{ 
+        color: '#fff',
+        fontSize: '13px',
+        fontWeight: 600,
+        letterSpacing: '5px',
+        textTransform: 'uppercase',
+        animation: 'text-pulse-glow 2.5s ease-in-out infinite'
       }}>
-        <span style={{ 
-          color: '#fff', 
-          fontSize: '14px', 
-          fontWeight: 800, 
-          letterSpacing: '4px',
-          textTransform: 'uppercase',
-          background: 'linear-gradient(90deg, #00f2ff, #7000ff)',
-          WebkitBackgroundClip: 'text',
-          WebkitTextFillColor: 'transparent',
-          animation: 'pulse 2s ease-in-out infinite'
-        }}>
-          AURA INITIALIZING
-        </span>
-        <div style={{ 
-          width: '40px', 
-          height: '2px', 
-          background: 'linear-gradient(90deg, transparent, #00f2ff, transparent)' 
-        }}></div>
-      </div>
+        {message}
+      </span>
     </div>
   );
 };

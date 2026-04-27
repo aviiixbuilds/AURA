@@ -16,7 +16,7 @@ const ArtistPage = () => {
   const { currentTrack, isPlaying, playTrack, togglePlay } = usePlayer();
   const { toggleFollow, isFollowing } = useLibrary();
 
-  if (artLoading || topLoading) return <Loader />;
+  if (artLoading || topLoading) return <Loader message="EXPLORING UNIVERSE.." />;
   if (artError) return <div style={{ color: 'var(--text-muted)' }}>Failed to load artist.</div>;
   if (!artist) return <div style={{ color: 'var(--text-muted)' }}>Artist not found.</div>;
 

@@ -15,7 +15,7 @@ const AlbumDetail = () => {
   const { currentTrack, isPlaying, playTrack, togglePlay } = usePlayer();
   const { toggleLike, isLiked } = useLibrary();
 
-  if (loading) return <Loader />;
+  if (loading) return <Loader message="EXPLORING UNIVERSE.." />;
   if (error) return <div style={{ color: 'var(--text-muted)', padding: '40px', textAlign: 'center' }}>Failed to load album.</div>;
   if (!album) return <div style={{ color: 'var(--text-muted)', padding: '40px', textAlign: 'center' }}>Album not found.</div>;
 

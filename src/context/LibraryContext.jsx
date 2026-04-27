@@ -11,6 +11,11 @@ export const LibraryProvider = ({ children }) => {
     return saved ? JSON.parse(saved) : [];
   });
 
+  const [followedArtists, setFollowedArtists] = useState(() => {
+    const saved = localStorage.getItem('aura-followed-artists');
+    return saved ? JSON.parse(saved) : [];
+  });
+
   const [playlists, setPlaylists] = useState(() => {
     const saved = localStorage.getItem('aura-playlists');
     return saved ? JSON.parse(saved) : [];
@@ -32,6 +37,10 @@ export const LibraryProvider = ({ children }) => {
   useEffect(() => {
     localStorage.setItem('aura-liked-songs', JSON.stringify(likedSongs));
   }, [likedSongs]);
+
+  useEffect(() => {
+    localStorage.setItem('aura-followed-artists', JSON.stringify(followedArtists));
+  }, [followedArtists]);
 
   useEffect(() => {
     localStorage.setItem('aura-playlists', JSON.stringify(playlists));
@@ -94,6 +103,19 @@ export const LibraryProvider = ({ children }) => {
 
   const isLiked = (trackId) => likedSongs.some(s => s.id === trackId);
 
+  const toggleFollow = (artist) => {
+    setFollowedArtists(prev => {
+      const isFollowed = prev.some(a => a.id === artist.id);
+      if (isFollowed) {
+        return prev.filter(a => a.id !== artist.id);
+      } else {
+        return [...prev, artist];
+      }
+    });
+  };
+
+  const isFollowing = (artistId) => followedArtists.some(a => a.id === artistId);
+
   const addPlay = (track) => {
     // Add to stats
     setStats(prev => {
@@ -122,6 +144,7 @@ export const LibraryProvider = ({ children }) => {
 
   const value = {
     likedSongs,
+    followedArtists,
     playlists,
     libraryItems,
     libraryLoading,
@@ -129,6 +152,8 @@ export const LibraryProvider = ({ children }) => {
     recentlyPlayed,
     toggleLike,
     isLiked,
+    toggleFollow,
+    isFollowing,
     addPlay,
     addPlaylist,
     fetchLibrary,

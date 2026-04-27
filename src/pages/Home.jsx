@@ -92,7 +92,7 @@ const Home = () => {
   const [activeFilter, setActiveFilter] = React.useState('All');
 
   if (loading) {
-    return <Loader />;
+    return <Loader message="INITIALIZING AURA...." />;
   }
 
   if (error) {
