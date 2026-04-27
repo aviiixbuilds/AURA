@@ -77,15 +77,27 @@ AURA is packed with advanced JavaScript features and a custom-built state manage
 ```bash
 src/
 ├── components/
-│   ├── common/       # Navbar, Sidebar, Loaders, Tooltips
-│   ├── cards/        # Playlist, Track, Album cards
-│   ├── player/       # Core Player and Ambient Mode
+│   ├── common/
+│   ├── cards/
+│   ├── player/
 │   └── sections/
-├── context/          # React Contexts (Library, Player, Theme)
-├── hooks/            # Custom Hooks (useSpotify, usePlayer)
-├── pages/            # Core Views (Home, Search, Library, etc)
-├── services/         # API integrations and Multi-Tier Fallbacks
-└── assets/           # Media, Videos, and Logos
+├── context/
+│   ├── PlayerContext.jsx
+│   ├── LibraryContext.jsx
+│   └── ThemeContext.jsx
+├── hooks/
+│   ├── useSpotify.js
+│   └── usePlayer.js
+├── pages/
+│   ├── Home.jsx
+│   ├── Search.jsx
+│   ├── LikedSongs.jsx
+│   ├── PlaylistDetail.jsx
+│   ├── AlbumDetail.jsx
+│   └── ArtistPage.jsx
+├── services/
+│   └── spotify.js
+└── assets/
 ```
 
 ---
