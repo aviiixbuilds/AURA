@@ -16,6 +16,8 @@ const QuickCard = ({ item, type = 'playlist', customTitle, customImage, onClick 
   const handleCardClick = () => {
     if (onClick) {
       onClick();
+    } else if (type === 'track' && item) {
+      playTrack(item);
     } else if (item?.id) {
       navigate(`/${type}/${item.id}`);
     }
@@ -104,6 +106,11 @@ const Home = () => {
 
   const filters = ['All', 'Music', 'Podcasts'];
 
+  const hour = new Date().getHours();
+  let greeting = 'Good evening';
+  if (hour < 12) greeting = 'Good morning';
+  else if (hour < 17) greeting = 'Good afternoon';
+
   return (
     <div style={{ position: 'relative' }}>
       {/* The "HUGE" Gradient Background */}
@@ -126,7 +133,7 @@ const Home = () => {
       <div className="animate-fade-in" style={{ display: 'flex', flexDirection: 'column', gap: '24px', padding: '0 24px 24px 24px', position: 'relative', zIndex: 1 }}>
         {/* Hero Section */}
         <section>
-          <h1 style={{ fontSize: '32px', marginBottom: '24px', marginTop: '8px', fontWeight: 800 }}>Good evening</h1>
+          <h1 style={{ fontSize: '32px', marginBottom: '24px', marginTop: '8px', fontWeight: 800 }}>{greeting}</h1>
           <div style={{ 
             display: 'grid', 
             gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', 
