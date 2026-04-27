@@ -17,6 +17,8 @@ import AlbumDetail from './pages/AlbumDetail';
 import ArtistPage from './pages/ArtistPage';
 import LikedSongs from './pages/LikedSongs';
 
+import lematWorksGif from './assets/LEMAT WORKS.gif';
+
 const MainLayout = ({ children }) => {
 
   return (
@@ -24,17 +26,39 @@ const MainLayout = ({ children }) => {
       <Navbar />
       <div style={{ display: 'flex', flex: 1, overflow: 'visible', gap: '8px', padding: '0 8px 8px', minHeight: 0 }}>
         <Sidebar />
-        <main className="no-scrollbar" style={{ 
+        
+        {/* Center Section Wrapper */}
+        <div style={{ 
           flex: 1, 
-          overflowY: 'auto', 
-          background: '#121212', 
+          position: 'relative', 
           borderRadius: '8px',
-          minHeight: 0,
-          position: 'relative', // Ensure sticky children position correctly
-          containerType: 'inline-size' // Enable container queries (cqi)
+          overflow: 'hidden',
+          backgroundColor: '#0a0a0a', // Darker base for better contrast with the GIF
+          minHeight: 0
         }}>
-          {children}
-        </main>
+          {/* Looping GIF Background */}
+          <div style={{
+            position: 'absolute',
+            inset: 0,
+            backgroundImage: `url("${lematWorksGif}")`,
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            opacity: 0.3, // Subtle opacity to not overpower the UI
+            pointerEvents: 'none',
+            zIndex: 0
+          }} />
+          
+          <main className="no-scrollbar" style={{ 
+            position: 'absolute',
+            inset: 0,
+            overflowY: 'auto', 
+            zIndex: 1,
+            containerType: 'inline-size' // Enable container queries (cqi)
+          }}>
+            {children}
+          </main>
+        </div>
+
         <RightSidebar />
       </div>
       <Player />

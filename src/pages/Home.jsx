@@ -113,7 +113,7 @@ const Home = () => {
         left: 0,
         right: 0,
         height: '300px', 
-        background: `linear-gradient(to bottom, rgba(7, 133, 121, 0.95) 0%, rgba(7, 133, 121, 0.3) 50%, transparent 100%)`,
+        background: `linear-gradient(to bottom, rgba(0, 0, 255, 0.95) 0%, rgba(0, 0, 255, 0.3) 50%, transparent 100%)`,
         zIndex: 0,
         pointerEvents: 'none'
       }} />
