@@ -96,7 +96,7 @@ const Search = () => {
         {!query && (
           <section>
             <h2 style={{ fontSize: '24px', marginBottom: '24px' }}>Browse all</h2>
-            <div style={{ 
+            <div className="card-grid" style={{ 
               display: 'grid', 
               gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', 
               gap: '24px' 
@@ -148,7 +148,7 @@ const Search = () => {
                 {results.albums?.items?.length > 0 && (activeFilter === 'All' || activeFilter === 'Albums') && (
                   <section>
                     <h2 style={{ fontSize: '24px', marginBottom: '16px' }}>Albums</h2>
-                    <div style={{ 
+                    <div className="card-grid" style={{ 
                       display: 'grid', 
                       gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', 
                       gap: '24px' 
@@ -164,7 +164,7 @@ const Search = () => {
                 {results.artists?.items?.length > 0 && (activeFilter === 'All' || activeFilter === 'Artists') && (
                   <section>
                     <h2 style={{ fontSize: '24px', marginBottom: '16px' }}>Artists</h2>
-                    <div style={{ 
+                    <div className="card-grid" style={{ 
                       display: 'grid', 
                       gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', 
                       gap: '24px' 
@@ -180,7 +180,7 @@ const Search = () => {
                 {results.playlists?.items?.length > 0 && (activeFilter === 'All' || activeFilter === 'Playlists') && (
                   <section>
                     <h2 style={{ fontSize: '24px', marginBottom: '16px' }}>Playlists</h2>
-                    <div style={{ 
+                    <div className="card-grid" style={{ 
                       display: 'grid', 
                       gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', 
                       gap: '24px' 

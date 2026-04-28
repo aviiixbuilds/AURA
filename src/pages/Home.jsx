@@ -136,7 +136,7 @@ const Home = () => {
         {/* Hero Section */}
         <section>
           <h1 style={{ fontSize: '32px', marginBottom: '24px', marginTop: '8px', fontWeight: 800 }}>{greeting}</h1>
-          <div style={{ 
+          <div className="quick-grid" style={{ 
             display: 'grid', 
             gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', 
             gridAutoRows: '64px',
@@ -184,7 +184,7 @@ const Home = () => {
             <section>
               <h2 style={{ fontSize: '24px', marginBottom: '16px', fontWeight: 800 }}>Picked for you</h2>
               <div 
-                className="card-hover"
+                className="card-hover mobile-hidden"
                 style={{ 
                   background: 'rgba(255,255,255,0.05)', 
                   padding: '20px', 
@@ -226,7 +226,7 @@ const Home = () => {
               <h2 style={{ fontSize: '24px', fontWeight: 800 }}>Recommended for...</h2>
               <span style={{ fontSize: '14px', color: 'var(--text-muted)', fontWeight: 700, cursor: 'pointer' }}>Show all</span>
             </div>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))', gap: '16px' }}>
+            <div className="card-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))', gap: '16px' }}>
               {featured?.playlists?.items?.slice(1, 3).map(item => (
                 <PlaylistCard key={item.id} item={item} type="playlist" />
               ))}
@@ -241,7 +241,7 @@ const Home = () => {
               <h2 style={{ fontSize: '24px' }}>Trending Now</h2>
               <span style={{ fontSize: '14px', color: 'var(--text-muted)', fontWeight: 700, cursor: 'pointer' }}>Show all</span>
             </div>
-            <div style={{ 
+            <div className="card-grid" style={{ 
               display: 'grid', 
               gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', 
               gap: '24px' 
@@ -260,7 +260,7 @@ const Home = () => {
               <h2 style={{ fontSize: '24px' }}>Hot Tracks</h2>
               <span style={{ fontSize: '14px', color: 'var(--text-muted)', fontWeight: 700, cursor: 'pointer' }}>Show all</span>
             </div>
-            <div style={{ 
+            <div className="card-grid" style={{ 
               display: 'grid', 
               gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', 
               gap: '24px' 
@@ -282,7 +282,7 @@ const Home = () => {
               <h2 style={{ fontSize: '24px' }}>New Releases</h2>
               <span style={{ fontSize: '14px', color: 'var(--text-muted)', fontWeight: 700, cursor: 'pointer' }}>Show all</span>
             </div>
-            <div style={{ 
+            <div className="card-grid" style={{ 
               display: 'grid', 
               gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', 
               gap: '24px' 
@@ -301,7 +301,7 @@ const Home = () => {
               <h2 style={{ fontSize: '24px' }}>Popular Artists</h2>
               <span style={{ fontSize: '14px', color: 'var(--text-muted)', fontWeight: 700, cursor: 'pointer' }}>Show all</span>
             </div>
-            <div style={{ 
+            <div className="card-grid" style={{ 
               display: 'grid', 
               gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', 
               gap: '24px' 
@@ -319,7 +319,7 @@ const Home = () => {
               <h2 style={{ fontSize: '24px', fontWeight: 800 }}>Recents</h2>
               <span style={{ fontSize: '14px', color: 'var(--text-muted)', fontWeight: 700, cursor: 'pointer' }}>Show all</span>
             </div>
-            <div style={{ 
+            <div className="card-grid" style={{ 
               display: 'grid', 
               gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', 
               gap: '24px' 

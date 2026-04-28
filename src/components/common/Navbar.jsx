@@ -135,7 +135,7 @@ const Navbar = () => {
         </Tooltip>
 
         {/* Search Bar */}
-        <div style={{ 
+        <div className="mobile-hidden" style={{ 
           display: 'flex', 
           alignItems: 'center', 
           background: 'rgba(255,255,255,0.1)',
@@ -187,7 +187,7 @@ const Navbar = () => {
 
       {/* Right Section */}
       <div style={{ display: 'flex', alignItems: 'center', gap: '16px', minWidth: 'fit-content' }}>
-        <div className="tooltip-container">
+        <div className="tooltip-container mobile-hidden">
           <button style={{ 
             background: 'white', border: 'none', color: 'black', 
             padding: '8px 16px', borderRadius: '20px', fontWeight: 700, 

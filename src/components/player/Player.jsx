@@ -90,7 +90,7 @@ const Player = ({ toggleLyrics }) => {
       borderTop: '1px solid rgba(255,255,255,0.05)',
     }}>
       {/* Track Info */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: '14px', width: '30%', minWidth: 0, opacity: currentTrack ? 1 : 0 }}>
+      <div className="player-track-info" style={{ display: 'flex', alignItems: 'center', gap: '14px', width: '30%', minWidth: 0, opacity: currentTrack ? 1 : 0 }}>
         <div style={{ 
           width: '56px', height: '56px', borderRadius: '4px', 
           background: 'var(--bg-card)', flexShrink: 0, overflow: 'hidden',
@@ -101,7 +101,7 @@ const Player = ({ toggleLyrics }) => {
             <PlaylistImage item={currentTrack} type="track" size={56} />
           )}
         </div>
-        <div style={{ display: 'flex', flexDirection: 'column', overflow: 'hidden', minWidth: 0 }}>
+        <div style={{ display: 'flex', flexDirection: 'column', overflow: 'hidden', minWidth: 0, flex: 1 }}>
           <span style={{ fontWeight: 600, fontSize: '14px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
             {currentTrack?.name}
           </span>
@@ -137,10 +137,21 @@ const Player = ({ toggleLyrics }) => {
         >
           <Heart size={18} fill={trackIsLiked ? '#1DB954' : 'none'} />
         </button>
+        <div 
+          onClick={() => currentTrack && togglePlay()}
+          className="desktop-hidden control-button"
+          style={{ 
+            marginLeft: 'auto',
+            display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white',
+            cursor: currentTrack ? 'pointer' : 'default', padding: '8px'
+          }}
+        >
+          {isPlaying ? <Pause size={24} className="fill-current" /> : <Play size={24} className="fill-current" />}
+        </div>
       </div>
 
       {/* Controls */}
-      <div style={{ 
+      <div className="mobile-hidden" style={{ 
         display: 'flex', flexDirection: 'column', alignItems: 'center', 
         gap: '8px', width: '40%' 
       }}>
@@ -261,7 +272,7 @@ const Player = ({ toggleLyrics }) => {
       </div>
 
       {/* Volume & Extras */}
-      <div style={{ 
+      <div className="mobile-hidden" style={{ 
         display: 'flex', alignItems: 'center', gap: '16px', 
         justifyContent: 'flex-end', width: '30%', color: 'var(--text-muted)' 
       }}>

@@ -7,6 +7,7 @@ import Navbar from './components/common/Navbar';
 import RightSidebar from './components/common/RightSidebar';
 import Player from './components/player/Player';
 import AmbientMode from './components/player/AmbientMode';
+import MobileNav from './components/common/MobileNav';
 
 // Page Components
 import Home from './pages/Home';
@@ -24,11 +25,13 @@ const MainLayout = ({ children }) => {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', width: '100vw', background: '#000' }}>
       <Navbar />
-      <div style={{ display: 'flex', flex: 1, overflow: 'visible', gap: '8px', padding: '0 8px 8px', minHeight: 0 }}>
-        <Sidebar />
+      <div className="mobile-wrapper" style={{ display: 'flex', flex: 1, overflow: 'visible', gap: '8px', padding: '0 8px 8px', minHeight: 0 }}>
+        <div className="mobile-hidden" style={{ display: 'flex', height: '100%' }}>
+          <Sidebar />
+        </div>
         
         {/* Center Section Wrapper */}
-        <div style={{ 
+        <div className="center-wrapper-mobile" style={{ 
           flex: 1, 
           position: 'relative', 
           borderRadius: '8px',
@@ -59,9 +62,12 @@ const MainLayout = ({ children }) => {
           </main>
         </div>
 
-        <RightSidebar />
+        <div className="mobile-hidden" style={{ display: 'flex', height: '100%' }}>
+          <RightSidebar />
+        </div>
       </div>
       <Player />
+      <MobileNav />
       <AmbientMode />
     </div>
   );

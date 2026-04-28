@@ -117,7 +117,7 @@ h1, h2, h3, h4, h5, h6 {
 @media (max-width: 768px) {
   :root {
     --sidebar-width: 0px;
-    --player-height: 110px;
+    --player-height: 64px; /* Slimmer player on mobile */
   }
   
   main {
@@ -126,6 +126,38 @@ h1, h2, h3, h4, h5, h6 {
   
   .glass-nav {
     padding: 0 16px !important;
+  }
+
+  .mobile-hidden {
+    display: none !important;
+  }
+
+  .desktop-hidden {
+    display: flex !important;
+  }
+
+  /* We need padding at bottom of center content for mobile nav + player */
+  .center-wrapper-mobile {
+    padding-bottom: 128px !important; /* 64px player + 64px mobile nav */
+  }
+
+  .player-track-info {
+    width: 100% !important;
+  }
+  
+  .card-grid {
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)) !important;
+    gap: 16px !important;
+  }
+  
+  .quick-grid {
+    grid-template-columns: repeat(auto-fill, minmax(100%, 1fr)) !important;
+  }
+}
+
+@media (min-width: 769px) {
+  .desktop-hidden {
+    display: none !important;
   }
 }
 
